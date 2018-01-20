@@ -56,8 +56,72 @@ function linz_sprott_99(;
     )
 end
 
+struct DiscreteExample <: AbstractLEExample
+    name
+    phase_dynamics!
+    u0
+    tspan
+    num_attr
+    known_exponents
+end
+
+"""
+Hénon map.
+
+* M. Hénon, Commun. Math. Phys. Phys. 50, 69-77 (1976)
+* http://sprott.physics.wisc.edu/chaos/comchaos.htm
+* https://en.wikipedia.org/wiki/H%C3%A9non_map
+"""
+function henon_map(;
+        u0=[0.1, 0.1],
+        tspan=(0, 10),
+        num_attr=10000)
+    @inline function phase_dynamics!(t, u, u_next)
+        u_next[1] = 1 + u[2] - 1.4 * u[1]^2
+        u_next[2] = 0.3 * u[1]
+    end
+    DiscreteExample(
+        "Hénon map",
+        phase_dynamics!,
+        u0, tspan, num_attr,
+        [0.41922, -1.62319],   # known_exponents
+    )
+end
+
+"""
+Chirikov standard map.
+
+* B. V. Chirikov, Physics Reports 52, 263-379 (1979)
+* http://sprott.physics.wisc.edu/chaos/comchaos.htm
+* https://en.wikipedia.org/wiki/Standard_map
+* http://www.scholarpedia.org/article/Chirikov_standard_map
+"""
+function standard_map(;
+        u0=[0.1, 0.1],
+        tspan=(0, 10),
+        num_attr=10000)
+    @inline function phase_dynamics!(t, u, u_next)
+        u_next[2] = (u[2] + sin(u[1])) % 2π
+        u_next[1] = (u[1] + u_next[2]) % 2π
+    end
+    DiscreteExample(
+        "Chirikov standard map",
+        phase_dynamics!,
+        u0, tspan, num_attr,
+        [0.10497, -0.10497],   # known_exponents
+    )
+end
+
 function le_problem(example::ContinuousExample; kwargs...)
     ContinuousLEProblem(
+        example.phase_dynamics!,
+        example.u0,
+        example.tspan;
+        kwargs...)
+end
+
+function le_problem(example::DiscreteExample; kwargs...)
+    DiscreteLEProblem(
         example.phase_dynamics!,
         example.u0,
         example.tspan;
