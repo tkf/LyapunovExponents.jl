@@ -1,4 +1,4 @@
-import DifferentialEquations: init, solve!, step!
+import DifferentialEquations: init, solve, solve!, step!
 
 abstract type AbstractLEProblem end
 abstract type AbstractRelaxer end
@@ -111,6 +111,11 @@ function solve!(solver::AbstractLESolver, num_attr;
             step!(solver)
         end)
     solver
+end
+
+function solve(prob::AbstractLEProblem, num_attr; progress=-1, kwargs...)
+    solver = init(prob; progress=progress, kwargs...)
+    solve!(solver, num_attr; progress=progress)
 end
 
 @inline function lyapunov_exponents(solver::AbstractLESolver)

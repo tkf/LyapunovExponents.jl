@@ -112,6 +112,13 @@ function standard_map(;
     )
 end
 
+const EXAMPLES = [
+    lorenz_63,
+    linz_sprott_99,
+    henon_map,
+    standard_map,
+]
+
 function le_problem(example::ContinuousExample; kwargs...)
     ContinuousLEProblem(
         example.phase_dynamics!,
@@ -126,6 +133,14 @@ function le_problem(example::DiscreteExample; kwargs...)
         example.u0,
         example.tspan;
         kwargs...)
+end
+
+dimension(example::AbstractLEExample) = length(example.u0)
+
+function solve(example::AbstractLEExample;
+               dim_lyap=dimension(example), kwargs...)
+    solve(le_problem(example; dim_lyap=dim_lyap), example.num_attr;
+          kwargs...)
 end
 
 mutable struct LEDemo
