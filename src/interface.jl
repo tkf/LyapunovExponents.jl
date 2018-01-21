@@ -1,3 +1,8 @@
+"""
+    lyapunov_exponents(phase_dynamics!, u0, tspan; <keyword arguments>)
+
+Calculate Lyapunov exponents of a dynamical system.
+"""
 function lyapunov_exponents(phase_dynamics!,
                             u0,
                             tspan,

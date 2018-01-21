@@ -1,5 +1,7 @@
 module LyapunovExponents
 
+export lyapunov_exponents
+
 using Requires
 
 include("utils.jl")
