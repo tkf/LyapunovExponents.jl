@@ -7,6 +7,8 @@ struct ContinuousExample <: AbstractLEExample
     tspan
     num_attr
     known_exponents
+    atol
+    rtol
 end
 
 """
@@ -19,7 +21,8 @@ Lorenz system.
 function lorenz_63(;
         u0=[0.1, 0.1, 0.1],
         tspan=(0.0, 1.0),
-        num_attr=1000)
+        num_attr=1000,
+        atol=0, rtol=1e-2)
     @inline function phase_dynamics!(t, u, du)
         du[1] = 10.0(u[2]-u[1])
         du[2] = u[1]*(28.0-u[3]) - u[2]
@@ -30,6 +33,7 @@ function lorenz_63(;
         phase_dynamics!,
         u0, tspan, num_attr,
         [0.9056, 0, -14.5723],  # known_exponents
+        atol, rtol,
     )
 end
 
@@ -42,7 +46,8 @@ Simplest piecewise linear dissipative chaotic flow.
 function linz_sprott_99(;
         u0=[0.1, 0.1, 0.1],
         tspan=(0.0, 1.0),
-        num_attr=10000)
+        num_attr=10000,
+        atol=0, rtol=1e-2)
     @inline function phase_dynamics!(t, u, du)
         du[1] = u[2]
         du[2] = u[3]
@@ -53,6 +58,7 @@ function linz_sprott_99(;
         phase_dynamics!,
         u0, tspan, num_attr,
         [0.0362, 0, -0.6362],   # known_exponents
+        atol, rtol,
     )
 end
 
@@ -63,6 +69,8 @@ struct DiscreteExample <: AbstractLEExample
     tspan
     num_attr
     known_exponents
+    atol
+    rtol
 end
 
 """
@@ -75,7 +83,8 @@ Hénon map.
 function henon_map(;
         u0=[0.1, 0.1],
         tspan=(0, 10),
-        num_attr=10000)
+        num_attr=10000,
+        atol=0, rtol=1e-2)
     @inline function phase_dynamics!(t, u, u_next)
         u_next[1] = 1 + u[2] - 1.4 * u[1]^2
         u_next[2] = 0.3 * u[1]
@@ -85,6 +94,7 @@ function henon_map(;
         phase_dynamics!,
         u0, tspan, num_attr,
         [0.41922, -1.62319],   # known_exponents
+        atol, rtol,
     )
 end
 
@@ -97,9 +107,12 @@ Chirikov standard map.
 * http://www.scholarpedia.org/article/Chirikov_standard_map
 """
 function standard_map(;
-        u0=[0.1, 0.1],
+        u0=[2.68156, 2.31167],
         tspan=(0, 10),
-        num_attr=10000)
+        num_attr=10000,
+        atol=0, rtol=0.2)
+    # TODO: Improve the accuracy. Check the paper.  It looks like
+    # `num_attr=1000000` is required to see some kind of convergence.
     @inline function phase_dynamics!(t, u, u_next)
         u_next[2] = (u[2] + sin(u[1])) % 2π
         u_next[1] = (u[1] + u_next[2]) % 2π
@@ -109,6 +122,7 @@ function standard_map(;
         phase_dynamics!,
         u0, tspan, num_attr,
         [0.10497, -0.10497],   # known_exponents
+        atol, rtol,
     )
 end
 
