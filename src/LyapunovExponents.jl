@@ -1,6 +1,6 @@
 module LyapunovExponents
 
-export lyapunov_exponents
+export ContinuousLEProblem, DiscreteLEProblem, lyapunov_exponents
 
 using Requires
 

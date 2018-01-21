@@ -22,6 +22,20 @@ function keepgoing!(diter::DiscreteIterator, u0=diter.u0)
     diter.u1 = u1
 end
 
+"""
+    DiscreteLEProblem(phase_prob;  <keyword arguments>)
+
+# Arguments
+- `phase_prob::DiscreteProblem`: Phase space dynamics represented in the
+  form of `DiscreteProblem` from DifferentialEquations.jl.
+- `num_tran::Integer`: Number of iterations to through away to get rid
+  of the transient dynamics.
+- `dim_lyap::Integer`: Number of Lyapunov exponents to be calculated.
+  Default to the full system dimension.
+- `Q0::Array`: The initial guess of the Gram-Schmidt "Lyapunov vectors".
+  Default to the identity matrix.
+- `tangent_dynamics::Function`:
+"""
 struct DiscreteLEProblem <: AbstractLEProblem
     phase_prob
     num_tran

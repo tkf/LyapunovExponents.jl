@@ -176,6 +176,11 @@ function solve(prob::AbstractLEProblem, num_attr; progress=-1, kwargs...)
     solve!(solver, num_attr; progress=progress)
 end
 
+"""
+    lyapunov_exponents(solver)
+
+Get the result of Lyapunov exponents calculation stored in `solver`.
+"""
 @inline function lyapunov_exponents(solver::AbstractLESolver)
     solver.exponents ./ t_chunk(solver)
 end
