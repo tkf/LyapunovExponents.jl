@@ -33,6 +33,34 @@ function phase_tangent_state(relaxer::AbstractRelaxer)
     u0
 end
 
+mutable struct LESolver{Intr} <: AbstractLESolver
+    integrator::Intr
+    exponents
+    num_orth
+    phase_state
+    tangent_state
+    sign_R
+
+    function LESolver(
+            integrator::Intr;
+            phase_state=get_phase_state(integrator),
+            tangent_state=get_tangent_state(integrator),
+            dim_lyap=length(phase_state),
+            ) where {Intr}
+        num_orth = 0
+        exponents = zeros(eltype(phase_state), dim_lyap)
+        sign_R = Array{Bool}(dim_lyap)
+        new{Intr}(
+            integrator,
+            exponents,
+            num_orth,
+            phase_state,
+            tangent_state,
+            sign_R,
+        )
+    end
+end
+
 @inline function keepgoing!(solver::AbstractLESolver)
     u0 = current_state(solver)
     u0[:, 1] = solver.phase_state

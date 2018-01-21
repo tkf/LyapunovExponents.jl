@@ -53,35 +53,12 @@ get_relaxer(prob::DiscreteLEProblem) =
 
 last_state(relaxer::DiscreteRelaxer) = relaxer.integrator.u0
 
-mutable struct DiscreteLESolver <: AbstractLESolver
-    integrator
-    exponents
-    num_orth
-    phase_state
-    tangent_state
-    sign_R
-
-    function DiscreteLESolver(
-            integrator::DiscreteIterator;
-            phase_state=integrator.u0[:, 1],
-            tangent_state=integrator.u0[:, 2:end],
-            dim_lyap=length(phase_state))
-        num_orth = 0
-        exponents = zeros(eltype(phase_state), dim_lyap)
-        sign_R = Array{Bool}(dim_lyap)
-        new(
-            integrator,
-            exponents,
-            num_orth,
-            phase_state,
-            tangent_state,
-            sign_R,
-        )
-    end
-end
+get_phase_state(integrator::DiscreteIterator) = integrator.u0[:, 1]
+get_tangent_state(integrator::DiscreteIterator) = integrator.u0[:, 2:end]
+const DiscreteLESolver = LESolver{<: DiscreteIterator}
 
 DiscreteLESolver(tangent_prob::DiscreteProblem; kwargs...) =
-    DiscreteLESolver(DiscreteIterator(tangent_prob); kwargs...)
+    LESolver(DiscreteIterator(tangent_prob); kwargs...)
 
 function DiscreteLESolver(prob::DiscreteLEProblem, u0)
     phase_prob = prob.phase_prob

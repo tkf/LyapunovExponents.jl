@@ -41,35 +41,12 @@ get_relaxer(prob::ContinuousLEProblem; kwargs...) =
 
 last_state(relaxer::ContinuousRelaxer) = relaxer.integrator.sol[end]
 
-mutable struct ContinuousLESolver <: AbstractLESolver
-    integrator
-    exponents
-    num_orth
-    phase_state
-    tangent_state
-    sign_R
-
-    function ContinuousLESolver(
-            integrator::ODEIntegrator;
-            phase_state=integrator.sol.prob.u0[:, 1],
-            tangent_state=integrator.sol.prob.u0[:, 2:end],
-            dim_lyap=length(phase_state))
-        num_orth = 0
-        exponents = zeros(eltype(phase_state), dim_lyap)
-        sign_R = Array{Bool}(dim_lyap)
-        new(
-            integrator,
-            exponents,
-            num_orth,
-            phase_state,
-            tangent_state,
-            sign_R,
-        )
-    end
-end
+get_phase_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 1]
+get_tangent_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 2:end]
+const ContinuousLESolver = LESolver{<: ODEIntegrator}
 
 ContinuousLESolver(tangent_prob::ODEProblem; kwargs...) =
-    ContinuousLESolver(get_integrator(tangent_prob); kwargs...)
+    LESolver(get_integrator(tangent_prob); kwargs...)
 
 function ContinuousLESolver(prob::ContinuousLEProblem, u0)
     phase_prob = prob.phase_prob
