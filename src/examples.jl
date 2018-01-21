@@ -160,3 +160,12 @@ function solve!(demo::LEDemo; progress=-1, kwargs...)
                                     demo.example.num_attr)
     solve!(demo.solver; progress=progress, kwargs...)
 end
+
+function Base.show(io::IO, demo::LEDemo)
+    print(io, "Demo: ", demo.example.name)
+    if isdefined(demo, :solver)
+        print(io, ", ", demo.solver)
+    else
+        print(io, " [solver not initialized]")
+    end
+end

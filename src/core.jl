@@ -150,3 +150,9 @@ function solve!(solver::LERecordingSolver; kwargs...)
     solver.i_hist = 0
     solve!(solver, num_attr; kwargs...)
 end
+
+Base.show(io::IO, solver::LERecordingSolver) = show(io, solver.solver)
+Base.show(io::IO, solver::AbstractLESolver) =
+    print(io,
+          "#Orth.: ", solver.num_orth, ", ",
+          "LEs: ", lyapunov_exponents(solver))
