@@ -126,11 +126,65 @@ function standard_map(;
     )
 end
 
+"""
+Baker's map
+
+* https://en.wikipedia.org/wiki/Baker%27s_map
+"""
+function bakers_map(;
+        u0=[0.6, 0.4],
+        tspan=(0, 10),
+        num_attr=10000,
+        atol=0, rtol=1e-7)
+    @inline function phase_dynamics!(t, u, u_next)
+        if u[1] < 0.5
+            u_next[1] = 2 * u[1]
+            u_next[2] = u[2] / 2
+        else
+            u_next[1] = 2 - 2 * u[1]
+            u_next[2] = 1 - u[2] / 2
+        end
+    end
+    DiscreteExample(
+        "Baker's map",
+        phase_dynamics!,
+        u0, tspan, num_attr,
+        log.([2.0, 0.5]),       # known_exponents
+        atol, rtol,
+    )
+end
+
+"""
+Arnold's cat map
+
+* https://en.wikipedia.org/wiki/Arnold%27s_cat_map
+"""
+function arnold_cat_map(;
+        u0=[0.1, 0.1],
+        tspan=(0, 10),
+        num_attr=10000,
+        atol=0, rtol=1e-4)
+    M = [2 1; 1 1]
+    @inline function phase_dynamics!(t, u, u_next)
+        A_mul_B!(u_next, M, u)
+        u_next .= mod.(u_next, 1)
+    end
+    DiscreteExample(
+        "Arnold's cat map",
+        phase_dynamics!,
+        u0, tspan, num_attr,
+        log.(sort!(eigvals(M), rev=true)), # known_exponents
+        atol, rtol,
+    )
+end
+
 const EXAMPLES = [
     lorenz_63,
     linz_sprott_99,
     henon_map,
     standard_map,
+    bakers_map,
+    arnold_cat_map,
 ]
 
 function le_problem(example::ContinuousExample; kwargs...)
