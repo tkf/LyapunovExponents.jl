@@ -45,35 +45,11 @@ get_phase_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 1]
 get_tangent_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 2:end]
 const ContinuousLESolver = LESolver{<: ODEIntegrator}
 
-ContinuousLESolver(tangent_prob::ODEProblem; kwargs...) =
+LESolver(tangent_prob::ODEProblem; kwargs...) =
     LESolver(get_integrator(tangent_prob); kwargs...)
 
-function ContinuousLESolver(prob::ContinuousLEProblem, u0)
-    phase_prob = prob.phase_prob
-
-    tangent_dynamics! = prob.tangent_dynamics!
-    if tangent_dynamics! == nothing
-        phase_dynamics! = phase_prob.f
-        tangent_dynamics! = PhaseTangentDynamics(phase_dynamics!, u0)
-    end
-
-    tangent_prob = ODEProblem(
-        tangent_dynamics!,
-        u0,
-        phase_prob.tspan,
-    )
-    ContinuousLESolver(
-        tangent_prob,
-    )
-end
-
-function ContinuousLESolver(relaxer::ContinuousRelaxer)
-    ContinuousLESolver(relaxer.prob, phase_tangent_state(relaxer))
-end
-
-function init(prob::ContinuousLEProblem; kwargs...)
-    ContinuousLESolver(relaxed(prob; kwargs...))
-end
+LESolver(relaxer::ContinuousRelaxer) =
+    LESolver(relaxer.prob, phase_tangent_state(relaxer))
 
 """
 Continue solving the ODE problem from the last state.

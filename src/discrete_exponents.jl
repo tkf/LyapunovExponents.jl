@@ -57,35 +57,11 @@ get_phase_state(integrator::DiscreteIterator) = integrator.u0[:, 1]
 get_tangent_state(integrator::DiscreteIterator) = integrator.u0[:, 2:end]
 const DiscreteLESolver = LESolver{<: DiscreteIterator}
 
-DiscreteLESolver(tangent_prob::DiscreteProblem; kwargs...) =
+LESolver(tangent_prob::DiscreteProblem; kwargs...) =
     LESolver(DiscreteIterator(tangent_prob); kwargs...)
 
-function DiscreteLESolver(prob::DiscreteLEProblem, u0)
-    phase_prob = prob.phase_prob
-
-    tangent_dynamics! = prob.tangent_dynamics!
-    if tangent_dynamics! == nothing
-        phase_dynamics! = phase_prob.f
-        tangent_dynamics! = PhaseTangentDynamics(phase_dynamics!, u0)
-    end
-
-    tangent_prob = DiscreteProblem(
-        tangent_dynamics!,
-        u0,
-        phase_prob.tspan,
-    )
-    DiscreteLESolver(
-        tangent_prob,
-    )
-end
-
-function DiscreteLESolver(relaxer::DiscreteRelaxer; kwargs...)
-    DiscreteLESolver(relaxer.prob, phase_tangent_state(relaxer))
-end
-
-function init(prob::DiscreteLEProblem; kwargs...)
-    DiscreteLESolver(relaxed(prob; kwargs...))
-end
+LESolver(relaxer::DiscreteRelaxer; kwargs...) =
+    LESolver(relaxer.prob, phase_tangent_state(relaxer))
 
 @inline function current_state(solver::DiscreteLESolver)
     solver.integrator.u0

@@ -61,6 +61,36 @@ mutable struct LESolver{Intr} <: AbstractLESolver
     end
 end
 
+function LESolver(prob::AbstractLEProblem, u0)
+    phase_prob = prob.phase_prob
+
+    de_prob_type = if isa(phase_prob, ODEProblem)
+        ODEProblem
+    elseif isa(phase_prob, DiscreteProblem)
+        DiscreteProblem
+    else
+        error("Unknown problem type: $(typeof(phase_prob))")
+    end
+    # TODO: maybe use type parameter to get `de_prob_type`.
+
+    tangent_dynamics! = prob.tangent_dynamics!
+    if tangent_dynamics! == nothing
+        phase_dynamics! = phase_prob.f
+        tangent_dynamics! = PhaseTangentDynamics(phase_dynamics!, u0)
+    end
+
+    tangent_prob = de_prob_type(
+        tangent_dynamics!,
+        u0,
+        phase_prob.tspan,
+    )
+    LESolver(
+        tangent_prob,
+    )
+end
+
+init(prob::AbstractLEProblem; kwargs...) = LESolver(relaxed(prob; kwargs...))
+
 @inline function keepgoing!(solver::AbstractLESolver)
     u0 = current_state(solver)
     u0[:, 1] = solver.phase_state
