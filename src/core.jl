@@ -1,11 +1,56 @@
 import DifferentialEquations: init, solve, solve!, step!
 
+"""
+The Problem type represents the setup of the Lyapunov exponents calculation.
+"""
 abstract type AbstractLEProblem end
+
+"""
+The Relaxer type represents the calculation required for throwing away
+the transient part of the dynamics.
+"""
 abstract type AbstractRelaxer end
+
+"""
+The Solver type represents the core Lyapunov Exponents (LE)
+calculation.  The LE calculation is done by calling the in-place
+mutating function [`solve!`](@ref).
+
+The methods connecting the three principal types (Problem, Relaxer and
+Solver) for the LE calculation are shown in the following diagram:
+
+┌─ Problem ([`AbstractLEProblem`](@ref))                               \\\n
+│     │                                                                \\\n
+│     │ [`get_relaxer`](@ref), [`relaxed`](@ref)                       \\\n
+│     ▼                                                                \\\n
+│   Relaxer ([`AbstractRelaxer`](@ref)) ┄┄ ⟲ [`relax!`](@ref)        \\\n
+│     │                                                                \\\n
+│     │ [`LESolver`](@ref)                                             \\\n
+│     │                                                                \\\n
+│┄┄┄┄┄┄┄ [`init`](@ref), [`solve`](@ref)                         \\\n
+│     │                                                                \\\n
+│     ▼                                                                \\\n
+└▶ Solver ([`AbstractLESolver`](@ref)) ┄┄ ⟲ [`solve!`](@ref),
+                                                 [`step!`](@ref)
+
+"""
 abstract type AbstractLESolver end
 
 dimension(prob) = length(prob.u0)
 
+"""
+    get_relaxer(prob::AbstractLEProblem; <keyword arguments>) :: AbstractRelaxer
+
+Get a relaxer for a LE problem.
+"""
+function get_relaxer end
+
+"""
+    relax!(relaxer::AbstractRelaxer; <keyword arguments>)
+
+Throwaway the transient part of the phase space dynamics of the LE
+problem `prob`.
+"""
 function relax!(relaxer; progress=-1)
     integrator = relaxer.integrator
     num_tran = relaxer.prob.num_tran
@@ -19,6 +64,15 @@ function relax!(relaxer; progress=-1)
     relaxer
 end
 
+"""
+    relaxed(prob::AbstractLEProblem; <keyword arguments>) :: AbstractRelaxer
+
+Throwaway the transient part of the phase space dynamics of the LE
+problem `prob`.
+
+That is to say, convert a LE problem ([`AbstractLEProblem`](@ref)) to
+a relaxer ([`AbstractRelaxer`](@ref)) and then call [`relax!`](@ref).
+"""
 relaxed(prob; progress=-1, kwargs...) =
     relax!(get_relaxer(prob; kwargs...); progress=progress)
 
@@ -33,6 +87,12 @@ function phase_tangent_state(relaxer::AbstractRelaxer)
     u0
 end
 
+"""
+    LESolver(integrator; <keyword arguments>)
+
+A type representing the main calculation of Lyapunov Exponents (LE).
+This struct holds all temporary state required for LE calculation.
+"""
 mutable struct LESolver{Intr} <: AbstractLESolver
     integrator::Intr
     exponents
@@ -89,6 +149,12 @@ function LESolver(prob::AbstractLEProblem, u0)
     )
 end
 
+"""
+    init(prob::AbstractLEProblem; <keyword arguments>) :: AbstractLESolver
+
+Run phase space simulation to throw away the transient and then
+construct a LE solver.
+"""
 init(prob::AbstractLEProblem; kwargs...) = LESolver(relaxed(prob; kwargs...))
 
 @inline function keepgoing!(solver::AbstractLESolver)
@@ -141,6 +207,11 @@ end
     sgn
 end
 
+"""
+    step!(solver::AbstractLESolver)
+
+Evolve the dynamics and then do an orthonormalization.
+"""
 function step!(solver::AbstractLESolver)
     dim_lyap = length(solver.exponents)
 
@@ -161,6 +232,11 @@ function step!(solver::AbstractLESolver)
     solver.tangent_state = Q
 end
 
+"""
+    solve!(solver::AbstractLESolver, num_attr; <keyword arguments>)
+
+Do `num_attr` times of orthonormalization `step!(solver)`.
+"""
 function solve!(solver::AbstractLESolver, num_attr;
                 progress=-1)
     @showprogress_if(
@@ -171,6 +247,13 @@ function solve!(solver::AbstractLESolver, num_attr;
     solver
 end
 
+"""
+    solve(prob::AbstractLEProblem, num_attr; <keyword arguments>)
+        :: AbstractLESolver
+
+Initialize the solver ([`init`](@ref)) and then go through the LE
+calculation ([`solve!`](@ref)).
+"""
 function solve(prob::AbstractLEProblem, num_attr; progress=-1, kwargs...)
     solver = init(prob; progress=progress, kwargs...)
     solve!(solver, num_attr; progress=progress)
