@@ -10,6 +10,8 @@ mutable struct DiscreteIterator
     end
 end
 
+get_integrator(prob::DiscreteProblem) = DiscreteIterator(prob)
+
 function keepgoing!(diter::DiscreteIterator, u0=diter.u0)
     tmin, tmax = diter.prob.tspan
     f = diter.prob.f
@@ -34,13 +36,7 @@ For the list of usable keyword arguments, see [`LEProblem`](@ref).
 DiscreteLEProblem(phase_dynamics!, u0, tspan; kwargs...) =
     LEProblem(DiscreteProblem(phase_dynamics!, u0, tspan); kwargs...)
 
-struct DiscreteRelaxer <: AbstractRelaxer
-    prob
-    integrator
-end
-
-get_relaxer(prob::DiscreteLEProblem) =
-    DiscreteRelaxer(prob, DiscreteIterator(prob.phase_prob))
+const DiscreteRelaxer = Relaxer{<: DiscreteLEProblem}
 
 last_state(relaxer::DiscreteRelaxer) = relaxer.integrator.u0
 

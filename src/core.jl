@@ -74,6 +74,14 @@ struct LEProblem{DEP} <: AbstractLEProblem
     end
 end
 
+struct Relaxer{LEP} <: AbstractRelaxer
+    prob::LEP
+    integrator
+end
+
+get_relaxer(prob::LEP; kwargs...) where {LEP <: AbstractLEProblem} =
+    Relaxer{LEP}(prob, get_integrator(prob.phase_prob; kwargs...))
+
 """
     get_relaxer(prob::AbstractLEProblem; <keyword arguments>) :: AbstractRelaxer
 

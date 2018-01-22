@@ -3,7 +3,7 @@ using ForwardDiff
 
 ODEIntegrator = OrdinaryDiffEq.ODEIntegrator
 
-function get_integrator(prob; kwargs...)
+function get_integrator(prob::ODEProblem; kwargs...)
     alg, extra_kwargs = default_algorithm(prob; kwargs...)
     init(prob, alg; kwargs..., extra_kwargs...)
 end
@@ -25,13 +25,7 @@ ContinuousLEProblem(phase_dynamics!, u0, tspan::Tuple; kwargs...) =
 ContinuousLEProblem(phase_dynamics!, u0, tchunk::Real; kwargs...) =
     ContinuousLEProblem(phase_dynamics!, u0, (zero(tchunk), tchunk); kwargs...)
 
-struct ContinuousRelaxer <: AbstractRelaxer
-    prob
-    integrator
-end
-
-get_relaxer(prob::ContinuousLEProblem; kwargs...) =
-    ContinuousRelaxer(prob, get_integrator(prob.phase_prob; kwargs...))
+const ContinuousRelaxer = Relaxer{<: ContinuousLEProblem}
 
 last_state(relaxer::ContinuousRelaxer) = relaxer.integrator.sol[end]
 
