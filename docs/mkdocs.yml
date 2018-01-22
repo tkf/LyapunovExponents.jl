@@ -3,7 +3,7 @@ repo_url:         https://github.com/tkf/LyapunovExponents.jl
 site_description: A hackable Lyapunov exponents calculator
 site_author:      tkf
 
-theme: readthedocs
+theme: alabaster
 
 extra_css:
   - assets/Documenter.css
