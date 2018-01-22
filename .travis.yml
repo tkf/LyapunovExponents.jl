@@ -10,6 +10,10 @@ notifications:
   email: false
 git:
   depth: 99999999
+cache:
+  pip: true
+  directories:
+    - /home/travis/.julia
 
 matrix:
   allow_failures:
@@ -20,8 +24,8 @@ matrix:
 #  apt: # apt-get for linux
 #    packages:
 #    - gfortran
-#before_script: # homebrew for mac
-#  - if [ $TRAVIS_OS_NAME = osx ]; then brew install gcc; fi
+before_script:
+  - julia -e 'Pkg.update()'
 
 ## uncomment the following lines to override the default test script
 #script:
