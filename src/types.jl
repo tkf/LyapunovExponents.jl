@@ -91,8 +91,8 @@ mutable struct LESolver{Intr} <: AbstractLESolver
 
     function LESolver(
             integrator::Intr;
-            phase_state=get_phase_state(integrator),
-            tangent_state=get_tangent_state(integrator),
+            phase_state=init_phase_state(integrator),
+            tangent_state=init_tangent_state(integrator),
             dim_lyap=length(phase_state),
             ) where {Intr}
         num_orth = 0

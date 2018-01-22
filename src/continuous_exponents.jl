@@ -28,8 +28,8 @@ const ContinuousRelaxer = Relaxer{<: ContinuousLEProblem}
 
 last_state(relaxer::ContinuousRelaxer) = relaxer.integrator.sol[end]
 
-get_phase_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 1]
-get_tangent_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 2:end]
+init_phase_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 1]
+init_tangent_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 2:end]
 const ContinuousLESolver = LESolver{<: ODEIntegrator}
 
 """

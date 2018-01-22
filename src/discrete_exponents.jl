@@ -40,8 +40,8 @@ const DiscreteRelaxer = Relaxer{<: DiscreteLEProblem}
 
 last_state(relaxer::DiscreteRelaxer) = relaxer.integrator.u0
 
-get_phase_state(integrator::DiscreteIterator) = integrator.u0[:, 1]
-get_tangent_state(integrator::DiscreteIterator) = integrator.u0[:, 2:end]
+init_phase_state(integrator::DiscreteIterator) = integrator.u0[:, 1]
+init_tangent_state(integrator::DiscreteIterator) = integrator.u0[:, 2:end]
 const DiscreteLESolver = LESolver{<: DiscreteIterator}
 
 @inline function current_state(solver::DiscreteLESolver)
