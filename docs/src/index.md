@@ -3,6 +3,7 @@
 ```@contents
 Pages = [
     "api.md",
+    "examples.md",
 ]
 Depth = 2
 ```

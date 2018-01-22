@@ -1,3 +1,15 @@
+"""
+A type to hold an example dynamical system and its known Lyapunov exponents.
+
+Here is an example code for constructing an example dynamical system,
+calculate its LEs and plot them:
+```julia
+using LyapunovExponents
+using Plots
+demo = solve!(LEDemo(LyapunovExponents.lorenz_63()))
+plot(demo)
+```
+"""
 struct LEExample{ProblemType}
     name
     phase_dynamics!
@@ -13,10 +25,10 @@ const ContinuousExample = LEExample{ContinuousLEProblem}
 const DiscreteExample = LEExample{DiscreteLEProblem}
 
 """
-Lorenz system.
+Return a [`LEExample`](@ref) for the Lorenz system.
 
-* https://en.wikipedia.org/wiki/Lorenz_system
-* http://sprott.physics.wisc.edu/chaos/comchaos.htm
+* <https://en.wikipedia.org/wiki/Lorenz_system>
+* <http://sprott.physics.wisc.edu/chaos/comchaos.htm>
 * E. N. Lorenz, J. Atmos. Sci. 20, 130-141 (1963)
 """
 function lorenz_63(;
@@ -39,9 +51,10 @@ function lorenz_63(;
 end
 
 """
-Simplest piecewise linear dissipative chaotic flow.
+Return a [`LEExample`](@ref) for the simplest piecewise linear
+dissipative chaotic flow.
 
-* http://sprott.physics.wisc.edu/chaos/comchaos.htm
+* <http://sprott.physics.wisc.edu/chaos/comchaos.htm>
 * S. J. Linz and J. C. Sprott, Phys. Lett. A 259, 240-245 (1999)
 """
 function linz_sprott_99(;
@@ -64,11 +77,11 @@ function linz_sprott_99(;
 end
 
 """
-Hénon map.
+Return a [`LEExample`](@ref) for the Hénon map.
 
 * M. Hénon, Commun. Math. Phys. Phys. 50, 69-77 (1976)
-* http://sprott.physics.wisc.edu/chaos/comchaos.htm
-* https://en.wikipedia.org/wiki/H%C3%A9non_map
+* <http://sprott.physics.wisc.edu/chaos/comchaos.htm>
+* <https://en.wikipedia.org/wiki/H%C3%A9non_map>
 """
 function henon_map(;
         u0=[0.1, 0.1],
@@ -89,12 +102,12 @@ function henon_map(;
 end
 
 """
-Chirikov standard map.
+Return a [`LEExample`](@ref) for the Chirikov standard map.
 
 * B. V. Chirikov, Physics Reports 52, 263-379 (1979)
-* http://sprott.physics.wisc.edu/chaos/comchaos.htm
-* https://en.wikipedia.org/wiki/Standard_map
-* http://www.scholarpedia.org/article/Chirikov_standard_map
+* <http://sprott.physics.wisc.edu/chaos/comchaos.htm>
+* <https://en.wikipedia.org/wiki/Standard_map>
+* <http://www.scholarpedia.org/article/Chirikov_standard_map>
 """
 function standard_map(;
         u0=[2.68156, 2.31167],
@@ -119,7 +132,7 @@ end
 """
 Baker's map
 
-* https://en.wikipedia.org/wiki/Baker%27s_map
+* <https://en.wikipedia.org/wiki/Baker%27s_map>
 """
 function bakers_map(;
         u0=[0.6, 0.4],
@@ -145,9 +158,9 @@ function bakers_map(;
 end
 
 """
-Arnold's cat map
+Return a [`LEExample`](@ref) for the Arnold's cat map
 
-* https://en.wikipedia.org/wiki/Arnold%27s_cat_map
+* <https://en.wikipedia.org/wiki/Arnold%27s_cat_map>
 """
 function arnold_cat_map(;
         u0=[0.1, 0.1],
@@ -209,10 +222,22 @@ mutable struct LEDemo
     LEDemo(example, prob) = new(example, prob)
 end
 
+"""
+    LEDemo(example::LEExample; <keyword arguments>)
+
+Create a `LEDemo` holding an `example` and an appropriate `LEProblem`
+created from the `example`.
+"""
 function LEDemo(example::LEExample; kwargs...)
     LEDemo(example, le_problem(example; kwargs...))
 end
 
+"""
+    solve!(demo::LEDemo; progress=-1, <keyword arguments>)
+
+Initialize `demo.solver` from `demo.prob` and run
+`solve!(demo.solver)` to calculate the Lyapunov exponents.
+"""
 function solve!(demo::LEDemo; progress=-1, kwargs...)
     demo.solver = LERecordingSolver(init(demo.prob; progress=progress),
                                     demo.example.num_attr)
