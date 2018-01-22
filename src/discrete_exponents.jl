@@ -36,26 +36,10 @@ end
   Default to the identity matrix.
 - `tangent_dynamics::Function`:
 """
-struct DiscreteLEProblem <: AbstractLEProblem
-    phase_prob
-    num_tran
-    dim_lyap
-    Q0
-    tangent_dynamics!
-
-    function DiscreteLEProblem(
-            phase_prob::DiscreteProblem;
-            num_tran=1,
-            dim_lyap=dimension(phase_prob),
-            Q0=eye(dimension(phase_prob), dim_lyap),
-            tangent_dynamics=nothing
-            )
-        new(phase_prob, num_tran, dim_lyap, Q0, tangent_dynamics)
-    end
-end
+const DiscreteLEProblem = LEProblem{<: DiscreteProblem}
 
 DiscreteLEProblem(phase_dynamics!, u0, tspan; kwargs...) =
-    DiscreteLEProblem(DiscreteProblem(phase_dynamics!, u0, tspan); kwargs...)
+    LEProblem(DiscreteProblem(phase_dynamics!, u0, tspan); kwargs...)
 
 struct DiscreteRelaxer <: AbstractRelaxer
     prob

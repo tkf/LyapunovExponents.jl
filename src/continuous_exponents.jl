@@ -26,28 +26,13 @@ end
    provided, `tangent_dynamics` is derived from `phase_prob.f`.  See
    also [`PhaseTangentDynamics`](@ref).
 """
-struct ContinuousLEProblem <: AbstractLEProblem
-    phase_prob
-    num_tran
-    dim_lyap
-    Q0
-    tangent_dynamics!
-
-    function ContinuousLEProblem(
-            phase_prob::ODEProblem;
-            num_tran=1,
-            dim_lyap=dimension(phase_prob),
-            Q0=eye(dimension(phase_prob), dim_lyap),
-            tangent_dynamics=nothing)
-        new(phase_prob, num_tran, dim_lyap, Q0, tangent_dynamics)
-    end
-end
+const ContinuousLEProblem = LEProblem{<: ODEProblem}
 
 """
     ContinuousLEProblem(phase_prob; <keyword arguments>)
 """
 ContinuousLEProblem(phase_dynamics!, u0, tspan::Tuple; kwargs...) =
-    ContinuousLEProblem(ODEProblem(phase_dynamics!, u0, tspan); kwargs...)
+    LEProblem(ODEProblem(phase_dynamics!, u0, tspan); kwargs...)
 
 ContinuousLEProblem(phase_dynamics!, u0, tchunk::Real; kwargs...) =
     ContinuousLEProblem(phase_dynamics!, u0, (zero(tchunk), tchunk); kwargs...)

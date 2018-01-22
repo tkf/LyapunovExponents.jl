@@ -38,6 +38,24 @@ abstract type AbstractLESolver end
 
 dimension(prob) = length(prob.u0)
 
+struct LEProblem{DEP} <: AbstractLEProblem
+    phase_prob::DEP
+    num_tran
+    dim_lyap
+    Q0
+    tangent_dynamics!
+
+    function LEProblem(
+            phase_prob::DEP;
+            num_tran=1,
+            dim_lyap=dimension(phase_prob),
+            Q0=eye(dimension(phase_prob), dim_lyap),
+            tangent_dynamics=nothing,
+            ) where {DEP}
+        new{DEP}(phase_prob, num_tran, dim_lyap, Q0, tangent_dynamics)
+    end
+end
+
 """
     get_relaxer(prob::AbstractLEProblem; <keyword arguments>) :: AbstractRelaxer
 
