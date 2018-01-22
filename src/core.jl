@@ -2,15 +2,13 @@ import DifferentialEquations: init, solve, solve!, step!
 
 dimension(prob) = length(prob.u0)
 
-get_relaxer(prob::LEP; kwargs...) where {LEP <: AbstractLEProblem} =
-    Relaxer{LEP}(prob, get_integrator(prob.phase_prob; kwargs...))
-
 """
     get_relaxer(prob::AbstractLEProblem; <keyword arguments>) :: AbstractRelaxer
 
 Get a relaxer for a LE problem.
 """
-function get_relaxer end
+get_relaxer(prob::LEP; kwargs...) where {LEP <: AbstractLEProblem} =
+    Relaxer{LEP}(prob, get_integrator(prob.phase_prob; kwargs...))
 
 """
     relax!(relaxer::AbstractRelaxer; <keyword arguments>)
