@@ -59,7 +59,7 @@ struct LEProblem{DEP} <: AbstractLEProblem
     Q0
     tangent_dynamics!
 
-    function LEProblem(
+    function LEProblem{DEP}(
             phase_prob::DEP;
             num_tran=1,
             dim_lyap=dimension(phase_prob),

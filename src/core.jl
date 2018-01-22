@@ -53,17 +53,8 @@ function phase_tangent_state(relaxer::Relaxer)
     u0
 end
 
-function LESolver(prob::LEProblem, u0)
+function LESolver(prob::LEProblem{DEP}, u0) where {DEP}
     phase_prob = prob.phase_prob
-
-    de_prob_type = if isa(phase_prob, ODEProblem)
-        ODEProblem
-    elseif isa(phase_prob, DiscreteProblem)
-        DiscreteProblem
-    else
-        error("Unknown problem type: $(typeof(phase_prob))")
-    end
-    # TODO: maybe use type parameter to get `de_prob_type`.
 
     tangent_dynamics! = prob.tangent_dynamics!
     if tangent_dynamics! == nothing
@@ -71,7 +62,7 @@ function LESolver(prob::LEProblem, u0)
         tangent_dynamics! = PhaseTangentDynamics(phase_dynamics!, u0)
     end
 
-    tangent_prob = de_prob_type(
+    tangent_prob = DEP(
         tangent_dynamics!,
         u0,
         phase_prob.tspan,

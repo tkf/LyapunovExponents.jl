@@ -7,7 +7,7 @@ function get_integrator(prob::ODEProblem; kwargs...)
     init(prob, alg; kwargs..., extra_kwargs...)
 end
 
-const ContinuousLEProblem = LEProblem{<: ODEProblem}
+const ContinuousLEProblem = LEProblem{ODEProblem}
 
 """
     ContinuousLEProblem(phase_dynamics!, u0, tspan; <keyword arguments>)
@@ -19,7 +19,7 @@ as the `tspan` argument of `ODEProblem`.
 For the list of usable keyword arguments, see [`LEProblem`](@ref).
 """
 ContinuousLEProblem(phase_dynamics!, u0, tspan::Tuple; kwargs...) =
-    LEProblem(ODEProblem(phase_dynamics!, u0, tspan); kwargs...)
+    ContinuousLEProblem(ODEProblem(phase_dynamics!, u0, tspan); kwargs...)
 
 ContinuousLEProblem(phase_dynamics!, u0, tchunk::Real; kwargs...) =
     ContinuousLEProblem(phase_dynamics!, u0, (zero(tchunk), tchunk); kwargs...)

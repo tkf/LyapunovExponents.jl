@@ -24,7 +24,7 @@ function keepgoing!(diter::DiscreteIterator, u0=diter.u0)
     diter.u1 = u1
 end
 
-const DiscreteLEProblem = LEProblem{<: DiscreteProblem}
+const DiscreteLEProblem = LEProblem{DiscreteProblem}
 
 """
     DiscreteLEProblem(phase_dynamics!, u0, tspan; <keyword arguments>)
@@ -34,7 +34,7 @@ Construct a `DiscretProblem` and use it for `DiscreteLEProblem`.
 For the list of usable keyword arguments, see [`LEProblem`](@ref).
 """
 DiscreteLEProblem(phase_dynamics!, u0, tspan; kwargs...) =
-    LEProblem(DiscreteProblem(phase_dynamics!, u0, tspan); kwargs...)
+    DiscreteLEProblem(DiscreteProblem(phase_dynamics!, u0, tspan); kwargs...)
 
 const DiscreteRelaxer = Relaxer{<: DiscreteLEProblem}
 
