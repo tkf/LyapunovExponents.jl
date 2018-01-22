@@ -1,7 +1,6 @@
 using DifferentialEquations
 using ForwardDiff
-
-ODEIntegrator = OrdinaryDiffEq.ODEIntegrator
+using OrdinaryDiffEq: ODEIntegrator
 
 function get_integrator(prob::ODEProblem; kwargs...)
     alg, extra_kwargs = default_algorithm(prob; kwargs...)
