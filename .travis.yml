@@ -34,6 +34,9 @@ before_script:
   - julia -e 'Pkg.update()'
   # Install Coverage.jl and Documenter.jl here so that they will be cached:
   - julia -e 'map(Pkg.add, ["Coverage", "Documenter"])'
+  # Install Python packages specified in docs/make.jl here so that
+  # they will be cached:
+  - pip install --upgrade mkdocs python-markdown-math mkdocs-alabaster
 
 ## uncomment the following lines to override the default test script
 #script:
