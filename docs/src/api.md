@@ -1,4 +1,14 @@
-# Low-level API
+# Interface
+
+## High-level API
+
+```@docs
+ContinuousLEProblem
+DiscreteLEProblem
+lyapunov_exponents
+```
+
+## Low-level API
 
 ```@docs
 LyapunovExponents.AbstractLEProblem
@@ -12,4 +22,5 @@ LyapunovExponents.init
 LyapunovExponents.step!
 LyapunovExponents.solve!
 LyapunovExponents.solve
+LyapunovExponents.PhaseTangentDynamics
 ```

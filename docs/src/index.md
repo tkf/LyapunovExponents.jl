@@ -2,13 +2,7 @@
 
 ```@contents
 Pages = [
-    "low_level_api.md",
+    "api.md",
 ]
-```
-
-```@docs
-ContinuousLEProblem
-DiscreteLEProblem
-lyapunov_exponents
-LyapunovExponents.PhaseTangentDynamics
+Depth = 2
 ```
