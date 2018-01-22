@@ -1,6 +1,4 @@
-abstract type AbstractLEExample end
-
-struct ContinuousExample <: AbstractLEExample
+struct LEExample{ProblemType}
     name
     phase_dynamics!
     u0
@@ -10,6 +8,9 @@ struct ContinuousExample <: AbstractLEExample
     atol
     rtol
 end
+
+const ContinuousExample = LEExample{ContinuousLEProblem}
+const DiscreteExample = LEExample{DiscreteLEProblem}
 
 """
 Lorenz system.
@@ -60,17 +61,6 @@ function linz_sprott_99(;
         [0.0362, 0, -0.6362],   # known_exponents
         atol, rtol,
     )
-end
-
-struct DiscreteExample <: AbstractLEExample
-    name
-    phase_dynamics!
-    u0
-    tspan
-    num_attr
-    known_exponents
-    atol
-    rtol
 end
 
 """
@@ -203,9 +193,9 @@ function le_problem(example::DiscreteExample; kwargs...)
         kwargs...)
 end
 
-dimension(example::AbstractLEExample) = length(example.u0)
+dimension(example::LEExample) = length(example.u0)
 
-function solve(example::AbstractLEExample;
+function solve(example::LEExample;
                dim_lyap=dimension(example), kwargs...)
     solve(le_problem(example; dim_lyap=dim_lyap), example.num_attr;
           kwargs...)
@@ -219,7 +209,7 @@ mutable struct LEDemo
     LEDemo(example, prob) = new(example, prob)
 end
 
-function LEDemo(example::AbstractLEExample; kwargs...)
+function LEDemo(example::LEExample; kwargs...)
     LEDemo(example, le_problem(example; kwargs...))
 end
 
