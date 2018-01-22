@@ -29,7 +29,11 @@ end
 const ContinuousLEProblem = LEProblem{<: ODEProblem}
 
 """
-    ContinuousLEProblem(phase_prob; <keyword arguments>)
+    ContinuousLEProblem(phase_dynamics!, u0, tspan; <keyword arguments>)
+
+Construct an `ODEProblem` and use it for `ContinuousLEProblem`.  If
+`tspan` is a `Real` instead of a `Tuple`, then `(0, tspan)` is passed
+as the `tspan` argument of `ODEProblem`.
 """
 ContinuousLEProblem(phase_dynamics!, u0, tspan::Tuple; kwargs...) =
     LEProblem(ODEProblem(phase_dynamics!, u0, tspan); kwargs...)

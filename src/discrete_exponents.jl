@@ -38,6 +38,11 @@ end
 """
 const DiscreteLEProblem = LEProblem{<: DiscreteProblem}
 
+"""
+    DiscreteLEProblem(phase_dynamics!, u0, tspan; <keyword arguments>)
+
+Construct a `DiscretProblem` and use it for `DiscreteLEProblem`.
+"""
 DiscreteLEProblem(phase_dynamics!, u0, tspan; kwargs...) =
     LEProblem(DiscreteProblem(phase_dynamics!, u0, tspan); kwargs...)
 
