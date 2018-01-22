@@ -32,6 +32,7 @@ before_script:
 #  - julia -e 'Pkg.clone(pwd()); Pkg.build("LyapunovExponents"); Pkg.test("LyapunovExponents"; coverage=true)'
 before_cache:
   - julia -e 'Pkg.rm("LyapunovExponents")'
+  - ls ~/.julia/v*/
 after_success:
   # push coverage results to Coveralls
   - julia -e 'cd(Pkg.dir("LyapunovExponents")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
