@@ -44,12 +44,6 @@ get_phase_state(integrator::DiscreteIterator) = integrator.u0[:, 1]
 get_tangent_state(integrator::DiscreteIterator) = integrator.u0[:, 2:end]
 const DiscreteLESolver = LESolver{<: DiscreteIterator}
 
-LESolver(tangent_prob::DiscreteProblem; kwargs...) =
-    LESolver(DiscreteIterator(tangent_prob); kwargs...)
-
-LESolver(relaxer::DiscreteRelaxer; kwargs...) =
-    LESolver(relaxer.prob, phase_tangent_state(relaxer))
-
 @inline function current_state(solver::DiscreteLESolver)
     solver.integrator.u0
 end

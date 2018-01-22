@@ -33,12 +33,6 @@ get_phase_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 1]
 get_tangent_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 2:end]
 const ContinuousLESolver = LESolver{<: ODEIntegrator}
 
-LESolver(tangent_prob::ODEProblem; kwargs...) =
-    LESolver(get_integrator(tangent_prob); kwargs...)
-
-LESolver(relaxer::ContinuousRelaxer) =
-    LESolver(relaxer.prob, phase_tangent_state(relaxer))
-
 """
 Continue solving the ODE problem from the last state.
 """

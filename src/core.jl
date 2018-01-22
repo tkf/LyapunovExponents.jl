@@ -1,4 +1,5 @@
 import DifferentialEquations: init, solve, solve!, step!
+using DifferentialEquations: DEProblem
 
 dimension(prob) = length(prob.u0)
 
@@ -79,6 +80,12 @@ function LESolver(prob::AbstractLEProblem, u0)
         tangent_prob,
     )
 end
+
+LESolver(tangent_prob::DEProblem; kwargs...) =
+    LESolver(get_integrator(tangent_prob); kwargs...)
+
+LESolver(relaxer::Relaxer; kwargs...) =
+    LESolver(relaxer.prob, phase_tangent_state(relaxer))
 
 """
     init(prob::AbstractLEProblem; <keyword arguments>) :: AbstractLESolver
