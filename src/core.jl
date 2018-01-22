@@ -1,7 +1,7 @@
 import DifferentialEquations: init, solve, solve!, step!
 using DifferentialEquations: DEProblem
 
-dimension(prob) = length(prob.u0)
+dimension(prob::DEProblem) = length(prob.u0)
 
 """
     get_relaxer(prob::AbstractLEProblem; <keyword arguments>) :: AbstractRelaxer
@@ -42,7 +42,7 @@ a relaxer ([`AbstractRelaxer`](@ref)) and then call [`relax!`](@ref).
 relaxed(prob; progress=-1, kwargs...) =
     relax!(get_relaxer(prob; kwargs...); progress=progress)
 
-function phase_tangent_state(relaxer::AbstractRelaxer)
+function phase_tangent_state(relaxer::Relaxer)
     dim_lyap = relaxer.prob.dim_lyap
     Q0 = relaxer.prob.Q0
     x0 = last_state(relaxer)
@@ -53,7 +53,7 @@ function phase_tangent_state(relaxer::AbstractRelaxer)
     u0
 end
 
-function LESolver(prob::AbstractLEProblem, u0)
+function LESolver(prob::LEProblem, u0)
     phase_prob = prob.phase_prob
 
     de_prob_type = if isa(phase_prob, ODEProblem)
@@ -95,7 +95,7 @@ construct a LE solver.
 """
 init(prob::AbstractLEProblem; kwargs...) = LESolver(relaxed(prob; kwargs...))
 
-@inline function keepgoing!(solver::AbstractLESolver)
+@inline function keepgoing!(solver::LESolver)
     u0 = current_state(solver)
     u0[:, 1] = solver.phase_state
     u0[:, 2:end] = solver.tangent_state
@@ -146,11 +146,11 @@ end
 end
 
 """
-    step!(solver::AbstractLESolver)
+    step!(solver::LESolver)
 
 Evolve the dynamics and then do an orthonormalization.
 """
-function step!(solver::AbstractLESolver)
+function step!(solver::LESolver)
     dim_lyap = length(solver.exponents)
 
     keepgoing!(solver)
