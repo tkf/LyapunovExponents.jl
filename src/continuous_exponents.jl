@@ -8,24 +8,6 @@ function get_integrator(prob; kwargs...)
     init(prob, alg; kwargs..., extra_kwargs...)
 end
 
-"""
-    ContinuousLEProblem(phase_prob; <keyword arguments>)
-
-# Arguments
-- `phase_prob::ODEProblem`: Phase space dynamics represented in the
-  form of `ODEProblem` from DifferentialEquations.jl.
-  `phase_prob.tspan` represents the inter-orthonormalization-interval.
-- `num_tran::Integer`: Number of iterations to through away to get rid
-  of the transient dynamics.
-- `dim_lyap::Integer`: Number of Lyapunov exponents to be calculated.
-  Default to the full system dimension.
-- `Q0::Array`: The initial guess of the Gram-Schmidt "Lyapunov vectors".
-  Default to the identity matrix.
-- `tangent_dynamics::Function`: A vector field for solving phase space
-   evolution *and* tangent space evolution together.  If this is not
-   provided, `tangent_dynamics` is derived from `phase_prob.f`.  See
-   also [`PhaseTangentDynamics`](@ref).
-"""
 const ContinuousLEProblem = LEProblem{<: ODEProblem}
 
 """
@@ -34,6 +16,8 @@ const ContinuousLEProblem = LEProblem{<: ODEProblem}
 Construct an `ODEProblem` and use it for `ContinuousLEProblem`.  If
 `tspan` is a `Real` instead of a `Tuple`, then `(0, tspan)` is passed
 as the `tspan` argument of `ODEProblem`.
+
+For the list of usable keyword arguments, see [`LEProblem`](@ref).
 """
 ContinuousLEProblem(phase_dynamics!, u0, tspan::Tuple; kwargs...) =
     LEProblem(ODEProblem(phase_dynamics!, u0, tspan); kwargs...)

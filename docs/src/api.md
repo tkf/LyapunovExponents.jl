@@ -14,6 +14,7 @@ lyapunov_exponents
 LyapunovExponents.AbstractLEProblem
 LyapunovExponents.AbstractRelaxer
 LyapunovExponents.AbstractLESolver
+LyapunovExponents.LEProblem
 LyapunovExponents.LESolver
 LyapunovExponents.get_relaxer
 LyapunovExponents.relaxed
