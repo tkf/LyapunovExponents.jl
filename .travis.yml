@@ -25,6 +25,12 @@ matrix:
 #    packages:
 #    - gfortran
 before_script:
+  # Remove this package to install it afresh (by the default script).
+  # Note that we cannot use `before_cache` to remove it before the
+  # cache upload since it occurs before `after_success` in which
+  # Documenter.jl needs it:
+  - julia -e 'Pkg.rm("LyapunovExponents")'
+  # Update all installed packages to reflect upstream changes:
   - julia -e 'Pkg.update()'
   # Install Coverage.jl and Documenter.jl here so that they will be cached:
   - julia -e 'map(Pkg.add, ["Coverage", "Documenter"])'
@@ -33,7 +39,6 @@ before_script:
 #script:
 #  - julia -e 'Pkg.clone(pwd()); Pkg.build("LyapunovExponents"); Pkg.test("LyapunovExponents"; coverage=true)'
 before_cache:
-  - julia -e 'Pkg.rm("LyapunovExponents")'
   - ls ~/.julia/v*/
 after_success:
   # push coverage results to Coveralls
