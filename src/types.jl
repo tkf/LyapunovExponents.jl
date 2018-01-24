@@ -66,6 +66,9 @@ struct LEProblem{DEP} <: AbstractLEProblem
             Q0=eye(dimension(phase_prob), dim_lyap),
             tangent_dynamics=nothing,
             ) where {DEP}
+        if ! is_semi_unitary(Q0)
+            error("Columns in Q0 are not orthonormal.")
+        end
         new{DEP}(phase_prob, num_tran, dim_lyap, Q0, tangent_dynamics)
     end
 end
