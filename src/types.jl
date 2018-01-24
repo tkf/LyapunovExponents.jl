@@ -32,7 +32,7 @@ Solver) for the LE calculation are shown in the following diagram:
                                                  [`step!`](@ref)
 
 """
-abstract type AbstractLESolver end
+abstract type AbstractLESolver{Intr} end
 
 """
     LEProblem(phase_prob;  <keyword arguments>)
@@ -81,7 +81,7 @@ end
 A type representing the main calculation of Lyapunov Exponents (LE).
 This struct holds all temporary state required for LE calculation.
 """
-mutable struct LESolver{Intr} <: AbstractLESolver
+mutable struct LESolver{Intr} <: AbstractLESolver{Intr}
     integrator::Intr
     exponents
     num_orth
@@ -105,6 +105,43 @@ mutable struct LESolver{Intr} <: AbstractLESolver
             phase_state,
             tangent_state,
             sign_R,
+        )
+    end
+end
+
+"""
+    MLESolver(integrator; <keyword arguments>)
+
+A type representing the main calculation of Maximum Lyapunov Exponents
+(MLE).  This struct holds all temporary state required for it.
+"""
+mutable struct MLESolver{Intr} <: AbstractLESolver{Intr}
+    integrator::Intr
+    exponent
+    num_orth
+    phase_state
+    tangent_state
+
+    function MLESolver(
+            integrator::Intr;
+            phase_state=init_phase_state(integrator),
+            tangent_state=init_tangent_state(integrator),
+            ) where {Intr}
+
+        if size(tangent_state) != (length(phase_state), 1)
+            error("tangent_state must be an array of",
+                  " size ($(length(phase_state)), 1);",
+                  " given: $(size(tangent_state))")
+        end
+
+        num_orth = 0
+        exponent = zero(eltype(phase_state))
+        new{Intr}(
+            integrator,
+            exponent,
+            num_orth,
+            phase_state,
+            tangent_state,
         )
     end
 end

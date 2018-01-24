@@ -31,7 +31,7 @@ last_state(relaxer::ContinuousRelaxer) = relaxer.integrator.sol[end]
 
 init_phase_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 1]
 init_tangent_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 2:end]
-const ContinuousLESolver = LESolver{<: ODEIntegrator}
+const ContinuousLESolver = AbstractLESolver{<: ODEIntegrator}
 
 """
 Continue solving the ODE problem from the last state.

@@ -34,7 +34,7 @@ Return a [`LEExample`](@ref) for the Lorenz system.
 function lorenz_63(;
         u0=[0.1, 0.1, 0.1],
         tspan=(0.0, 1.0),
-        num_attr=1000,
+        num_attr=2000,
         atol=0, rtol=1e-2)
     @inline function phase_dynamics!(t, u, du)
         du[1] = 10.0(u[2]-u[1])

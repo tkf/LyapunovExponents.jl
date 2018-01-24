@@ -53,7 +53,10 @@ function phase_tangent_state(relaxer::Relaxer)
     u0
 end
 
-function LESolver(prob::LEProblem{DEP}, u0) where {DEP}
+get_solver(relaxer::Relaxer; kwargs...) =
+    get_solver(relaxer.prob, phase_tangent_state(relaxer))
+
+function get_solver(prob::LEProblem{DEP}, u0; kwargs...) where {DEP}
     phase_prob = prob.phase_prob
 
     tangent_dynamics! = prob.tangent_dynamics!
@@ -67,16 +70,22 @@ function LESolver(prob::LEProblem{DEP}, u0) where {DEP}
         u0,
         phase_prob.tspan,
     )
-    LESolver(
-        tangent_prob,
-    )
+    get_solver(tangent_prob; kwargs...)
 end
 
-LESolver(tangent_prob::DEProblem; kwargs...) =
-    LESolver(get_integrator(tangent_prob); kwargs...)
+function get_solver(tangent_prob::DEProblem; solver_type=nothing, kwargs...)
+    if solver_type === nothing
+        @assert ndims(tangent_prob.u0) == 2
+        dim_lyap = size(tangent_prob.u0)[2] - 1
+        if dim_lyap == 1
+            solver_type = MLESolver
+        else
+            solver_type = LESolver
+        end
+    end
 
-LESolver(relaxer::Relaxer; kwargs...) =
-    LESolver(relaxer.prob, phase_tangent_state(relaxer))
+    return solver_type(get_integrator(tangent_prob); kwargs...)
+end
 
 """
     init(prob::AbstractLEProblem; <keyword arguments>) :: AbstractLESolver
@@ -84,9 +93,9 @@ LESolver(relaxer::Relaxer; kwargs...) =
 Run phase space simulation to throw away the transient and then
 construct a LE solver.
 """
-init(prob::AbstractLEProblem; kwargs...) = LESolver(relaxed(prob; kwargs...))
+init(prob::AbstractLEProblem; kwargs...) = get_solver(relaxed(prob; kwargs...))
 
-@inline function keepgoing!(solver::LESolver)
+@inline function keepgoing!(solver::AbstractLESolver)
     u0 = current_state(solver)
     u0[:, 1] = solver.phase_state
     u0[:, 2:end] = solver.tangent_state
@@ -100,11 +109,15 @@ end
 S_n = ((n-1)/n) S_{n-1} + r_n / n
 """
 @inline function lyap_add_R!(n, lyap, R)
+    for i = 1:length(lyap)
+        lyap[i] = lyap_add_r(n, lyap[i], R[i, i])
+    end
+end
+
+@inline function lyap_add_r(n, lyap, r)
     a = (n - 1) / n
     b = 1 - a
-    for i = 1:length(lyap)
-        lyap[i] = a * lyap[i] + b * log(R[i, i])
-    end
+    return a * lyap + b * log(r)
 end
 
 """ A = A * diag(sgn) """
@@ -137,14 +150,17 @@ end
 end
 
 """
-    step!(solver::LESolver)
+    step!(solver::AbstractLESolver)
 
 Evolve the dynamics and then do an orthonormalization.
 """
-function step!(solver::LESolver)
-    dim_lyap = length(solver.exponents)
-
+function step!(solver::AbstractLESolver)
     keepgoing!(solver)
+    post_evolve!(solver)
+end
+
+function post_evolve!(solver::LESolver)
+    dim_lyap = length(solver.exponents)
     P = solver.tangent_state
     F = qrfact!(P)
     Q = F[:Q][:, 1:dim_lyap]
@@ -159,6 +175,14 @@ function step!(solver::LESolver)
     lyap_add_R!(n, solver.exponents, R)
 
     solver.tangent_state = Q
+end
+
+function post_evolve!(solver::MLESolver)
+    v = solver.tangent_state[:, 1]
+    r = norm(v)
+    n = (solver.num_orth += 1)
+    solver.exponent = lyap_add_r(n, solver.exponent, r)
+    solver.tangent_state[:, 1] .= v ./ r
 end
 
 """
@@ -193,7 +217,11 @@ end
 
 Get the result of Lyapunov exponents calculation stored in `solver`.
 """
-@inline function lyapunov_exponents(solver::AbstractLESolver)
+@inline function lyapunov_exponents(solver::LESolver)
     solver.exponents ./ t_chunk(solver)
 end
 # TODO: check if the dot here is meaningful (maybe define lyapunov_exponents!)
+
+@inline function lyapunov_exponents(solver::MLESolver)
+    [solver.exponent / t_chunk(solver)]
+end

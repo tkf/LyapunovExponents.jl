@@ -1,4 +1,4 @@
-mutable struct LERecordingSolver <: AbstractLESolver
+mutable struct LERecordingSolver{Intr} <: AbstractLESolver{Intr}
     solver
     exponents_history
     i_hist
