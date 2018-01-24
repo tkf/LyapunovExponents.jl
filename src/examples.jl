@@ -77,6 +77,51 @@ function linz_sprott_99(;
 end
 
 """
+Return a [`LEExample`](@ref) for the van der Pol oscillator with
+periodic forcing.
+
+`.known_exponents` are extracted from Figure 6 of Geist, Parlitz &
+Lauterborn (1990).
+
+* <http://scholarpedia.org/article/Van_der_Pol_oscillator>
+* <https://en.wikipedia.org/wiki/Van_der_Pol_oscillator>
+* van der Pol and van der Mark. “Frequency Demultiplication.”
+  Nature 120, no. 3019 (September 1927): 363.
+  https://doi.org/10.1038/120363a0.
+* Parlitz, Ulrich, and Werner Lauterborn. “Period-Doubling Cascades and
+  Devil’s Staircases of the Driven van Der Pol Oscillator.”
+  Physical Review A 36, no. 3 (August 1, 1987): 1428–34.
+  https://doi.org/10.1103/PhysRevA.36.1428.
+  (Figure 10a)
+* Geist, K., Parlitz, U., & Lauterborn, W. (1990).
+  Comparison of Different Methods for Computing Lyapunov Exponents.
+  Progress of Theoretical Physics, 83, 875–893.
+  https://doi.org/10.1143/PTP.83.875
+  (Figure 6)
+"""
+function van_der_pol(;
+        u0=[0.1, 0.1],
+        t0=0.0, chunk_periods=1,
+        ω=2.466, tspan=(t0, t0 + chunk_periods * 2 * π / ω),
+        num_attr=100,
+        atol=0, rtol=1e-1)
+    # Note that with larger num_attr (e.g., 10000), the last Lyapunov
+    # exponents negatively overshoots what Geist, Parlitz & Lauterborn
+    # (1990) reported.  num_attr=100 is required for test to pass.
+    @inline function phase_dynamics!(t, u, du)
+        du[1] = u[2]
+        du[2] = -u[1] - 5.0 * (u[1]^2 - 1) * u[2] + 5.0 * cos(ω * t)
+    end
+    ContinuousExample(
+        "van der Pol & van der Mark (1927)",
+        phase_dynamics!,
+        u0, tspan, num_attr,
+        [0.085, -6.7],   # known_exponents
+        atol, rtol,
+    )
+end
+
+"""
 Return a [`LEExample`](@ref) for the Hénon map.
 
 * M. Hénon, Commun. Math. Phys. Phys. 50, 69-77 (1976)
@@ -184,6 +229,7 @@ end
 const EXAMPLES = [
     lorenz_63,
     linz_sprott_99,
+    van_der_pol,
     henon_map,
     standard_map,
     bakers_map,
