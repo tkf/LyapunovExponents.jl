@@ -23,7 +23,7 @@ smarerr(x, y) = 2 * @views maximum(abs.(x[:] .- y[:]) ./ (x[:] .+ y[:]))
     times = collect(linspace(t0, t2, points))
     long_data = hcat(map(long_sol, times)...)
 
-    integrator = get_integrator(ode)
+    integrator = get_integrator(ode; save_everystep=true)
     keepgoing!(integrator)
     first_data = [integrator.sol(t) for t in times if t < t1]
     half_sol_in_first = copy(integrator.sol[end])
