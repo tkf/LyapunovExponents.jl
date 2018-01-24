@@ -285,27 +285,18 @@ const EXAMPLES = [
     arnold_cat_map,
 ]
 
-function le_problem(example::ContinuousExample; kwargs...)
-    ContinuousLEProblem(
-        example.phase_dynamics!,
-        example.u0,
-        example.tspan;
-        kwargs...)
-end
-
-function le_problem(example::DiscreteExample; kwargs...)
-    DiscreteLEProblem(
-        example.phase_dynamics!,
-        example.u0,
-        example.tspan;
-        kwargs...)
+function LEProblem(example::LEExample{P}; kwargs...) where {P <: LEProblem}
+    P(example.phase_dynamics!,
+      example.u0,
+      example.tspan;
+      kwargs...)
 end
 
 dimension(example::LEExample) = length(example.u0)
 
 function solve(example::LEExample;
                dim_lyap=dimension(example), kwargs...)
-    solve(le_problem(example; dim_lyap=dim_lyap), example.num_attr;
+    solve(LEProblem(example; dim_lyap=dim_lyap), example.num_attr;
           kwargs...)
 end
 
@@ -324,7 +315,7 @@ Create a `LEDemo` holding an `example` and an appropriate `LEProblem`
 created from the `example`.
 """
 function LEDemo(example::LEExample; kwargs...)
-    LEDemo(example, le_problem(example; kwargs...))
+    LEDemo(example, LEProblem(example; kwargs...))
 end
 
 """

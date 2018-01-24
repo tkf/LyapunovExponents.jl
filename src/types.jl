@@ -1,3 +1,5 @@
+using DiffEqBase: ODEProblem, DiscreteProblem
+
 """
 The Problem type represents the setup of the Lyapunov exponents calculation.
 """
@@ -72,6 +74,11 @@ struct LEProblem{DEP} <: AbstractLEProblem
         new{DEP}(phase_prob, num_tran, dim_lyap, Q0, tangent_dynamics)
     end
 end
+
+LEProblem(phase_prob::DEP; kwargs...) where {DEP <: ODEProblem} =
+    LEProblem{ODEProblem}(phase_prob; kwargs...)
+LEProblem(phase_prob::DEP; kwargs...) where {DEP <:DiscreteProblem} =
+    LEProblem{DiscreteProblem}(phase_prob; kwargs...)
 
 struct Relaxer{LEP} <: AbstractRelaxer
     prob::LEP
