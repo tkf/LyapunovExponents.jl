@@ -48,7 +48,6 @@ abstract type AbstractLESolver{Intr} end
 - `dim_lyap::Integer`: Number of Lyapunov exponents to be calculated.
   Default to the full system dimension.
 - `Q0::Array`: The initial guess of the Gram-Schmidt "Lyapunov vectors".
-  Default to the identity matrix.
 - `tangent_dynamics::Function`: A vector field for solving phase space
    evolution *and* tangent space evolution together.  If this is not
    provided, `tangent_dynamics` is derived from `phase_prob.f`.  See
@@ -65,7 +64,7 @@ struct LEProblem{DEP} <: AbstractLEProblem
             phase_prob::DEP;
             num_tran=1,
             dim_lyap=dimension(phase_prob),
-            Q0=eye(dimension(phase_prob), dim_lyap),
+            Q0 = default_Q0(phase_prob, dimension(phase_prob), dim_lyap),
             tangent_dynamics! = nothing,
             ) where {DEP}
         if ! is_semi_unitary(Q0)

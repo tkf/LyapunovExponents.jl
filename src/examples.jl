@@ -118,7 +118,7 @@ function van_der_pol(;
         u0=[0.1, 0.1],
         t0=0.0, chunk_periods=1,
         ω=2.466, tspan=(t0, t0 + chunk_periods * 2 * π / ω),
-        num_attr=100,
+        num_attr=200,
         atol=0, rtol=1e-1,
         kwargs...)
     # Note that with larger num_attr (e.g., 10000), the last Lyapunov
@@ -283,7 +283,7 @@ function bakers_map(;
         u0=[0.6, 0.4],
         tspan=(0, 10),
         num_attr=10000,
-        atol=0, rtol=1e-7,
+        atol=0, rtol=1e-5,
         kwargs...)
     @inline function phase_dynamics!(u_next, u, p, t)
         if u[1] < 0.5
