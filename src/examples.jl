@@ -121,6 +121,54 @@ function van_der_pol(;
     )
 end
 
+σ(x) = 1 / (1 + exp(-x))
+
+type ContinuousRNN
+    w
+    θ
+    τ
+end
+
+function (param::ContinuousRNN)(t, u, du)
+    w = param.w
+    θ = param.θ
+    τ = param.τ
+    du .= (- u .+ w * σ.(u .+ θ)) ./ τ
+end
+
+"""
+Return a [`LEExample`](@ref) for a low-dimensional chaotic
+continuous-time recurrent neural networks by Beer (1995).
+
+* Beer, R. D. (1995). On the dynamics of small continuous-time recurrent
+  neural networks. Adapt. Behav., 3(4), 469–509.
+  https://doi.org/10.1177/105971239500300405
+  (Figure 9D)
+"""
+function beer_95(;
+        u0=[0.1, 0.1, 0.1],
+        tspan=(0, 10.0),
+        num_attr=2000,
+        atol=0, rtol=1e-1)
+    phase_dynamics! = ContinuousRNN(
+        # w
+        [  5.422  -0.018  2.75
+          -0.24    4.59   1.21
+           0.535  -2.25   3.885 ],
+        # θ
+        [-4.108, -2.787, -1.114],
+        # τ
+        [1.0, 2.5, 1.0],
+    )
+    ContinuousExample(
+        "Beer (1995)",
+        phase_dynamics!,
+        u0, tspan, num_attr,
+        [0.010, 0],   # known_exponents
+        atol, rtol,
+    )
+end
+
 """
 Return a [`LEExample`](@ref) for the Hénon map.
 
@@ -230,6 +278,7 @@ const EXAMPLES = [
     lorenz_63,
     linz_sprott_99,
     van_der_pol,
+    beer_95,
     henon_map,
     standard_map,
     bakers_map,

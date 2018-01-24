@@ -75,6 +75,8 @@ struct Relaxer{LEP} <: AbstractRelaxer
     integrator
 end
 
+get_dim_lyap(integrator) = size(init_tangent_state(integrator))[2]
+
 """
     LESolver(integrator; <keyword arguments>)
 
@@ -93,7 +95,7 @@ mutable struct LESolver{Intr} <: AbstractLESolver{Intr}
             integrator::Intr;
             phase_state=init_phase_state(integrator),
             tangent_state=init_tangent_state(integrator),
-            dim_lyap=length(phase_state),
+            dim_lyap=get_dim_lyap(integrator),
             ) where {Intr}
         num_orth = 0
         exponents = zeros(eltype(phase_state), dim_lyap)
