@@ -2,8 +2,9 @@ using DifferentialEquations
 using ForwardDiff
 using OrdinaryDiffEq: ODEIntegrator
 
-function get_integrator(prob::ODEProblem; kwargs...)
-    alg, extra_kwargs = default_algorithm(prob; kwargs...)
+function get_integrator(prob::ODEProblem; save_everystep=false, kwargs...)
+    alg, extra_kwargs = default_algorithm(prob; save_everystep=save_everystep,
+                                          kwargs...)
     init(prob, alg; kwargs..., extra_kwargs...)
 end
 
