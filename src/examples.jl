@@ -87,16 +87,16 @@ Lauterborn (1990).
 * <https://en.wikipedia.org/wiki/Van_der_Pol_oscillator>
 * van der Pol and van der Mark. “Frequency Demultiplication.”
   Nature 120, no. 3019 (September 1927): 363.
-  https://doi.org/10.1038/120363a0.
+  <https://doi.org/10.1038/120363a0>.
 * Parlitz, Ulrich, and Werner Lauterborn. “Period-Doubling Cascades and
   Devil’s Staircases of the Driven van Der Pol Oscillator.”
   Physical Review A 36, no. 3 (August 1, 1987): 1428–34.
-  https://doi.org/10.1103/PhysRevA.36.1428.
+  <https://doi.org/10.1103/PhysRevA.36.1428>.
   (Figure 10a)
 * Geist, K., Parlitz, U., & Lauterborn, W. (1990).
   Comparison of Different Methods for Computing Lyapunov Exponents.
   Progress of Theoretical Physics, 83, 875–893.
-  https://doi.org/10.1143/PTP.83.875
+  <https://doi.org/10.1143/PTP.83.875>.
   (Figure 6)
 """
 function van_der_pol(;
@@ -142,7 +142,7 @@ continuous-time recurrent neural networks by Beer (1995).
 
 * Beer, R. D. (1995). On the dynamics of small continuous-time recurrent
   neural networks. Adapt. Behav., 3(4), 469–509.
-  https://doi.org/10.1177/105971239500300405
+  <https://doi.org/10.1177/105971239500300405>.
   (Figure 9D)
 """
 function beer_95(;
