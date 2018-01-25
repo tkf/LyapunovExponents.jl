@@ -21,7 +21,8 @@ of development and nowhere close to providing a stable API.
   Julia library which provides easy-to-use, clearly written,
   well-tested, and well-documented Lyapunov exponents calculation.
 * [eom] is a Rust library which provides Lyapunov exponents and
-  Covariant Lyapunov vectors calculation.
+  Covariant Lyapunov vectors calculation, on top of configurable
+  ODE/PDE solvers.
 * (I'm sure there are more...)
 
 
@@ -45,6 +46,7 @@ Wanted list:
 * Delay differential equations.
 * Partial differential equations.
 * Stochastic dynamical systems.
+* Poincaré map.
 * Testing utilities for tangent space evolution (Jacobian calculation)
   provided by users.
 
