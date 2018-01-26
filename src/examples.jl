@@ -16,6 +16,7 @@ struct LEExample{ProblemType}
     u0
     tspan
     num_attr
+    tangent_dynamics!
     known_exponents
     atol
     rtol
@@ -41,10 +42,22 @@ function lorenz_63(;
         du[2] = u[1]*(28.0-u[3]) - u[2]
         du[3] = u[1]*u[2] - (8/3)*u[3]
     end
+    @inline @views function tangent_dynamics!(t, u, du)
+        phase_dynamics!(t, u[:, 1], du[:, 1])
+        du[1, 2:end] .= 10.0 .* (u[2, 2:end] .- u[1, 2:end])
+        du[2, 2:end] .=
+            u[1, 2:end] .* (28.0 .- u[3, 1]) .-
+            u[1, 1] .* u[3, 2:end] .-
+            u[2, 2:end]
+        du[3, 2:end] .=
+            u[1, 2:end] .* u[2, 1] .+ u[1, 1] .* u[2, 2:end] .-
+            (8/3) .* u[3, 2:end]
+    end
     ContinuousExample(
         "Lorenz (1963)",
         phase_dynamics!,
         u0, tspan, num_attr,
+        tangent_dynamics!,
         [0.9056, 0, -14.5723],  # known_exponents
         atol, rtol,
     )
@@ -65,12 +78,21 @@ function linz_sprott_99(;
     @inline function phase_dynamics!(t, u, du)
         du[1] = u[2]
         du[2] = u[3]
-        du[3] = -0.6 * u[3] - u[2] - (u[1] > 0 ? u[1] : -u[1]) + 1
+        du[3] = -0.6 * u[3] - u[2] - (u[1] > 0 ? 1 : -1) * u[1] + 1
+    end
+    @inline @views function tangent_dynamics!(t, u, du)
+        phase_dynamics!(t, u[:, 1], du[:, 1])
+        du[1, 2:end] = u[2, 2:end]
+        du[2, 2:end] = u[3, 2:end]
+        du[3, 2:end] .=
+            -0.6 .* u[3, 2:end] .- u[2, 2:end] .-
+            (u[1, 1] > 0 ? 1 : -1) .* u[1, 2:end]
     end
     ContinuousExample(
         "Linz & Sprott (1999) Piecewise linear flow",
         phase_dynamics!,
         u0, tspan, num_attr,
+        tangent_dynamics!,
         [0.0362, 0, -0.6362],   # known_exponents
         atol, rtol,
     )
@@ -116,6 +138,7 @@ function van_der_pol(;
         "van der Pol & van der Mark (1927)",
         phase_dynamics!,
         u0, tspan, num_attr,
+        nothing,
         [0.085, -6.7],   # known_exponents
         atol, rtol,
     )
@@ -164,6 +187,7 @@ function beer_95(;
         "Beer (1995)",
         phase_dynamics!,
         u0, tspan, num_attr,
+        nothing,
         [0.010, 0],   # known_exponents
         atol, rtol,
     )
@@ -189,6 +213,7 @@ function henon_map(;
         "Hénon map",
         phase_dynamics!,
         u0, tspan, num_attr,
+        nothing,
         [0.41922, -1.62319],   # known_exponents
         atol, rtol,
     )
@@ -217,6 +242,7 @@ function standard_map(;
         "Chirikov standard map",
         phase_dynamics!,
         u0, tspan, num_attr,
+        nothing,
         [0.10497, -0.10497],   # known_exponents
         atol, rtol,
     )
@@ -241,10 +267,21 @@ function bakers_map(;
             u_next[2] = 1 - u[2] / 2
         end
     end
+    @inline @views function tangent_dynamics!(t, u, u_next)
+        phase_dynamics!(t, u[:, 1], u_next[:, 1])
+        if u[1, 1] < 0.5
+            u_next[1, 2:end] .= 2 .* u[1, 2:end]
+            u_next[2, 2:end] .= u[2, 2:end] ./ 2
+        else
+            u_next[1, 2:end] .= - 2 .* u[1, 2:end]
+            u_next[2, 2:end] .= - u[2, 2:end] ./ 2
+        end
+    end
     DiscreteExample(
         "Baker's map",
         phase_dynamics!,
         u0, tspan, num_attr,
+        nothing,
         log.([2.0, 0.5]),       # known_exponents
         atol, rtol,
     )
@@ -260,15 +297,23 @@ function arnold_cat_map(;
         tspan=(0, 10),
         num_attr=10000,
         atol=0, rtol=1e-4)
+    @assert size(u0) == (2,)
     M = [2 1; 1 1]
     @inline function phase_dynamics!(t, u, u_next)
         A_mul_B!(u_next, M, u)
         u_next .= mod.(u_next, 1)
     end
+    @inline @views function tangent_dynamics!(t, u, u_next)
+        phase_dynamics!(t, u[:, 1], u_next[:, 1])
+        for i in 2:size(u)[2]
+            @inbounds A_mul_B!(u_next[:, i], M, u[:, i])
+        end
+    end
     DiscreteExample(
         "Arnold's cat map",
         phase_dynamics!,
         u0, tspan, num_attr,
+        tangent_dynamics!,
         log.(sort!(eigvals(M), rev=true)), # known_exponents
         atol, rtol,
     )
@@ -289,6 +334,7 @@ function LEProblem(example::LEExample{P}; kwargs...) where {P <: LEProblem}
     P(example.phase_dynamics!,
       example.u0,
       example.tspan;
+      tangent_dynamics! = example.tangent_dynamics!,
       kwargs...)
 end
 
