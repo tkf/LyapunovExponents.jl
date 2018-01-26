@@ -43,10 +43,13 @@ relaxed(prob; progress=-1, kwargs...) =
     relax!(get_relaxer(prob; kwargs...); progress=progress)
 
 function phase_tangent_state(relaxer::Relaxer)
-    dim_lyap = relaxer.prob.dim_lyap
-    Q0 = relaxer.prob.Q0
     x0 = last_state(relaxer)
+    return phase_tangent_state(relaxer.prob, x0)
+end
 
+function phase_tangent_state(prob::LEProblem, x0 = prob.phase_prob.u0)
+    dim_lyap = prob.dim_lyap
+    Q0 = prob.Q0
     u0 = similar(x0, (length(x0), dim_lyap + 1))
     u0[:, 1] = x0
     u0[:, 2:end] = Q0

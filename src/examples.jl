@@ -281,7 +281,7 @@ function bakers_map(;
         "Baker's map",
         phase_dynamics!,
         u0, tspan, num_attr,
-        nothing,
+        tangent_dynamics!,
         log.([2.0, 0.5]),       # known_exponents
         atol, rtol,
     )

@@ -44,6 +44,8 @@ init_phase_state(integrator::DiscreteIterator) = integrator.u0[:, 1]
 init_tangent_state(integrator::DiscreteIterator) = integrator.u0[:, 2:end]
 const DiscreteLESolver = AbstractLESolver{<: DiscreteIterator}
 
+current_state(integrator::DiscreteIterator) = integrator.u0
+
 @inline function current_state(solver::DiscreteLESolver)
     solver.integrator.u0
 end

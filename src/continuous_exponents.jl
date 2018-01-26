@@ -42,6 +42,8 @@ function keepgoing!(integrator::ODEIntegrator, u0=integrator.sol[end])
 end
 # TODO: Find out if this is a valid way for general algorithm
 
+current_state(integrator::ODEIntegrator) = integrator.sol[end]
+
 @inline function current_state(solver::ContinuousLESolver)
     solver.integrator.sol[end]
 end
