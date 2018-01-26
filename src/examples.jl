@@ -134,17 +134,25 @@ function van_der_pol(;
         du[1] = u[2]
         du[2] = -u[1] - 5.0 * (u[1]^2 - 1) * u[2] + 5.0 * cos(ω * t)
     end
+    @inline @views function tangent_dynamics!(t, u, du)
+        phase_dynamics!(t, u[:, 1], du[:, 1])
+        du[1, 2:end] .= u[2, 2:end]
+        du[2, 2:end] .= -u[1, 2:end] .-
+            5.0 * (u[1, 1]^2 - 1) .* u[2, 2:end] .-
+            5.0 * 2.0 * u[1, 1] * u[2, 1] .* u[1, 2:end]
+    end
     ContinuousExample(
         "van der Pol & van der Mark (1927)",
         phase_dynamics!,
         u0, tspan, num_attr,
-        nothing,
+        tangent_dynamics!,
         [0.085, -6.7],   # known_exponents
         atol, rtol,
     )
 end
 
 σ(x) = 1 / (1 + exp(-x))
+σ′(x) = σ(x) * (1 - σ(x))
 
 type ContinuousRNN
     w
@@ -152,11 +160,22 @@ type ContinuousRNN
     τ
 end
 
-function (param::ContinuousRNN)(t, u, du)
+function (param::ContinuousRNN)(t, u::A, du::A) where
+        {T, A <: AbstractArray{T, 1}}
     w = param.w
     θ = param.θ
     τ = param.τ
     du .= (- u .+ w * σ.(u .+ θ)) ./ τ
+end
+
+@views function (param::ContinuousRNN)(t, u::A, du::A) where
+        {T, A <: AbstractArray{T, 2}}
+    w = param.w
+    θ = param.θ
+    τ = param.τ
+    param(t, u[:, 1], du[:, 1])
+    Y = u[:, 2:end]
+    du[:, 2:end] .= (- Y .+ w * Diagonal(σ′.(u[:, 1] .+ θ)) * Y) ./ τ
 end
 
 """
@@ -187,7 +206,7 @@ function beer_95(;
         "Beer (1995)",
         phase_dynamics!,
         u0, tspan, num_attr,
-        nothing,
+        phase_dynamics!,
         [0.010, 0],   # known_exponents
         atol, rtol,
     )
@@ -209,11 +228,16 @@ function henon_map(;
         u_next[1] = 1 + u[2] - 1.4 * u[1]^2
         u_next[2] = 0.3 * u[1]
     end
+    @inline @views function tangent_dynamics!(t, u, u_next)
+        phase_dynamics!(t, u[:, 1], u_next[:, 1])
+        u_next[1, 2:end] .= u[2, 2:end] .- 1.4 * 2 * u[1, 1] .* u[1, 2:end]
+        u_next[2, 2:end] .= 0.3 .* u[1, 2:end]
+    end
     DiscreteExample(
         "Hénon map",
         phase_dynamics!,
         u0, tspan, num_attr,
-        nothing,
+        tangent_dynamics!,
         [0.41922, -1.62319],   # known_exponents
         atol, rtol,
     )
@@ -238,11 +262,16 @@ function standard_map(;
         u_next[2] = (u[2] + sin(u[1])) % 2π
         u_next[1] = (u[1] + u_next[2]) % 2π
     end
+    @inline @views function tangent_dynamics!(t, u, u_next)
+        phase_dynamics!(t, u[:, 1], u_next[:, 1])
+        u_next[2, 2:end] .= u[2, 2:end] .+ cos(u[1, 1]) .* u[1, 2:end]
+        u_next[1, 2:end] .= u[1, 2:end] .+ u_next[2, 2:end]
+    end
     DiscreteExample(
         "Chirikov standard map",
         phase_dynamics!,
         u0, tspan, num_attr,
-        nothing,
+        tangent_dynamics!,
         [0.10497, -0.10497],   # known_exponents
         atol, rtol,
     )
