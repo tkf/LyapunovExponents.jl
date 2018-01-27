@@ -121,9 +121,7 @@ S_n = ((n-1)/n) S_{n-1} + r_n / n
 end
 
 @inline function lyap_add_r(n, lyap, r)
-    a = (n - 1) / n
-    b = 1 - a
-    return a * lyap + b * log(r)
+    return (n - 1) / n * lyap + log(r) / n
 end
 
 """ A = A * diag(sgn) """
