@@ -1,4 +1,7 @@
+# Re-export methods from DifferentialEquations extended here:
+export init, solve, solve!, step!
 import DifferentialEquations: init, solve, solve!, step!
+
 using DifferentialEquations: DEProblem
 
 dimension(prob::DEProblem) = length(prob.u0)

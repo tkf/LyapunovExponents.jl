@@ -1,7 +1,6 @@
 using Base.Test
 using Plots
 using LyapunovExponents
-using LyapunovExponents: solve!  # FIXME
 
 @time @testset "Smoke test demo" begin
     @test begin
