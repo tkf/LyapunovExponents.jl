@@ -6,8 +6,9 @@ end
 
 function LERecordingSolver(solver::AbstractLESolver{Intr},
                            num_attr::Integer) where {Intr}
-    dim_lyap = length(solver.exponents)
-    exponents_history = similar(solver.exponents, (dim_lyap, num_attr))
+    exps = solver.inst_exponents
+    dim_lyap = length(exps)
+    exponents_history = similar(exps, (dim_lyap, num_attr))
     LERecordingSolver{Intr}(solver, exponents_history, 0)
 end
 

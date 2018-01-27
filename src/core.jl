@@ -164,7 +164,7 @@ function step!(solver::AbstractLESolver)
 end
 
 function post_evolve!(solver::LESolver)
-    dim_lyap = length(solver.exponents)
+    dim_lyap = length(solver.inst_exponents)
     P = solver.tangent_state
     F = qrfact!(P)
     Q = F[:Q][:, 1:dim_lyap]
@@ -175,9 +175,13 @@ function post_evolve!(solver::LESolver)
     A_mul_sign!(Q, sign_R)       # Q = Q * sign_R
     sign_mul_A!(sign_R, R)       # R = signR * R
 
-    n = (solver.num_orth += 1)
-    lyap_add_R!(n, solver.exponents, R)
+    @assert size(R) == (dim_lyap, dim_lyap)
+    for i in 1:dim_lyap
+        @inbounds solver.inst_exponents[i] = log(R[i, i])
+    end
+    OnlineStats.fit!(solver.series, solver.inst_exponents)
 
+    solver.num_orth += 1
     solver.tangent_state = Q
 end
 
@@ -222,7 +226,7 @@ end
 Get the result of Lyapunov exponents calculation stored in `solver`.
 """
 @inline function lyapunov_exponents(solver::LESolver)
-    solver.exponents ./ t_chunk(solver)
+    mean(solver.main_stat) ./ t_chunk(solver)
 end
 # TODO: check if the dot here is meaningful (maybe define lyapunov_exponents!)
 

@@ -95,7 +95,9 @@ This struct holds all temporary state required for LE calculation.
 """
 mutable struct LESolver{Intr} <: AbstractLESolver{Intr}
     integrator::Intr
-    exponents
+    series
+    main_stat
+    inst_exponents
     num_orth
     phase_state
     tangent_state
@@ -106,13 +108,18 @@ mutable struct LESolver{Intr} <: AbstractLESolver{Intr}
             phase_state=init_phase_state(integrator),
             tangent_state=init_tangent_state(integrator),
             dim_lyap=get_dim_lyap(integrator),
+            main_stat = VecMean(dim_lyap),
+            add_stats = [],
             ) where {Intr}
         num_orth = 0
-        exponents = zeros(eltype(phase_state), dim_lyap)
+        series = OnlineStats.Series(main_stat, add_stats...)
+        inst_exponents = zeros(eltype(phase_state), dim_lyap)
         sign_R = Array{Bool}(dim_lyap)
         new{Intr}(
             integrator,
-            exponents,
+            series,
+            main_stat,
+            inst_exponents,
             num_orth,
             phase_state,
             tangent_state,
