@@ -65,14 +65,16 @@ function compare_states(u1, u2; verbose=false, kwargs...)
 end
 
 
-function test_same_dynamics(f1!, f2!, u_list, t_list; kwargs...)
+function test_same_dynamics(f1!, f2!, u_list, p_list, t_list; kwargs...)
     for u in u_list
-        for t in t_list
-            u1 = similar(u)
-            u2 = similar(u)
-            f1!(t, copy(u), u1)
-            f2!(t, copy(u), u2)
-            compare_states(u1, u2; kwargs...)
+        for p in p_list
+            for t in t_list
+                u1 = similar(u)
+                u2 = similar(u)
+                f1!(u1, copy(u), p, t)
+                f2!(u2, copy(u), p, t)
+                compare_states(u1, u2; kwargs...)
+            end
         end
     end
 end
@@ -99,6 +101,7 @@ function test_same_dynamics(p1::P1, p2::P2, num_u::Int;
                             evolve = false,
                             rng = Base.GLOBAL_RNG,
                             u_gen = randn,
+                            p_list = [p1.p],
                             kwargs...) where {P1 <: DEProblem,
                                               P2 <: DEProblem}
     u_list = gen_u_list(rng, u_gen, num_u, p1.u0)
@@ -106,7 +109,7 @@ function test_same_dynamics(p1::P1, p2::P2, num_u::Int;
         test_same_dynamics(p1, p2, u_list; kwargs...)
     else
         t_list = p1.tspan[1]:p1.tspan[2]
-        test_same_dynamics(p1.f, p2.f, u_list, t_list; kwargs...)
+        test_same_dynamics(p1.f, p2.f, u_list, p_list, t_list; kwargs...)
     end
 end
 

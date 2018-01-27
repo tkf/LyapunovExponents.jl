@@ -15,9 +15,10 @@ get_integrator(prob::DiscreteProblem) = DiscreteIterator(prob)
 function keepgoing!(diter::DiscreteIterator, u0=diter.u0)
     tmin, tmax = diter.prob.tspan
     f = diter.prob.f
+    p = diter.prob.p
     u1 = diter.u1
     for t in tmin:tmax
-        f(t, u0, u1)
+        f(u1, u0, p, t)
         u0, u1 = u1, u0
     end
     diter.u0 = u0

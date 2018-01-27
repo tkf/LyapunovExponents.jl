@@ -37,13 +37,13 @@ function lorenz_63(;
         tspan=(0.0, 1.0),
         num_attr=4000,
         atol=0, rtol=1e-2)
-    @inline function phase_dynamics!(t, u, du)
+    @inline function phase_dynamics!(du, u, p, t)
         du[1] = 10.0(u[2]-u[1])
         du[2] = u[1]*(28.0-u[3]) - u[2]
         du[3] = u[1]*u[2] - (8/3)*u[3]
     end
-    @inline @views function tangent_dynamics!(t, u, du)
-        phase_dynamics!(t, u[:, 1], du[:, 1])
+    @inline @views function tangent_dynamics!(du, u, p, t)
+        phase_dynamics!(du[:, 1], u[:, 1], p, t)
         du[1, 2:end] .= 10.0 .* (u[2, 2:end] .- u[1, 2:end])
         du[2, 2:end] .=
             u[1, 2:end] .* (28.0 .- u[3, 1]) .-
@@ -75,13 +75,13 @@ function linz_sprott_99(;
         tspan=(0.0, 1.0),
         num_attr=10000,
         atol=0, rtol=1e-2)
-    @inline function phase_dynamics!(t, u, du)
+    @inline function phase_dynamics!(du, u, p, t)
         du[1] = u[2]
         du[2] = u[3]
         du[3] = -0.6 * u[3] - u[2] - (u[1] > 0 ? 1 : -1) * u[1] + 1
     end
-    @inline @views function tangent_dynamics!(t, u, du)
-        phase_dynamics!(t, u[:, 1], du[:, 1])
+    @inline @views function tangent_dynamics!(du, u, p, t)
+        phase_dynamics!(du[:, 1], u[:, 1], p, t)
         du[1, 2:end] = u[2, 2:end]
         du[2, 2:end] = u[3, 2:end]
         du[3, 2:end] .=
@@ -130,12 +130,12 @@ function van_der_pol(;
     # Note that with larger num_attr (e.g., 10000), the last Lyapunov
     # exponents negatively overshoots what Geist, Parlitz & Lauterborn
     # (1990) reported.  num_attr=100 is required for test to pass.
-    @inline function phase_dynamics!(t, u, du)
+    @inline function phase_dynamics!(du, u, p, t)
         du[1] = u[2]
         du[2] = -u[1] - 5.0 * (u[1]^2 - 1) * u[2] + 5.0 * cos(ω * t)
     end
-    @inline @views function tangent_dynamics!(t, u, du)
-        phase_dynamics!(t, u[:, 1], du[:, 1])
+    @inline @views function tangent_dynamics!(du, u, p, t)
+        phase_dynamics!(du[:, 1], u[:, 1], p, t)
         du[1, 2:end] .= u[2, 2:end]
         du[2, 2:end] .= -u[1, 2:end] .-
             5.0 * (u[1, 1]^2 - 1) .* u[2, 2:end] .-
@@ -160,7 +160,7 @@ type ContinuousRNN
     τ
 end
 
-function (param::ContinuousRNN)(t, u::A, du::A) where
+function (param::ContinuousRNN)(du::A, u::A, p, t) where
         {T, A <: AbstractArray{T, 1}}
     w = param.w
     θ = param.θ
@@ -168,12 +168,12 @@ function (param::ContinuousRNN)(t, u::A, du::A) where
     du .= (- u .+ w * σ.(u .+ θ)) ./ τ
 end
 
-@views function (param::ContinuousRNN)(t, u::A, du::A) where
+@views function (param::ContinuousRNN)(du::A, u::A, p, t) where
         {T, A <: AbstractArray{T, 2}}
     w = param.w
     θ = param.θ
     τ = param.τ
-    param(t, u[:, 1], du[:, 1])
+    param(du[:, 1], u[:, 1], p, t)
     Y = u[:, 2:end]
     du[:, 2:end] .= (- Y .+ w * Diagonal(σ′.(u[:, 1] .+ θ)) * Y) ./ τ
 end
@@ -224,12 +224,12 @@ function henon_map(;
         tspan=(0, 10),
         num_attr=10000,
         atol=0, rtol=1e-2)
-    @inline function phase_dynamics!(t, u, u_next)
+    @inline function phase_dynamics!(u_next, u, p, t)
         u_next[1] = 1 + u[2] - 1.4 * u[1]^2
         u_next[2] = 0.3 * u[1]
     end
-    @inline @views function tangent_dynamics!(t, u, u_next)
-        phase_dynamics!(t, u[:, 1], u_next[:, 1])
+    @inline @views function tangent_dynamics!(u_next, u, p, t)
+        phase_dynamics!(u_next[:, 1], u[:, 1], p, t)
         u_next[1, 2:end] .= u[2, 2:end] .- 1.4 * 2 * u[1, 1] .* u[1, 2:end]
         u_next[2, 2:end] .= 0.3 .* u[1, 2:end]
     end
@@ -258,12 +258,12 @@ function standard_map(;
         atol=0, rtol=0.2)
     # TODO: Improve the accuracy. Check the paper.  It looks like
     # `num_attr=1000000` is required to see some kind of convergence.
-    @inline function phase_dynamics!(t, u, u_next)
+    @inline function phase_dynamics!(u_next, u, p, t)
         u_next[2] = (u[2] + sin(u[1])) % 2π
         u_next[1] = (u[1] + u_next[2]) % 2π
     end
-    @inline @views function tangent_dynamics!(t, u, u_next)
-        phase_dynamics!(t, u[:, 1], u_next[:, 1])
+    @inline @views function tangent_dynamics!(u_next, u, p, t)
+        phase_dynamics!(u_next[:, 1], u[:, 1], p, t)
         u_next[2, 2:end] .= u[2, 2:end] .+ cos(u[1, 1]) .* u[1, 2:end]
         u_next[1, 2:end] .= u[1, 2:end] .+ u_next[2, 2:end]
     end
@@ -287,7 +287,7 @@ function bakers_map(;
         tspan=(0, 10),
         num_attr=10000,
         atol=0, rtol=1e-7)
-    @inline function phase_dynamics!(t, u, u_next)
+    @inline function phase_dynamics!(u_next, u, p, t)
         if u[1] < 0.5
             u_next[1] = 2 * u[1]
             u_next[2] = u[2] / 2
@@ -296,8 +296,8 @@ function bakers_map(;
             u_next[2] = 1 - u[2] / 2
         end
     end
-    @inline @views function tangent_dynamics!(t, u, u_next)
-        phase_dynamics!(t, u[:, 1], u_next[:, 1])
+    @inline @views function tangent_dynamics!(u_next, u, p, t)
+        phase_dynamics!(u_next[:, 1], u[:, 1], p, t)
         if u[1, 1] < 0.5
             u_next[1, 2:end] .= 2 .* u[1, 2:end]
             u_next[2, 2:end] .= u[2, 2:end] ./ 2
@@ -328,12 +328,12 @@ function arnold_cat_map(;
         atol=0, rtol=1e-4)
     @assert size(u0) == (2,)
     M = [2 1; 1 1]
-    @inline function phase_dynamics!(t, u, u_next)
+    @inline function phase_dynamics!(u_next, u, p, t)
         A_mul_B!(u_next, M, u)
         u_next .= mod.(u_next, 1)
     end
-    @inline @views function tangent_dynamics!(t, u, u_next)
-        phase_dynamics!(t, u[:, 1], u_next[:, 1])
+    @inline @views function tangent_dynamics!(u_next, u, p, t)
+        phase_dynamics!(u_next[:, 1], u[:, 1], p, t)
         for i in 2:size(u)[2]
             @inbounds A_mul_B!(u_next[:, i], M, u[:, i])
         end

@@ -2,7 +2,7 @@
 Auto-generated dynamics for solving phase and tangent dynamics together.
 """
 type PhaseTangentDynamics
-    "A callable in `(t, u, du)` format (inplace version for `ODEProblem`)."
+    "A callable in `(du, u, p, t)` format (inplace version for `ODEProblem`)."
     phase_dynamics!
 
     "Temporary variable to store the Jacobian of the `phase_dynamics!`."
@@ -30,10 +30,10 @@ function PhaseTangentDynamics(
 end
 
 """Co-evolve phase- and tangent-sapce dynamics."""
-@inline function (dyn::PhaseTangentDynamics)(t, u, du)
+@inline function (dyn::PhaseTangentDynamics)(du, u, phase_param, t)
     ForwardDiff.jacobian!(
         dyn.jacobian,
-        (dx, x) -> dyn.phase_dynamics!(t, x, dx),
+        (dx, x) -> dyn.phase_dynamics!(dx, x, phase_param, t),
         (@view du[:, 1]),       # phase space derivative `dx` goes here
         (@view u[:, 1]),        # current phase space state `x`
     )
