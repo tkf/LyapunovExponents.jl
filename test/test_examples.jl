@@ -7,7 +7,19 @@ using LyapunovExponents.Test: test_tangent_dynamics_against_autodiff
         [ex for ex in [f() for f in EXAMPLES]
          if ex.tangent_dynamics! != nothing]
     num_u = 5  # number of random states at which the systems are tested
-    test_tangent_dynamics_against_autodiff(LEProblem(ex), num_u)
+    opts = Dict(
+        # :verbose => true
+    )
+    test_tangent_dynamics_against_autodiff(LEProblem(ex), num_u; opts...)
+    if contains(ex.name, "Hénon map")
+        # TODO: It fails maybe because some randomly generated states
+        # are outside the domain of Hénon map.
+        continue
+    else
+        test_tangent_dynamics_against_autodiff(LEProblem(ex), num_u;
+                                               evolve = true,
+                                               opts...)
+    end
 end
 
 @time @testset "Example $(ex.name)" for ex in [f() for f in EXAMPLES]
