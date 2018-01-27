@@ -60,7 +60,7 @@ function phase_tangent_state(prob::LEProblem, x0 = prob.phase_prob.u0)
 end
 
 get_solver(relaxer::Relaxer; kwargs...) =
-    get_solver(relaxer.prob, phase_tangent_state(relaxer))
+    get_solver(relaxer.prob, phase_tangent_state(relaxer); kwargs...)
 
 function get_solver(prob::LEProblem{DEP}, u0; kwargs...) where {DEP}
     phase_prob = prob.phase_prob
@@ -99,7 +99,8 @@ end
 Run phase space simulation to throw away the transient and then
 construct a LE solver.
 """
-init(prob::AbstractLEProblem; kwargs...) = get_solver(relaxed(prob; kwargs...))
+init(prob::AbstractLEProblem; progress = -1, kwargs...) =
+    get_solver(relaxed(prob; progress = progress); kwargs...)
 
 @inline function keepgoing!(solver::AbstractLESolver)
     u0 = current_state(solver)

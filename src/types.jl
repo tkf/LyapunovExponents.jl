@@ -112,6 +112,9 @@ mutable struct LESolver{Intr} <: AbstractLESolver{Intr}
             add_stats = [],
             ) where {Intr}
         num_orth = 0
+        if ! isa(main_stat, OnlineStats.OnlineStat)
+            main_stat = main_stat(dim_lyap)
+        end
         series = OnlineStats.Series(main_stat, add_stats...)
         inst_exponents = zeros(eltype(phase_state), dim_lyap)
         sign_R = Array{Bool}(dim_lyap)
