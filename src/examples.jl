@@ -1,14 +1,5 @@
 """
 A type to hold an example dynamical system and its known Lyapunov exponents.
-
-Here is an example code for constructing an example dynamical system,
-calculate its LEs and plot them:
-```julia
-using LyapunovExponents
-using Plots
-demo = solve!(LEDemo(LyapunovExponents.lorenz_63()))
-plot(demo)
-```
 """
 struct LEExample{ProblemType}
     name
@@ -26,7 +17,7 @@ const ContinuousExample = LEExample{ContinuousLEProblem}
 const DiscreteExample = LEExample{DiscreteLEProblem}
 
 """
-Return a [`LEExample`](@ref) for the Lorenz system.
+Return a [`LEDemo`](@ref) for the Lorenz system.
 
 * <https://en.wikipedia.org/wiki/Lorenz_system>
 * <http://sprott.physics.wisc.edu/chaos/comchaos.htm>
@@ -53,18 +44,18 @@ function lorenz_63(;
             u[1, 2:end] .* u[2, 1] .+ u[1, 1] .* u[2, 2:end] .-
             (8/3) .* u[3, 2:end]
     end
-    ContinuousExample(
+    LEDemo(ContinuousExample(
         "Lorenz (1963)",
         phase_dynamics!,
         u0, tspan, num_attr,
         tangent_dynamics!,
         [0.9056, 0, -14.5723],  # known_exponents
         atol, rtol,
-    )
+    ))
 end
 
 """
-Return a [`LEExample`](@ref) for the simplest piecewise linear
+Return a [`LEDemo`](@ref) for the simplest piecewise linear
 dissipative chaotic flow.
 
 * <http://sprott.physics.wisc.edu/chaos/comchaos.htm>
@@ -88,18 +79,18 @@ function linz_sprott_99(;
             -0.6 .* u[3, 2:end] .- u[2, 2:end] .-
             (u[1, 1] > 0 ? 1 : -1) .* u[1, 2:end]
     end
-    ContinuousExample(
+    LEDemo(ContinuousExample(
         "Linz & Sprott (1999) Piecewise linear flow",
         phase_dynamics!,
         u0, tspan, num_attr,
         tangent_dynamics!,
         [0.0362, 0, -0.6362],   # known_exponents
         atol, rtol,
-    )
+    ))
 end
 
 """
-Return a [`LEExample`](@ref) for the van der Pol oscillator with
+Return a [`LEDemo`](@ref) for the van der Pol oscillator with
 periodic forcing.
 
 `.known_exponents` are extracted from Figure 6 of Geist, Parlitz &
@@ -141,14 +132,14 @@ function van_der_pol(;
             5.0 * (u[1, 1]^2 - 1) .* u[2, 2:end] .-
             5.0 * 2.0 * u[1, 1] * u[2, 1] .* u[1, 2:end]
     end
-    ContinuousExample(
+    LEDemo(ContinuousExample(
         "van der Pol & van der Mark (1927)",
         phase_dynamics!,
         u0, tspan, num_attr,
         tangent_dynamics!,
         [0.085, -6.7],   # known_exponents
         atol, rtol,
-    )
+    ))
 end
 
 σ(x) = 1 / (1 + exp(-x))
@@ -179,7 +170,7 @@ end
 end
 
 """
-Return a [`LEExample`](@ref) for a low-dimensional chaotic
+Return a [`LEDemo`](@ref) for a low-dimensional chaotic
 continuous-time recurrent neural networks by Beer (1995).
 
 * Beer, R. D. (1995). On the dynamics of small continuous-time recurrent
@@ -202,18 +193,18 @@ function beer_95(;
         # τ
         [1.0, 2.5, 1.0],
     )
-    ContinuousExample(
+    LEDemo(ContinuousExample(
         "Beer (1995)",
         phase_dynamics!,
         u0, tspan, num_attr,
         phase_dynamics!,
         [0.010, 0],   # known_exponents
         atol, rtol,
-    )
+    ))
 end
 
 """
-Return a [`LEExample`](@ref) for the Hénon map.
+Return a [`LEDemo`](@ref) for the Hénon map.
 
 * M. Hénon, Commun. Math. Phys. Phys. 50, 69-77 (1976)
 * <http://sprott.physics.wisc.edu/chaos/comchaos.htm>
@@ -233,18 +224,18 @@ function henon_map(;
         u_next[1, 2:end] .= u[2, 2:end] .- 1.4 * 2 * u[1, 1] .* u[1, 2:end]
         u_next[2, 2:end] .= 0.3 .* u[1, 2:end]
     end
-    DiscreteExample(
+    LEDemo(DiscreteExample(
         "Hénon map",
         phase_dynamics!,
         u0, tspan, num_attr,
         tangent_dynamics!,
         [0.41922, -1.62319],   # known_exponents
         atol, rtol,
-    )
+    ))
 end
 
 """
-Return a [`LEExample`](@ref) for the Chirikov standard map.
+Return a [`LEDemo`](@ref) for the Chirikov standard map.
 
 * B. V. Chirikov, Physics Reports 52, 263-379 (1979)
 * <http://sprott.physics.wisc.edu/chaos/comchaos.htm>
@@ -267,14 +258,14 @@ function standard_map(;
         u_next[2, 2:end] .= u[2, 2:end] .+ cos(u[1, 1]) .* u[1, 2:end]
         u_next[1, 2:end] .= u[1, 2:end] .+ u_next[2, 2:end]
     end
-    DiscreteExample(
+    LEDemo(DiscreteExample(
         "Chirikov standard map",
         phase_dynamics!,
         u0, tspan, num_attr,
         tangent_dynamics!,
         [0.10497, -0.10497],   # known_exponents
         atol, rtol,
-    )
+    ))
 end
 
 """
@@ -306,18 +297,18 @@ function bakers_map(;
             u_next[2, 2:end] .= - u[2, 2:end] ./ 2
         end
     end
-    DiscreteExample(
+    LEDemo(DiscreteExample(
         "Baker's map",
         phase_dynamics!,
         u0, tspan, num_attr,
         tangent_dynamics!,
         log.([2.0, 0.5]),       # known_exponents
         atol, rtol,
-    )
+    ))
 end
 
 """
-Return a [`LEExample`](@ref) for the Arnold's cat map
+Return a [`LEDemo`](@ref) for the Arnold's cat map
 
 * <https://en.wikipedia.org/wiki/Arnold%27s_cat_map>
 """
@@ -338,17 +329,17 @@ function arnold_cat_map(;
             @inbounds A_mul_B!(u_next[:, i], M, u[:, i])
         end
     end
-    DiscreteExample(
+    LEDemo(DiscreteExample(
         "Arnold's cat map",
         phase_dynamics!,
         u0, tspan, num_attr,
         tangent_dynamics!,
         log.(sort!(eigvals(M), rev=true)), # known_exponents
         atol, rtol,
-    )
+    ))
 end
 
-const EXAMPLES = [
+const DEMOS = [
     lorenz_63,
     linz_sprott_99,
     van_der_pol,
@@ -385,6 +376,15 @@ end
 
 """
     LEDemo(example::LEExample; <keyword arguments>)
+
+Here is an example code for constructing an example dynamical system,
+calculate its LEs and plot them:
+```julia
+using LyapunovExponents
+using Plots
+demo = solve!(LyapunovExponents.lorenz_63())
+plot(demo)
+```
 
 Create a `LEDemo` holding an `example` and an appropriate `LEProblem`
 created from the `example`.

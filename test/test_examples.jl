@@ -1,10 +1,10 @@
 using Base.Test
-using LyapunovExponents: EXAMPLES, dimension, solve, lyapunov_exponents,
+using LyapunovExponents: DEMOS, dimension, solve, lyapunov_exponents,
     LEProblem
 using LyapunovExponents.Test: test_tangent_dynamics_against_autodiff
 
 @time @testset "Tangent dynamics $(ex.name)" for ex in
-        [ex for ex in [f() for f in EXAMPLES]
+        [ex for ex in [f().example for f in DEMOS]
          if ex.tangent_dynamics! != nothing]
     num_u = 5  # number of random states at which the systems are tested
     opts = Dict(
@@ -22,7 +22,7 @@ using LyapunovExponents.Test: test_tangent_dynamics_against_autodiff
     end
 end
 
-@time @testset "Example $(ex.name)" for ex in [f() for f in EXAMPLES]
+@time @testset "Example $(ex.name)" for ex in [f().example for f in DEMOS]
     for dim_lyap in 1:dimension(ex)
         solver = solve(ex; dim_lyap=dim_lyap)
         @show dim = min(dim_lyap, length(ex.known_exponents))

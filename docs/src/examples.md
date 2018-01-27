@@ -1,8 +1,8 @@
 # Example dynamical systems
 
 ```@docs
-LyapunovExponents.LEExample
 LyapunovExponents.LEDemo
+LyapunovExponents.LEExample
 ```
 
 ## Discrete systems
