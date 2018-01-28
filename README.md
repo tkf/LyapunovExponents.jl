@@ -15,17 +15,6 @@ At the moment, LyapunovExponents.jl is still at the very early stage
 of development and nowhere close to providing a stable API.
 
 
-## Related works
-
-* [ChaosTools.jl] from the [DynamicalSystems.jl] ecosystem is another
-  Julia library which provides easy-to-use, clearly written,
-  well-tested, and well-documented Lyapunov exponents calculation.
-* [eom] is a Rust library which provides Lyapunov exponents and
-  Covariant Lyapunov vectors calculation, on top of configurable
-  ODE/PDE solvers.
-* (I'm sure there are more...)
-
-
 ## Features
 
 Implemented:
@@ -34,10 +23,15 @@ Implemented:
 * Maximum Lyapunov exponents calculation.
 * Tangent space evolution based on the automatic differentiation tool
   [ForwardDiff.jl].
+* Testing utilities for tangent space evolution (Jacobian calculation)
+  provided by users.
 * Continuous dynamical systems support based on [DifferentialEquations.jl].
   This means that [the rich set of ODE solvers](http://docs.juliadiffeq.org/latest/solvers/ode_solve.html)
   can be used.
 * [Various examples of continuous and discrete dynamical systems.](https://tkf.github.io/LyapunovExponents.jl/latest/examples/)
+* [OnlineStats.jl] support: on-the-fly calculation of Lyapunov
+  exponents, their variance, covariance, and any other statics it
+  supports.
 
 Wanted list:
 
@@ -47,14 +41,24 @@ Wanted list:
 * Partial differential equations.
 * Stochastic dynamical systems.
 * Poincaré map.
-* Testing utilities for tangent space evolution (Jacobian calculation)
-  provided by users.
 
 [DifferentialEquations.jl]: http://juliadiffeq.org
 [ForwardDiff.jl]: http://www.juliadiff.org/ForwardDiff.jl
 [ChaosTools.jl]: https://juliadynamics.github.io/DynamicalSystems.jl/latest/chaos/overview/
 [DynamicalSystems.jl]: https://juliadynamics.github.io/DynamicalSystems.jl/latest/
+[OnlineStats.jl]: https://github.com/joshday/OnlineStats.jl
 [eom]: https://github.com/termoshtt/eom
+
+
+## Related works
+
+* [ChaosTools.jl] from the [DynamicalSystems.jl] ecosystem is another
+  Julia library which provides easy-to-use, clearly written,
+  well-tested, and well-documented Lyapunov exponents calculation.
+* [eom] is a Rust library which provides Lyapunov exponents and
+  Covariant Lyapunov vectors calculation, on top of configurable
+  ODE/PDE solvers.
+* (I'm sure there are more...)
 
 
 ## License
