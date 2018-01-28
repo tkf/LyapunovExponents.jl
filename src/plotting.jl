@@ -3,13 +3,13 @@ using RecipesBase
 """ Plot `LERecordingSolver` via `RecipesBase`."""
 @recipe function f(solver::LERecordingSolver;
                    known_exponents=nothing)
-    exponents_history = solver.exponents_history
-    dim_lyap = size(exponents_history)[1]
+    le_hist = exponents_history(solver)
+    dim_lyap = size(le_hist)[1]
     layout --> (dim_lyap, 1)
     xscale --> :log10
 
-    ylims = @views [[minimum(exponents_history[i, :]),
-                     maximum(exponents_history[i, :])]
+    ylims = @views [[minimum(le_hist[i, :]),
+                     maximum(le_hist[i, :])]
                     for i = 1:dim_lyap]
     if known_exponents != nothing
         for i = 1:dim_lyap
@@ -30,7 +30,7 @@ using RecipesBase
             label --> ""
             ylabel := "LE$i"
             ylim --> ylims[i]
-            @view exponents_history[i, :]
+            @view le_hist[i, :]
         end
         if known_exponents != nothing
             @series begin

@@ -231,8 +231,14 @@ Get the result of Lyapunov exponents calculation stored in `solver`.
 @inline function lyapunov_exponents(solver::LESolver)
     mean(solver.main_stat) ./ t_chunk(solver)
 end
-# TODO: check if the dot here is meaningful (maybe define lyapunov_exponents!)
 
 @inline function lyapunov_exponents(solver::MLESolver)
     [solver.exponent / t_chunk(solver)]
 end
+
+"""Get finite-time Lyapunov exponents (FTLE)"""
+@inline ftle(solver::LESolver) = solver.inst_exponents ./ t_chunk(solver)
+# TODO: check if the dot here is meaningful (maybe define ftle!)
+# But probably this is not the performance-critical point.
+
+@inline ftle(solver::MLESolver) = [solver.inst_exponent / t_chunk(solver)]
