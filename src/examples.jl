@@ -27,7 +27,8 @@ function lorenz_63(;
         u0=[0.1, 0.1, 0.1],
         tspan=(0.0, 1.0),
         num_attr=4000,
-        atol=0, rtol=1e-2)
+        atol=0, rtol=1e-2,
+        kwargs...)
     @inline function phase_dynamics!(du, u, p, t)
         du[1] = 10.0(u[2]-u[1])
         du[2] = u[1]*(28.0-u[3]) - u[2]
@@ -51,7 +52,7 @@ function lorenz_63(;
         tangent_dynamics!,
         [0.9056, 0, -14.5723],  # known_exponents
         atol, rtol,
-    ))
+    ); kwargs...)
 end
 
 """
@@ -65,7 +66,8 @@ function linz_sprott_99(;
         u0=[0.1, 0.1, 0.1],
         tspan=(0.0, 1.0),
         num_attr=10000,
-        atol=0, rtol=1e-2)
+        atol=0, rtol=1e-2,
+        kwargs...)
     @inline function phase_dynamics!(du, u, p, t)
         du[1] = u[2]
         du[2] = u[3]
@@ -86,7 +88,7 @@ function linz_sprott_99(;
         tangent_dynamics!,
         [0.0362, 0, -0.6362],   # known_exponents
         atol, rtol,
-    ))
+    ); kwargs...)
 end
 
 """
@@ -117,7 +119,8 @@ function van_der_pol(;
         t0=0.0, chunk_periods=1,
         ω=2.466, tspan=(t0, t0 + chunk_periods * 2 * π / ω),
         num_attr=100,
-        atol=0, rtol=1e-1)
+        atol=0, rtol=1e-1,
+        kwargs...)
     # Note that with larger num_attr (e.g., 10000), the last Lyapunov
     # exponents negatively overshoots what Geist, Parlitz & Lauterborn
     # (1990) reported.  num_attr=100 is required for test to pass.
@@ -139,7 +142,7 @@ function van_der_pol(;
         tangent_dynamics!,
         [0.085, -6.7],   # known_exponents
         atol, rtol,
-    ))
+    ); kwargs...)
 end
 
 σ(x) = 1 / (1 + exp(-x))
@@ -182,7 +185,8 @@ function beer_95(;
         u0=[0.1, 0.1, 0.1],
         tspan=(0, 10.0),
         num_attr=4000,
-        atol=0, rtol=1e-1)
+        atol=0, rtol=1e-1,
+        kwargs...)
     phase_dynamics! = ContinuousRNN(
         # w
         [  5.422  -0.018  2.75
@@ -200,7 +204,7 @@ function beer_95(;
         phase_dynamics!,
         [0.010, 0],   # known_exponents
         atol, rtol,
-    ))
+    ); kwargs...)
 end
 
 """
@@ -214,7 +218,8 @@ function henon_map(;
         u0=[0.1, 0.1],
         tspan=(0, 10),
         num_attr=10000,
-        atol=0, rtol=1e-2)
+        atol=0, rtol=1e-2,
+        kwargs...)
     @inline function phase_dynamics!(u_next, u, p, t)
         u_next[1] = 1 + u[2] - 1.4 * u[1]^2
         u_next[2] = 0.3 * u[1]
@@ -231,7 +236,7 @@ function henon_map(;
         tangent_dynamics!,
         [0.41922, -1.62319],   # known_exponents
         atol, rtol,
-    ))
+    ); kwargs...)
 end
 
 """
@@ -246,7 +251,8 @@ function standard_map(;
         u0=[2.68156, 2.31167],
         tspan=(0, 10),
         num_attr=10000,
-        atol=0, rtol=0.2)
+        atol=0, rtol=0.2,
+        kwargs...)
     # TODO: Improve the accuracy. Check the paper.  It looks like
     # `num_attr=1000000` is required to see some kind of convergence.
     @inline function phase_dynamics!(u_next, u, p, t)
@@ -265,7 +271,7 @@ function standard_map(;
         tangent_dynamics!,
         [0.10497, -0.10497],   # known_exponents
         atol, rtol,
-    ))
+    ); kwargs...)
 end
 
 """
@@ -277,7 +283,8 @@ function bakers_map(;
         u0=[0.6, 0.4],
         tspan=(0, 10),
         num_attr=10000,
-        atol=0, rtol=1e-7)
+        atol=0, rtol=1e-7,
+        kwargs...)
     @inline function phase_dynamics!(u_next, u, p, t)
         if u[1] < 0.5
             u_next[1] = 2 * u[1]
@@ -304,7 +311,7 @@ function bakers_map(;
         tangent_dynamics!,
         log.([2.0, 0.5]),       # known_exponents
         atol, rtol,
-    ))
+    ); kwargs...)
 end
 
 """
@@ -316,7 +323,8 @@ function arnold_cat_map(;
         u0=[0.1, 0.1],
         tspan=(0, 10),
         num_attr=10000,
-        atol=0, rtol=1e-4)
+        atol=0, rtol=1e-4,
+        kwargs...)
     @assert size(u0) == (2,)
     M = [2 1; 1 1]
     @inline function phase_dynamics!(u_next, u, p, t)
@@ -336,7 +344,7 @@ function arnold_cat_map(;
         tangent_dynamics!,
         log.(sort!(eigvals(M), rev=true)), # known_exponents
         atol, rtol,
-    ))
+    ); kwargs...)
 end
 
 const DEMOS = [
