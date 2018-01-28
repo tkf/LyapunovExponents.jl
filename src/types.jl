@@ -140,6 +140,7 @@ A type representing the main calculation of Maximum Lyapunov Exponents
 mutable struct MLESolver{Intr} <: AbstractLESolver{Intr}
     integrator::Intr
     exponent
+    inst_exponent
     num_orth
     phase_state
     tangent_state
@@ -160,6 +161,7 @@ mutable struct MLESolver{Intr} <: AbstractLESolver{Intr}
         exponent = zero(eltype(phase_state))
         new{Intr}(
             integrator,
+            exponent,
             exponent,
             num_orth,
             phase_state,

@@ -19,6 +19,11 @@ end
         plot(demo, show = false)
         true
     end
+    @test begin
+        demo = solve!(LyapunovExponents.lorenz_63(num_attr=3, dim_lyap=1))
+        plot(demo, show = false)
+        true
+    end
     @testset "main_stat = $ST" for ST in [VecVariance, CovMatrix]
         demo = LyapunovExponents.lorenz_63(num_attr=3)
         @test_nothrow solve!(demo; main_stat = ST)

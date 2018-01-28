@@ -193,6 +193,7 @@ function post_evolve!(solver::MLESolver)
     r = norm(v)
     n = (solver.num_orth += 1)
     solver.exponent = lyap_add_r(n, solver.exponent, r)
+    solver.inst_exponent = log(r)  # TODO: don't re-calculate log(r)
     solver.tangent_state[:, 1] .= v ./ r
 end
 
