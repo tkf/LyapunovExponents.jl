@@ -218,9 +218,18 @@ end
 Initialize the solver ([`init`](@ref)) and then go through the LE
 calculation ([`solve!`](@ref)).
 """
-function solve(prob::AbstractLEProblem, num_attr; progress=-1, kwargs...)
+function solve(prob::AbstractLEProblem, num_attr;
+               progress = -1,
+               record::Bool = false,
+               kwargs...)
     solver = init(prob; progress=progress, kwargs...)
-    solve!(solver, num_attr; progress=progress)
+    if record
+        solver = LERecordingSolver(solver, num_attr)
+        solve!(solver; progress=progress)
+    else
+        solve!(solver, num_attr; progress=progress)
+    end
+    return solver
 end
 
 """

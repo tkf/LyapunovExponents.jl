@@ -399,12 +399,11 @@ end
 Initialize `demo.solver` from `demo.prob` and run
 `solve!(demo.solver)` to calculate the Lyapunov exponents.
 """
-function solve!(demo::LEDemo; progress = -1, kwargs...)
-    demo.solver = LERecordingSolver(init(demo.prob;
-                                         progress = progress,
-                                         kwargs...),
-                                    demo.example.num_attr)
-    solve!(demo.solver; progress = progress)
+function solve!(demo::LEDemo; progress = -1, record = true, kwargs...)
+    demo.solver = solve(demo.prob, demo.example.num_attr;
+                        progress = progress,
+                        record = record,
+                        kwargs...)
     return demo
 end
 
