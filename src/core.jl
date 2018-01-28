@@ -62,7 +62,9 @@ end
 get_solver(relaxer::Relaxer; kwargs...) =
     get_solver(relaxer.prob, phase_tangent_state(relaxer); kwargs...)
 
-function get_solver(prob::LEProblem{DEP}, u0; kwargs...) where {DEP}
+function get_solver(prob::LEProblem{DEP},
+                    u0 = phase_tangent_state(prob);
+                    kwargs...) where {DEP}
     phase_prob = prob.phase_prob
 
     tangent_dynamics! = prob.tangent_dynamics!
