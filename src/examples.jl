@@ -405,6 +405,7 @@ function solve!(demo::LEDemo; progress = -1, kwargs...)
                                          kwargs...),
                                     demo.example.num_attr)
     solve!(demo.solver; progress = progress)
+    return demo
 end
 
 function Base.show(io::IO, demo::LEDemo)
