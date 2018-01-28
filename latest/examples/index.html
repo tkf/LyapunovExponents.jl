@@ -43,81 +43,81 @@
           
             <p><a id='Example-dynamical-systems-1'></a></p>
 <h1 id="example-dynamical-systems">Example dynamical systems</h1>
-<p><a id='LyapunovExponents.LEExample' href='#LyapunovExponents.LEExample'>#</a>
-<strong><code>LyapunovExponents.LEExample</code></strong> &mdash; <em>Type</em>.</p>
-<p>A type to hold an example dynamical system and its known Lyapunov exponents.</p>
-<p>Here is an example code for constructing an example dynamical system, calculate its LEs and plot them:</p>
-<pre><code class="julia">using LyapunovExponents
-using Plots
-demo = solve!(LEDemo(LyapunovExponents.lorenz_63()))
-plot(demo)
-</code></pre>
-
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d8d01eb5c57eb857c725b5d76d6a6d2028257472/src/examples.jl#L1-L12' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.LEDemo' href='#LyapunovExponents.LEDemo'>#</a>
 <strong><code>LyapunovExponents.LEDemo</code></strong> &mdash; <em>Type</em>.</p>
 <pre><code>LEDemo(example::LEExample; &lt;keyword arguments&gt;)
 </code></pre>
 
+<p>Here is an example code for constructing an example dynamical system, calculate its LEs and plot them:</p>
+<pre><code class="julia">using LyapunovExponents
+using Plots
+demo = solve!(LyapunovExponents.lorenz_63())
+plot(demo)
+</code></pre>
+
 <p>Create a <code>LEDemo</code> holding an <code>example</code> and an appropriate <code>LEProblem</code> created from the <code>example</code>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d8d01eb5c57eb857c725b5d76d6a6d2028257472/src/examples.jl#L311-L316' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/edf76d2c3d5344726fb8f728b27090bb508cb8b4/src/examples.jl#L377-L391' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.LEExample' href='#LyapunovExponents.LEExample'>#</a>
+<strong><code>LyapunovExponents.LEExample</code></strong> &mdash; <em>Type</em>.</p>
+<p>A type to hold an example dynamical system and its known Lyapunov exponents.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/edf76d2c3d5344726fb8f728b27090bb508cb8b4/src/examples.jl#L1-L3' class='documenter-source'>source</a><br></p>
 <p><a id='Discrete-systems-1'></a></p>
 <h2 id="discrete-systems">Discrete systems</h2>
 <p><a id='LyapunovExponents.henon_map' href='#LyapunovExponents.henon_map'>#</a>
 <strong><code>LyapunovExponents.henon_map</code></strong> &mdash; <em>Function</em>.</p>
-<p>Return a <a href="./#LyapunovExponents.LEExample"><code>LEExample</code></a> for the Hénon map.</p>
+<p>Return a <a href="./#LyapunovExponents.LEDemo"><code>LEDemo</code></a> for the Hénon map.</p>
 <ul>
 <li>M. Hénon, Commun. Math. Phys. Phys. 50, 69-77 (1976)</li>
 <li><a href="http://sprott.physics.wisc.edu/chaos/comchaos.htm">http://sprott.physics.wisc.edu/chaos/comchaos.htm</a></li>
 <li><a href="https://en.wikipedia.org/wiki/H%C3%A9non_map">https://en.wikipedia.org/wiki/H%C3%A9non_map</a></li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d8d01eb5c57eb857c725b5d76d6a6d2028257472/src/examples.jl#L172-L178' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/edf76d2c3d5344726fb8f728b27090bb508cb8b4/src/examples.jl#L206-L212' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.standard_map' href='#LyapunovExponents.standard_map'>#</a>
 <strong><code>LyapunovExponents.standard_map</code></strong> &mdash; <em>Function</em>.</p>
-<p>Return a <a href="./#LyapunovExponents.LEExample"><code>LEExample</code></a> for the Chirikov standard map.</p>
+<p>Return a <a href="./#LyapunovExponents.LEDemo"><code>LEDemo</code></a> for the Chirikov standard map.</p>
 <ul>
 <li>B. V. Chirikov, Physics Reports 52, 263-379 (1979)</li>
 <li><a href="http://sprott.physics.wisc.edu/chaos/comchaos.htm">http://sprott.physics.wisc.edu/chaos/comchaos.htm</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Standard_map">https://en.wikipedia.org/wiki/Standard_map</a></li>
 <li><a href="http://www.scholarpedia.org/article/Chirikov_standard_map">http://www.scholarpedia.org/article/Chirikov_standard_map</a></li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d8d01eb5c57eb857c725b5d76d6a6d2028257472/src/examples.jl#L197-L204' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/edf76d2c3d5344726fb8f728b27090bb508cb8b4/src/examples.jl#L237-L244' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.bakers_map' href='#LyapunovExponents.bakers_map'>#</a>
 <strong><code>LyapunovExponents.bakers_map</code></strong> &mdash; <em>Function</em>.</p>
 <p>Baker's map</p>
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/Baker%27s_map">https://en.wikipedia.org/wiki/Baker%27s_map</a></li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d8d01eb5c57eb857c725b5d76d6a6d2028257472/src/examples.jl#L225-L229' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/edf76d2c3d5344726fb8f728b27090bb508cb8b4/src/examples.jl#L271-L275' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.arnold_cat_map' href='#LyapunovExponents.arnold_cat_map'>#</a>
 <strong><code>LyapunovExponents.arnold_cat_map</code></strong> &mdash; <em>Function</em>.</p>
-<p>Return a <a href="./#LyapunovExponents.LEExample"><code>LEExample</code></a> for the Arnold's cat map</p>
+<p>Return a <a href="./#LyapunovExponents.LEDemo"><code>LEDemo</code></a> for the Arnold's cat map</p>
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/Arnold%27s_cat_map">https://en.wikipedia.org/wiki/Arnold%27s_cat_map</a></li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d8d01eb5c57eb857c725b5d76d6a6d2028257472/src/examples.jl#L253-L257' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/edf76d2c3d5344726fb8f728b27090bb508cb8b4/src/examples.jl#L310-L314' class='documenter-source'>source</a><br></p>
 <p><a id='Continuous-systems-1'></a></p>
 <h2 id="continuous-systems">Continuous systems</h2>
 <p><a id='LyapunovExponents.lorenz_63' href='#LyapunovExponents.lorenz_63'>#</a>
 <strong><code>LyapunovExponents.lorenz_63</code></strong> &mdash; <em>Function</em>.</p>
-<p>Return a <a href="./#LyapunovExponents.LEExample"><code>LEExample</code></a> for the Lorenz system.</p>
+<p>Return a <a href="./#LyapunovExponents.LEDemo"><code>LEDemo</code></a> for the Lorenz system.</p>
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/Lorenz_system">https://en.wikipedia.org/wiki/Lorenz_system</a></li>
 <li><a href="http://sprott.physics.wisc.edu/chaos/comchaos.htm">http://sprott.physics.wisc.edu/chaos/comchaos.htm</a></li>
 <li>E. N. Lorenz, J. Atmos. Sci. 20, 130-141 (1963)</li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d8d01eb5c57eb857c725b5d76d6a6d2028257472/src/examples.jl#L27-L33' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/edf76d2c3d5344726fb8f728b27090bb508cb8b4/src/examples.jl#L19-L25' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.linz_sprott_99' href='#LyapunovExponents.linz_sprott_99'>#</a>
 <strong><code>LyapunovExponents.linz_sprott_99</code></strong> &mdash; <em>Function</em>.</p>
-<p>Return a <a href="./#LyapunovExponents.LEExample"><code>LEExample</code></a> for the simplest piecewise linear dissipative chaotic flow.</p>
+<p>Return a <a href="./#LyapunovExponents.LEDemo"><code>LEDemo</code></a> for the simplest piecewise linear dissipative chaotic flow.</p>
 <ul>
 <li><a href="http://sprott.physics.wisc.edu/chaos/comchaos.htm">http://sprott.physics.wisc.edu/chaos/comchaos.htm</a></li>
 <li>S. J. Linz and J. C. Sprott, Phys. Lett. A 259, 240-245 (1999)</li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d8d01eb5c57eb857c725b5d76d6a6d2028257472/src/examples.jl#L53-L59' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/edf76d2c3d5344726fb8f728b27090bb508cb8b4/src/examples.jl#L57-L63' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.van_der_pol' href='#LyapunovExponents.van_der_pol'>#</a>
 <strong><code>LyapunovExponents.van_der_pol</code></strong> &mdash; <em>Function</em>.</p>
-<p>Return a <a href="./#LyapunovExponents.LEExample"><code>LEExample</code></a> for the van der Pol oscillator with periodic forcing.</p>
+<p>Return a <a href="./#LyapunovExponents.LEDemo"><code>LEDemo</code></a> for the van der Pol oscillator with periodic forcing.</p>
 <p><code>.known_exponents</code> are extracted from Figure 6 of Geist, Parlitz &amp; Lauterborn (1990).</p>
 <ul>
 <li><a href="http://scholarpedia.org/article/Van_der_Pol_oscillator">http://scholarpedia.org/article/Van_der_Pol_oscillator</a></li>
@@ -126,14 +126,14 @@ plot(demo)
 <li>Parlitz, Ulrich, and Werner Lauterborn. “Period-Doubling Cascades and Devil’s Staircases of the Driven van Der Pol Oscillator.” Physical Review A 36, no. 3 (August 1, 1987): 1428–34. <a href="https://doi.org/10.1103/PhysRevA.36.1428">https://doi.org/10.1103/PhysRevA.36.1428</a>. (Figure 10a)</li>
 <li>Geist, K., Parlitz, U., &amp; Lauterborn, W. (1990). Comparison of Different Methods for Computing Lyapunov Exponents. Progress of Theoretical Physics, 83, 875–893. <a href="https://doi.org/10.1143/PTP.83.875">https://doi.org/10.1143/PTP.83.875</a>. (Figure 6)</li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d8d01eb5c57eb857c725b5d76d6a6d2028257472/src/examples.jl#L79-L101' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/edf76d2c3d5344726fb8f728b27090bb508cb8b4/src/examples.jl#L92-L114' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.beer_95' href='#LyapunovExponents.beer_95'>#</a>
 <strong><code>LyapunovExponents.beer_95</code></strong> &mdash; <em>Function</em>.</p>
-<p>Return a <a href="./#LyapunovExponents.LEExample"><code>LEExample</code></a> for a low-dimensional chaotic continuous-time recurrent neural networks by Beer (1995).</p>
+<p>Return a <a href="./#LyapunovExponents.LEDemo"><code>LEDemo</code></a> for a low-dimensional chaotic continuous-time recurrent neural networks by Beer (1995).</p>
 <ul>
 <li>Beer, R. D. (1995). On the dynamics of small continuous-time recurrent neural networks. Adapt. Behav., 3(4), 469–509. <a href="https://doi.org/10.1177/105971239500300405">https://doi.org/10.1177/105971239500300405</a>. (Figure 9D)</li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d8d01eb5c57eb857c725b5d76d6a6d2028257472/src/examples.jl#L139-L147' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/edf76d2c3d5344726fb8f728b27090bb508cb8b4/src/examples.jl#L172-L180' class='documenter-source'>source</a><br></p>
             
           
         </div>
@@ -218,7 +218,7 @@ plot(demo)
 
   <!--
   MkDocs version      : 0.17.2
-  Docs Build Date UTC : 2018-01-25 02:24:09
+  Docs Build Date UTC : 2018-01-28 19:32:12
   -->
 </body>
 </html>
