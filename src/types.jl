@@ -93,27 +93,32 @@ get_dim_lyap(integrator) = size(init_tangent_state(integrator))[2]
 A type representing the main calculation of Lyapunov Exponents (LE).
 This struct holds all temporary state required for LE calculation.
 """
-mutable struct LESolver{Intr} <: AbstractLESolver{Intr}
+mutable struct LESolver{Intr,
+                        V <: AbstractVector,
+                        M <: AbstractMatrix,
+                        } <: AbstractLESolver{Intr}
     integrator::Intr
-    series
-    main_stat
-    inst_exponents
-    num_orth
-    phase_state
-    tangent_state
-    sign_R
+    series::OnlineStats.Series
+    main_stat::OnlineStatsBase.OnlineStat
+    inst_exponents::V
+    num_orth::Int
+    phase_state::V
+    tangent_state::M
+    sign_R::Vector{Bool}
+    # TODO: Make sure that they result in concrete types
 
     function LESolver(
             integrator::Intr;
-            phase_state=init_phase_state(integrator),
-            tangent_state=init_tangent_state(integrator),
+            phase_state::V = init_phase_state(integrator),
+            tangent_state::M = init_tangent_state(integrator),
             main_stat = VecMean,
             add_stats = [],
-            ) where {Intr}
+            ) where {Intr,
+                     V <: AbstractVector,
+                     M <: AbstractMatrix}
 
         dim_lyap = get_dim_lyap(integrator)
         @assert dim_lyap <= length(phase_state)
-        @assert ndims(phase_state) == 1
         @assert size(tangent_state)[1] == length(phase_state)
 
         num_orth = 0
@@ -123,7 +128,7 @@ mutable struct LESolver{Intr} <: AbstractLESolver{Intr}
         series = OnlineStats.Series(main_stat, add_stats...)
         inst_exponents = zeros(eltype(phase_state), dim_lyap)
         sign_R = Array{Bool}(dim_lyap)
-        new{Intr}(
+        new{Intr, V, M}(
             integrator,
             series,
             main_stat,
@@ -142,19 +147,26 @@ end
 A type representing the main calculation of Maximum Lyapunov Exponents
 (MLE).  This struct holds all temporary state required for it.
 """
-mutable struct MLESolver{Intr} <: AbstractLESolver{Intr}
+mutable struct MLESolver{Intr,
+                         T <: Real,
+                         V <: AbstractVector,
+                         M <: AbstractMatrix,
+                         } <: AbstractLESolver{Intr}
     integrator::Intr
-    exponent
-    inst_exponent
-    num_orth
-    phase_state
-    tangent_state
+    exponent::T
+    inst_exponent::T
+    num_orth::Int
+    phase_state::V
+    tangent_state::M
+    # TODO: Make sure that they result in concrete types
 
     function MLESolver(
             integrator::Intr;
-            phase_state=init_phase_state(integrator),
-            tangent_state=init_tangent_state(integrator),
-            ) where {Intr}
+            phase_state::V = init_phase_state(integrator),
+            tangent_state::M = init_tangent_state(integrator),
+            ) where {Intr,
+                     V <: AbstractVector,
+                     M <: AbstractMatrix}
 
         if size(tangent_state) != (length(phase_state), 1)
             error("tangent_state must be an array of",
@@ -163,8 +175,9 @@ mutable struct MLESolver{Intr} <: AbstractLESolver{Intr}
         end
 
         num_orth = 0
-        exponent = zero(eltype(phase_state))
-        new{Intr}(
+        T = eltype(phase_state)
+        exponent = T(0)
+        new{Intr, T, V, M}(
             integrator,
             exponent,
             exponent,
