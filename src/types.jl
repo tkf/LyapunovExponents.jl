@@ -107,10 +107,15 @@ mutable struct LESolver{Intr} <: AbstractLESolver{Intr}
             integrator::Intr;
             phase_state=init_phase_state(integrator),
             tangent_state=init_tangent_state(integrator),
-            dim_lyap=get_dim_lyap(integrator),
-            main_stat = VecMean(dim_lyap),
+            main_stat = VecMean,
             add_stats = [],
             ) where {Intr}
+
+        dim_lyap = get_dim_lyap(integrator)
+        @assert dim_lyap <= length(phase_state)
+        @assert ndims(phase_state) == 1
+        @assert size(tangent_state)[1] == length(phase_state)
+
         num_orth = 0
         if ! isa(main_stat, OnlineStats.OnlineStat)
             main_stat = main_stat(dim_lyap)
