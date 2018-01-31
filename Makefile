@@ -7,6 +7,10 @@ LIVERELOAD = livereload --port $(DOCS_PORT) --wait 0.5
 test:
 	$(JULIA) --check-bounds=yes test/runtests.jl
 
+judge:
+	OMP_NUM_THREADS=1 $(JULIA) -e 'using PkgBenchmark: judge; showall(judge("LyapunovExponents", "$(JUDGE_BASELINE)"; promptsave=false, promptoverwrite=false)); println()'
+JUDGE_BASELINE = HEAD^
+
 docs:
 	$(JULIA) docs/make.jl
 	cd docs && mkdocs build
