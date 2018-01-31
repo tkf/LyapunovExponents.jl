@@ -127,6 +127,14 @@ end
     return (n - 1) / n * lyap + log(r) / n
 end
 
+@inline function eye!(A)
+    A .= 0
+    for i in 1:min(size(A)...)
+        @inbounds A[i, i] = 1
+    end
+    A
+end
+
 """ A = A * diag(sgn) """
 @inline function A_mul_sign!(A, sgn)
     for i = 1:size(A)[2]
@@ -170,8 +178,8 @@ function post_evolve!(solver::LESolver)
     dim_lyap = length(solver.inst_exponents)
     P = solver.tangent_state
     F = qrfact!(P)
-    Q = eye(eltype(P), size(P)...)  # TODO: pre-allocate
-    A_mul_B!(F[:Q], Q)  # Q = Matrix(F[:Q])[...]; but lesser allocation
+    Q = solver.Q
+    A_mul_B!(F[:Q], eye!(Q))  # Q = Matrix(F[:Q])[...]; but lesser allocation
     R = F[:R]
 
     sign_R = solver.sign_R
@@ -186,7 +194,7 @@ function post_evolve!(solver::LESolver)
     OnlineStats.fit!(solver.series, solver.inst_exponents)
 
     solver.num_orth += 1
-    solver.tangent_state = Q
+    solver.tangent_state, solver.Q = Q, solver.tangent_state
 end
 
 function post_evolve!(solver::MLESolver)

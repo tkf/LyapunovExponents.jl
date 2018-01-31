@@ -103,6 +103,7 @@ mutable struct LESolver{Intr,
     num_orth::Int
     phase_state::V
     tangent_state::M
+    Q::M
     sign_R::Vector{Bool}
     # TODO: Make sure that they result in concrete types
 
@@ -126,6 +127,7 @@ mutable struct LESolver{Intr,
         end
         series = OnlineStats.Series(main_stat, add_stats...)
         inst_exponents = zeros(eltype(phase_state), dim_lyap)
+        Q = similar(tangent_state)
         sign_R = Array{Bool}(dim_lyap)
         new{Intr, V, M}(
             integrator,
@@ -135,6 +137,7 @@ mutable struct LESolver{Intr,
             num_orth,
             phase_state,
             tangent_state,
+            Q,
             sign_R,
         )
     end
