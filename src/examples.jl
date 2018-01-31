@@ -66,7 +66,7 @@ function linz_sprott_99(;
         u0=[0.1, 0.1, 0.1],
         tspan=(0.0, 1.0),
         num_attr=10000,
-        atol=0, rtol=1e-2,
+        atol=1e-5, rtol=1e-2,
         kwargs...)
     @inline function phase_dynamics!(du, u, p, t)
         du[1] = u[2]

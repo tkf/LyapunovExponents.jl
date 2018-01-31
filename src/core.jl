@@ -170,7 +170,8 @@ function post_evolve!(solver::LESolver)
     dim_lyap = length(solver.inst_exponents)
     P = solver.tangent_state
     F = qrfact!(P)
-    Q = F[:Q][:, 1:dim_lyap]
+    Q = eye(eltype(P), size(P)...)  # TODO: pre-allocate
+    A_mul_B!(F[:Q], Q)  # Q = Matrix(F[:Q])[...]; but lesser allocation
     R = F[:R]
 
     sign_R = solver.sign_R
