@@ -35,7 +35,6 @@ Implemented:
 
 Wanted list:
 
-* Benchmarks.
 * Covariant Lyapunov vectors.
 * Delay differential equations.
 * Partial differential equations.
