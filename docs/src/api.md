@@ -24,4 +24,5 @@ LyapunovExponents.step!
 LyapunovExponents.solve!
 LyapunovExponents.solve
 LyapunovExponents.PhaseTangentDynamics
+LyapunovExponents.CLVSolver
 ```

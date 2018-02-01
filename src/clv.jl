@@ -11,6 +11,49 @@ const UTM = UpperTriangular{Float64, Matrix{Float64}}
 make_UTM(args...) = UpperTriangular(Matrix{Float64}(args...))
 # TODO: UpperTriangular wastes almost half of memory; fix it
 
+
+"""
+    CLVSolver(solver::LESolver, num_attr::Int)
+    CLVSolver(demo::LEDemo)
+
+A covariant Lyapunov vector (CLV) calculator.
+
+This solver implements the 'dynamical' algorithm proposed by Ginelli
+et al. (2007, 2013).
+
+### Example
+
+Figure 1 of Ginelli et al. (2007) can be reproduced as follows.  This
+code first calculates the CLV of the Henon map and plot the histogram
+of angle between two CLVs:
+
+```julia
+using LyapunovExponents
+
+demo = LyapunovExponents.henon_map(num_attr=100000)
+solver = LyapunovExponents.CLVSolver(demo)
+@time solve!(solver)
+
+limit = floor(Int, length(solver.C_history) * 0.9)
+angles = [acos(abs(dot(C[:, 1], C[:, 2]))) * 2 / π
+          for C in solver.C_history[1:limit]]
+
+using Plots
+stephist(angles, bins=1000, normalize=true,
+         xlabel="Angle [pi/2 rad]", ylabel="Density", label="")
+```
+
+### Reference
+
+* Ginelli, F., Poggi, P., Turchi, A., Chaté, H., Livi, R., & Politi, A. (2007).
+  *Characterizing Dynamics with Covariant Lyapunov Vectors.*
+  Physical Review Letters, 99(13), 1–4.
+  <http://doi.org/10.1103/PhysRevLett.99.130601>
+* Ginelli, F., Chaté, H., Livi, R., & Politi, A. (2013).
+  *Covariant Lyapunov vectors.*
+  Journal of Physics A: Mathematical and Theoretical, 46(25), 254005.
+  <http://doi.org/10.1088/1751-8113/46/25/254005>
+"""
 mutable struct CLVSolver{Intr, V, M} <: AbstractLESolver{Intr}
     solver::LESolver{Intr, V, M}
     G_history::Vector{M}
