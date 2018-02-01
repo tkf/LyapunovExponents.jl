@@ -1,5 +1,7 @@
 module RNN
 export beer_95
+
+using Parameters: @unpack
 using ..ExampleBase: LEDemo, ContinuousExample
 
 σ(x) = 1 / (1 + exp(-x))
@@ -11,20 +13,14 @@ type ContinuousRNN
     τ
 end
 
-function (param::ContinuousRNN)(du::A, u::A, p, t) where
-        {T, A <: AbstractArray{T, 1}}
-    w = param.w
-    θ = param.θ
-    τ = param.τ
+@inline function phase_dynamics!(du, u, p, t)
+    @unpack w, θ, τ = p
     du .= (- u .+ w * σ.(u .+ θ)) ./ τ
 end
 
-@views function (param::ContinuousRNN)(du::A, u::A, p, t) where
-        {T, A <: AbstractArray{T, 2}}
-    w = param.w
-    θ = param.θ
-    τ = param.τ
-    param(du[:, 1], u[:, 1], p, t)
+@inline @views function tangent_dynamics!(du, u, p, t)
+    @unpack w, θ, τ = p
+    phase_dynamics!(du[:, 1], u[:, 1], p, t)
     Y = u[:, 2:end]
     du[:, 2:end] .= (- Y .+ w * Diagonal(σ′.(u[:, 1] .+ θ)) * Y) ./ τ
 end
@@ -54,7 +50,6 @@ function beer_95(;
         # τ
         [1.0, 2.5, 1.0],
     )
-    tangent_dynamics! = phase_dynamics! = param
     LEDemo(ContinuousExample(
         "Beer (1995)",
         phase_dynamics!, u0, tspan, param,

@@ -1,6 +1,29 @@
 module VanDerPol
 export van_der_pol
+
+using Parameters: @with_kw, @unpack
 using ..ExampleBase: LEDemo, ContinuousExample
+
+@with_kw struct VanDerPolParam
+    d::Float64 = 5.0
+    a::Float64 = 5.0
+    ω::Float64 = 2.466
+end
+
+@inline function phase_dynamics!(du, u, p, t)
+    @unpack d, a, ω = p
+    du[1] = u[2]
+    du[2] = -u[1] - d * (u[1]^2 - 1) * u[2] + a * cos(ω * t)
+end
+
+@inline @views function tangent_dynamics!(du, u, p, t)
+    @unpack d, a, ω = p
+    phase_dynamics!(du[:, 1], u[:, 1], p, t)
+    du[1, 2:end] .= u[2, 2:end]
+    du[2, 2:end] .= -u[1, 2:end] .-
+        d * (u[1, 1]^2 - 1) .* u[2, 2:end] .-
+        d * 2.0 * u[1, 1] * u[2, 1] .* u[1, 2:end]
+end
 
 """
 Return a [`LEDemo`](@ref) for the van der Pol oscillator with
@@ -28,27 +51,17 @@ Lauterborn (1990).
 function van_der_pol(;
         u0=[0.1, 0.1],
         t0=0.0, chunk_periods=1,
-        ω=2.466, tspan=(t0, t0 + chunk_periods * 2 * π / ω),
         num_attr=200,
         atol=0, rtol=1e-1,
         kwargs...)
     # Note that with larger num_attr (e.g., 10000), the last Lyapunov
     # exponents negatively overshoots what Geist, Parlitz & Lauterborn
     # (1990) reported.  num_attr=100 is required for test to pass.
-    @inline function phase_dynamics!(du, u, p, t)
-        du[1] = u[2]
-        du[2] = -u[1] - 5.0 * (u[1]^2 - 1) * u[2] + 5.0 * cos(ω * t)
-    end
-    @inline @views function tangent_dynamics!(du, u, p, t)
-        phase_dynamics!(du[:, 1], u[:, 1], p, t)
-        du[1, 2:end] .= u[2, 2:end]
-        du[2, 2:end] .= -u[1, 2:end] .-
-            5.0 * (u[1, 1]^2 - 1) .* u[2, 2:end] .-
-            5.0 * 2.0 * u[1, 1] * u[2, 1] .* u[1, 2:end]
-    end
+    param = VanDerPolParam()
+    tspan = (t0, t0 + chunk_periods * 2 * π / param.ω)
     LEDemo(ContinuousExample(
         "van der Pol & van der Mark (1927)",
-        phase_dynamics!, u0, tspan, nothing,
+        phase_dynamics!, u0, tspan, param,
         tangent_dynamics!,
         num_attr,
         [0.085, -6.7],   # known_exponents
