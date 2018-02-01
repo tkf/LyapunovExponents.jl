@@ -13,7 +13,7 @@ include("continuous_exponents.jl")
 include("discrete_exponents.jl")
 include("recording.jl")
 include("interface.jl")
-include("examples.jl")
+include("examples/examples.jl")
 include("test.jl")
 
 @require RecipesBase include("plotting.jl")
