@@ -21,6 +21,7 @@ Implemented:
 
 * Lyapunov exponents calculation based on QR decomposition.
 * Maximum Lyapunov exponents calculation.
+* Covariant Lyapunov vectors calculation.
 * Tangent space evolution based on the automatic differentiation tool
   [ForwardDiff.jl].
 * Testing utilities for tangent space evolution (Jacobian calculation)
@@ -35,7 +36,6 @@ Implemented:
 
 Wanted list:
 
-* Covariant Lyapunov vectors.
 * Delay differential equations.
 * Partial differential equations.
 * Stochastic dynamical systems.
