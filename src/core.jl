@@ -181,7 +181,7 @@ function post_evolve!(solver::LESolver)
     F = qrfact!(P)
     Q = solver.Q
     A_mul_B!(F[:Q], eye!(Q))  # Q = Matrix(F[:Q])[...]; but lesser allocation
-    R = F[:R]
+    R = solver.R = F[:R]
 
     sign_R = solver.sign_R
     sign_diag!(sign_R, R)        # sign_R = diagm(sign(diag(R)))
@@ -212,8 +212,10 @@ end
 
 Do `num_attr` times of orthonormalization `step!(solver)`.
 """
-function solve!(solver::AbstractLESolver, num_attr;
-                progress=-1)
+solve!(solver::AbstractLESolver, num_attr; kwargs...) =
+    forward!(solver, num_attr; kwargs...)
+
+function forward!(solver::AbstractLESolver, num_attr; progress=-1)
     @showprogress_if(
         (progress >= 0), progress, "Computing Lyapunov exponents...",
         for _ in 1:num_attr

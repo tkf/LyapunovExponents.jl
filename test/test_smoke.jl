@@ -2,7 +2,7 @@ using Base.Test
 using Plots
 using OnlineStats: CovMatrix
 using LyapunovExponents
-using LyapunovExponents: VecVariance
+using LyapunovExponents: VecVariance, CLVSolver
 
 macro test_nothrow(ex)
     quote
@@ -10,6 +10,14 @@ macro test_nothrow(ex)
             $(esc(ex))
             true
         end
+    end
+end
+
+@time @testset "Smoke test CLV" begin
+    @test_nothrow begin
+        demo = LyapunovExponents.lorenz_63(num_attr=3)
+        solver = CLVSolver(demo)
+        solve!(solver)
     end
 end
 

@@ -2,8 +2,9 @@ module ExampleBase
 
 import DifferentialEquations: solve, solve!
 
-using ...LyapunovExponents: LEProblem, ContinuousLEProblem, DiscreteLEProblem
-import ...LyapunovExponents: dimension
+using ...LyapunovExponents: LEProblem, ContinuousLEProblem, DiscreteLEProblem,
+    init
+import ...LyapunovExponents: dimension, CLVSolver
 
 """
 A type to hold an example dynamical system and its known Lyapunov exponents.
@@ -81,6 +82,8 @@ function solve!(demo::LEDemo; progress = -1, record = true, kwargs...)
                         kwargs...)
     return demo
 end
+
+CLVSolver(demo::LEDemo) = CLVSolver(init(demo.prob), demo.example.num_attr)
 
 function Base.show(io::IO, demo::LEDemo)
     print(io, "Demo: ", demo.example.name)
