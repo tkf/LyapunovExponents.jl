@@ -20,8 +20,9 @@ of development and nowhere close to providing a stable API.
 Implemented:
 
 * Lyapunov exponents calculation based on QR decomposition.
-* Maximum Lyapunov exponents calculation.
+* Maximum Lyapunov exponent calculation.
 * Covariant Lyapunov vectors calculation.
+  (Not well tested!)
 * Tangent space evolution based on the automatic differentiation tool
   [ForwardDiff.jl].
 * Testing utilities for tangent space evolution (Jacobian calculation)
