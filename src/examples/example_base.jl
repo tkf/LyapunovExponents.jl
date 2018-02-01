@@ -13,8 +13,9 @@ struct LEExample{ProblemType}
     phase_dynamics!
     u0
     tspan
-    num_attr
+    param
     tangent_dynamics!
+    num_attr
     known_exponents
     atol
     rtol
@@ -26,7 +27,8 @@ const DiscreteExample = LEExample{DiscreteLEProblem}
 function LEProblem(example::LEExample{P}; kwargs...) where {P <: LEProblem}
     P(example.phase_dynamics!,
       example.u0,
-      example.tspan;
+      example.tspan,
+      example.param;
       tangent_dynamics! = example.tangent_dynamics!,
       kwargs...)
 end

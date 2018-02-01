@@ -30,9 +30,9 @@ function linz_sprott_99(;
     end
     LEDemo(ContinuousExample(
         "Linz & Sprott (1999) Piecewise linear flow",
-        phase_dynamics!,
-        u0, tspan, num_attr,
+        phase_dynamics!, u0, tspan, nothing,
         tangent_dynamics!,
+        num_attr,
         [0.0362, 0, -0.6362],   # known_exponents
         atol, rtol,
     ); kwargs...)

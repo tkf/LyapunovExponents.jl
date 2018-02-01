@@ -4,6 +4,7 @@ ForwardDiff
 OnlineStats
 OnlineStatsBase
 OrdinaryDiffEq
+Parameters
 Plots
 ProgressMeter
 RecipesBase

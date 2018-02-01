@@ -77,6 +77,7 @@ function get_solver(prob::LEProblem{DEP},
         tangent_dynamics!,
         u0,
         phase_prob.tspan,
+        phase_prob.p,
     )
     get_solver(tangent_prob; kwargs...)
 end

@@ -26,9 +26,9 @@ function henon_map(;
     end
     LEDemo(DiscreteExample(
         "Hénon map",
-        phase_dynamics!,
-        u0, tspan, num_attr,
+        phase_dynamics!, u0, tspan, nothing,
         tangent_dynamics!,
+        num_attr,
         [0.41922, -1.62319],   # known_exponents
         atol, rtol,
     ); kwargs...)

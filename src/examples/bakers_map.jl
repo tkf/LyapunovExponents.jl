@@ -34,9 +34,9 @@ function bakers_map(;
     end
     LEDemo(DiscreteExample(
         "Baker's map",
-        phase_dynamics!,
-        u0, tspan, num_attr,
+        phase_dynamics!, u0, tspan, nothing,
         tangent_dynamics!,
+        num_attr,
         log.([2.0, 0.5]),       # known_exponents
         atol, rtol,
     ); kwargs...)

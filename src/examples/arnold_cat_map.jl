@@ -27,9 +27,9 @@ function arnold_cat_map(;
     end
     LEDemo(DiscreteExample(
         "Arnold's cat map",
-        phase_dynamics!,
-        u0, tspan, num_attr,
+        phase_dynamics!, u0, tspan, nothing,
         tangent_dynamics!,
+        num_attr,
         log.(sort!(eigvals(M), rev=true)), # known_exponents
         atol, rtol,
     ); kwargs...)

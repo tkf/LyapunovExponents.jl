@@ -44,7 +44,7 @@ function beer_95(;
         num_attr=4000,
         atol=0, rtol=1e-1,
         kwargs...)
-    phase_dynamics! = ContinuousRNN(
+    param = ContinuousRNN(
         # w
         [  5.422  -0.018  2.75
           -0.24    4.59   1.21
@@ -54,11 +54,12 @@ function beer_95(;
         # τ
         [1.0, 2.5, 1.0],
     )
+    tangent_dynamics! = phase_dynamics! = param
     LEDemo(ContinuousExample(
         "Beer (1995)",
-        phase_dynamics!,
-        u0, tspan, num_attr,
-        phase_dynamics!,
+        phase_dynamics!, u0, tspan, param,
+        tangent_dynamics!,
+        num_attr,
         [0.010, 0],   # known_exponents
         atol, rtol,
     ); kwargs...)

@@ -48,9 +48,9 @@ function van_der_pol(;
     end
     LEDemo(ContinuousExample(
         "van der Pol & van der Mark (1927)",
-        phase_dynamics!,
-        u0, tspan, num_attr,
+        phase_dynamics!, u0, tspan, nothing,
         tangent_dynamics!,
+        num_attr,
         [0.085, -6.7],   # known_exponents
         atol, rtol,
     ); kwargs...)

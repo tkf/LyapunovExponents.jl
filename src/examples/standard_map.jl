@@ -29,9 +29,9 @@ function standard_map(;
     end
     LEDemo(DiscreteExample(
         "Chirikov standard map",
-        phase_dynamics!,
-        u0, tspan, num_attr,
+        phase_dynamics!, u0, tspan, nothing,
         tangent_dynamics!,
+        num_attr,
         [0.10497, -0.10497],   # known_exponents
         atol, rtol,
     ); kwargs...)
