@@ -5,19 +5,18 @@ using RecipesBase
                    known_exponents=nothing)
     le_hist = exponents_history(solver)
     dim_lyap = size(le_hist)[1]
+    known_exponents = known_exponents == nothing ? [] : known_exponents
     layout --> (dim_lyap, 1)
     xscale --> :log10
 
     ylims = @views [[minimum(le_hist[i, :]),
                      maximum(le_hist[i, :])]
                     for i = 1:dim_lyap]
-    if known_exponents != nothing
-        for i = 1:dim_lyap
-            ylims[i][1] = min(ylims[i][1], known_exponents[i])
-            ylims[i][2] = max(ylims[i][2], known_exponents[i])
-        end
+    for i in 1:min(dim_lyap, length(known_exponents))
+        ylims[i][1] = min(ylims[i][1], known_exponents[i])
+        ylims[i][2] = max(ylims[i][2], known_exponents[i])
     end
-    for i = 1:dim_lyap
+    for i in 1:dim_lyap
         ymin, ymax = ylims[i]
         dy = ymax - ymin
         ylims[i] = [ymin - dy * 0.05,
@@ -32,7 +31,7 @@ using RecipesBase
             ylim --> ylims[i]
             @view le_hist[i, :]
         end
-        if known_exponents != nothing
+        if i <= length(known_exponents)
             @series begin
                 subplot := i
                 linetype := :hline
