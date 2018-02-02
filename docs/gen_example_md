@@ -3,9 +3,13 @@ example_script="$1"
 name="$(basename "$example_script" .jl)"
 
 cat <<EOF
-# Example: [\`LyapunovExponents.$name\`](@ref)
+# Example: \`$name\`
 
 ![Demo for $name]($name.png "Demo for $name")
+
+Use [\`LyapunovExponents.$name\`](@ref) to generate a
+[\`LyapunovExponents.LEDemo\`](@ref) (which wraps
+[\`LEProblem\`](@ref)) and solve it.
 
 EOF
 echo '```julia'
