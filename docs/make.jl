@@ -1,5 +1,8 @@
 using Documenter, LyapunovExponents
 
+using Plots
+gr()
+
 # Generate src/gallery/examples/*.{md,png}.  In principle, I can
 # generate those files in build/gallery/examples/ after `makedocs()`
 # below.  However, resolving @ref etc. are done by `makedocs()` so
