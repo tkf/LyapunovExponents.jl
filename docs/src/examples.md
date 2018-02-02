@@ -9,6 +9,7 @@ LyapunovExponents.LEExample
 
 ```@docs
 LyapunovExponents.henon_map
+LyapunovExponents.lozi_map
 LyapunovExponents.standard_map
 LyapunovExponents.bakers_map
 LyapunovExponents.arnold_cat_map

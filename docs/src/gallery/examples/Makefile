@@ -6,6 +6,7 @@ arnold_cat_map \
 linz_sprott_99 \
 van_der_pol \
 beer_95 \
+lozi_map \
 # lorenz_63
 
 EXAMPLE_SCRIPTS = $(patsubst %,%.jl,$(EXAMPLE_SYSTEMS))

@@ -1,0 +1,9 @@
+#!/bin/bash
+header_md="$1"
+gallery_script="$2"
+
+cat "$header_md"
+echo
+echo '```julia'
+cat "$gallery_script"
+echo '```'
