@@ -1,0 +1,17 @@
+#!/bin/bash
+cat <<EOF
+# Gallery
+
+\`\`\`@contents
+Pages = [
+EOF
+for name in "$@"
+do
+    relpath="$(echo "$name" | sed 's#src/gallery/##')"
+    echo "    \"$relpath\","
+done
+cat <<EOF
+]
+Depth = 2
+\`\`\`
+EOF

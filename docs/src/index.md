@@ -4,6 +4,7 @@
 Pages = [
     "api.md",
     "examples.md",
+    "gallery/index.md",
 ]
 Depth = 2
 ```
