@@ -10,13 +10,11 @@
     
 
     
-        
     <url>
      <loc>/api/</loc>
      <lastmod>2018-02-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
     
 
     
@@ -28,6 +26,12 @@
     
 
     
+        
+    <url>
+     <loc>/gallery/</loc>
+     <lastmod>2018-02-02</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
         
     <url>
      <loc>/gallery/ginelli_07_fig1a/</loc>

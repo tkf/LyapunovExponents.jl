@@ -1,3 +1,13 @@
-div.sphinxsidebarwrapper h1.logo {
-  font-size: 20px;
+div[role=main] p img {
+  max-width: 100%;
+}
+
+code.LE-diagram {
+  line-height: 1em;
+  display: block;  /* required to make line-height work */
+}
+
+code.LE-diagram a > code {
+  color: #008cba;
+  display: inline;  /* "undo" the "display: block" above */
 }

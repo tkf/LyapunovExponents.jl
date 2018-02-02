@@ -1,47 +1,206 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-
-    <title>Examples &mdash; LyapunovExponents.jl</title>
-
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">   
     <link rel="shortcut icon" href="../img/favicon.ico">
-    <link rel="stylesheet" href="../css/alabaster.css" type="text/css">
-    <link rel="stylesheet" href="../css/alabaster-overrides.css" type="text/css">
+
+    <title></title>
+
+    <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.018/css/hack.min.css">
+    <link href='//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700,700italic&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href="../css/base.css" rel="stylesheet">
+    <link href="../css/cinder.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/highlight.css">
+
+
+    <link href="../assets/Documenter.css" rel="stylesheet">
+
+
+    <link href="../extra.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js"></script>
+    <script>
+    WebFont.load({
+        google: {
+            families: ['Open Sans', 'PT Sans']
+        }
+    });
+    </script>
 
     
-      <link href="../assets/Documenter.css" rel="stylesheet">
-    
-      <link href="../extra.css" rel="stylesheet">
-    
-
-    
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
-    
-      <script src="../assets/mathjaxhelper.js"></script>
-    
-      <script src="../search/require.js"></script>
-    
-      <script src="../search/search.js"></script>
-    
-
-    
-
-    <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
-
-    
-  
 </head>
+
 <body>
 
-  <div class="document">
-    <div class="documentwrapper">
-      <div class="bodywrapper">
-        <div class="body" role="main">
-          
-            <p><a id='Example-dynamical-systems-1'></a></p>
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+
+            <a class="navbar-brand" href="..">LyapunovExponents.jl</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="..">Home</a>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="../api/">API</a>
+                    </li>
+                
+                
+                
+                    <li class="active">
+                        <a href="./">Examples</a>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Gallery <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../gallery/">Home</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/ginelli_07_fig1a/">Ginelli 07 fig1a</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/arnold_cat_map/">Arnold cat map</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/bakers_map/">Bakers map</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/beer_95/">Beer 95</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/henon_map/">Henon map</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/linz_sprott_99/">Linz sprott 99</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/lorenz_63/">Lorenz 63</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/lozi_map/">Lozi map</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/standard_map/">Standard map</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/van_der_pol/">Van der pol</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                            <i class="fa fa-search"></i> Search
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="next" href="../api/">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="../gallery/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/tkf/LyapunovExponents.jl/edit/master/docs/examples.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <div class="container">
+        
+        <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="first-level active"><a href="#example-dynamical-systems">Example dynamical systems</a></li>
+            <li class="second-level"><a href="#discrete-systems">Discrete systems</a></li>
+                
+            <li class="second-level"><a href="#continuous-systems">Continuous systems</a></li>
+                
+    </ul>
+</div></div>
+        <div class="col-md-9" role="main">
+
+<p><a id='Example-dynamical-systems-1'></a></p>
 <h1 id="example-dynamical-systems">Example dynamical systems</h1>
 <p><a id='LyapunovExponents.Examples.ExampleBase.LEDemo' href='#LyapunovExponents.Examples.ExampleBase.LEDemo'>#</a>
 <strong><code>LyapunovExponents.Examples.ExampleBase.LEDemo</code></strong> &mdash; <em>Type</em>.</p>
@@ -56,11 +215,11 @@ plot(demo)
 </code></pre>
 
 <p>Create a <code>LEDemo</code> holding an <code>example</code> and an appropriate <code>LEProblem</code> created from the <code>example</code>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/examples/example_base.jl#L53-L67' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/13e54df874493132907bce5b35b5b7e6d5b07ebc/src/examples/example_base.jl#L53-L67' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.Examples.ExampleBase.LEExample' href='#LyapunovExponents.Examples.ExampleBase.LEExample'>#</a>
 <strong><code>LyapunovExponents.Examples.ExampleBase.LEExample</code></strong> &mdash; <em>Type</em>.</p>
 <p>A type to hold an example dynamical system and its known Lyapunov exponents.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/examples/example_base.jl#L9-L11' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/13e54df874493132907bce5b35b5b7e6d5b07ebc/src/examples/example_base.jl#L9-L11' class='documenter-source'>source</a><br></p>
 <p><a id='Discrete-systems-1'></a></p>
 <h2 id="discrete-systems">Discrete systems</h2>
 <p><a id='LyapunovExponents.Examples.HenonMap.henon_map' href='#LyapunovExponents.Examples.HenonMap.henon_map'>#</a>
@@ -71,11 +230,11 @@ plot(demo)
 <li><a href="http://sprott.physics.wisc.edu/chaos/comchaos.htm">http://sprott.physics.wisc.edu/chaos/comchaos.htm</a></li>
 <li><a href="https://en.wikipedia.org/wiki/H%C3%A9non_map">https://en.wikipedia.org/wiki/H%C3%A9non_map</a></li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/examples/henon_map.jl#L25-L31' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/13e54df874493132907bce5b35b5b7e6d5b07ebc/src/examples/henon_map.jl#L25-L31' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.Examples.LoziMap.lozi_map' href='#LyapunovExponents.Examples.LoziMap.lozi_map'>#</a>
 <strong><code>LyapunovExponents.Examples.LoziMap.lozi_map</code></strong> &mdash; <em>Function</em>.</p>
 <p>Return a <a href="./#LyapunovExponents.Examples.ExampleBase.LEDemo"><code>LEDemo</code></a> for the Lozi map.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/examples/lozi_map.jl#L25-L27' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/13e54df874493132907bce5b35b5b7e6d5b07ebc/src/examples/lozi_map.jl#L25-L27' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.Examples.StandardMap.standard_map' href='#LyapunovExponents.Examples.StandardMap.standard_map'>#</a>
 <strong><code>LyapunovExponents.Examples.StandardMap.standard_map</code></strong> &mdash; <em>Function</em>.</p>
 <p>Return a <a href="./#LyapunovExponents.Examples.ExampleBase.LEDemo"><code>LEDemo</code></a> for the Chirikov standard map.</p>
@@ -85,21 +244,21 @@ plot(demo)
 <li><a href="https://en.wikipedia.org/wiki/Standard_map">https://en.wikipedia.org/wiki/Standard_map</a></li>
 <li><a href="http://www.scholarpedia.org/article/Chirikov_standard_map">http://www.scholarpedia.org/article/Chirikov_standard_map</a></li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/examples/standard_map.jl#L16-L23' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/13e54df874493132907bce5b35b5b7e6d5b07ebc/src/examples/standard_map.jl#L16-L23' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.Examples.BakersMap.bakers_map' href='#LyapunovExponents.Examples.BakersMap.bakers_map'>#</a>
 <strong><code>LyapunovExponents.Examples.BakersMap.bakers_map</code></strong> &mdash; <em>Function</em>.</p>
 <p>Baker's map</p>
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/Baker%27s_map">https://en.wikipedia.org/wiki/Baker%27s_map</a></li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/examples/bakers_map.jl#L5-L9' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/13e54df874493132907bce5b35b5b7e6d5b07ebc/src/examples/bakers_map.jl#L5-L9' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.Examples.ArnoldCatMap.arnold_cat_map' href='#LyapunovExponents.Examples.ArnoldCatMap.arnold_cat_map'>#</a>
 <strong><code>LyapunovExponents.Examples.ArnoldCatMap.arnold_cat_map</code></strong> &mdash; <em>Function</em>.</p>
 <p>Return a <a href="./#LyapunovExponents.Examples.ExampleBase.LEDemo"><code>LEDemo</code></a> for the Arnold's cat map</p>
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/Arnold%27s_cat_map">https://en.wikipedia.org/wiki/Arnold%27s_cat_map</a></li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/examples/arnold_cat_map.jl#L17-L21' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/13e54df874493132907bce5b35b5b7e6d5b07ebc/src/examples/arnold_cat_map.jl#L17-L21' class='documenter-source'>source</a><br></p>
 <p><a id='Continuous-systems-1'></a></p>
 <h2 id="continuous-systems">Continuous systems</h2>
 <p><a id='LyapunovExponents.Examples.Lorenz63.lorenz_63' href='#LyapunovExponents.Examples.Lorenz63.lorenz_63'>#</a>
@@ -110,7 +269,7 @@ plot(demo)
 <li><a href="http://sprott.physics.wisc.edu/chaos/comchaos.htm">http://sprott.physics.wisc.edu/chaos/comchaos.htm</a></li>
 <li>E. N. Lorenz, J. Atmos. Sci. 20, 130-141 (1963)</li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/examples/lorenz_63.jl#L33-L39' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/13e54df874493132907bce5b35b5b7e6d5b07ebc/src/examples/lorenz_63.jl#L33-L39' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.Examples.LinzSprott99.linz_sprott_99' href='#LyapunovExponents.Examples.LinzSprott99.linz_sprott_99'>#</a>
 <strong><code>LyapunovExponents.Examples.LinzSprott99.linz_sprott_99</code></strong> &mdash; <em>Function</em>.</p>
 <p>Return a <a href="./#LyapunovExponents.Examples.ExampleBase.LEDemo"><code>LEDemo</code></a> for the simplest piecewise linear dissipative chaotic flow.</p>
@@ -118,7 +277,7 @@ plot(demo)
 <li><a href="http://sprott.physics.wisc.edu/chaos/comchaos.htm">http://sprott.physics.wisc.edu/chaos/comchaos.htm</a></li>
 <li>S. J. Linz and J. C. Sprott, Phys. Lett. A 259, 240-245 (1999)</li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/examples/linz_sprott_99.jl#L20-L26' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/13e54df874493132907bce5b35b5b7e6d5b07ebc/src/examples/linz_sprott_99.jl#L20-L26' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.Examples.VanDerPol.van_der_pol' href='#LyapunovExponents.Examples.VanDerPol.van_der_pol'>#</a>
 <strong><code>LyapunovExponents.Examples.VanDerPol.van_der_pol</code></strong> &mdash; <em>Function</em>.</p>
 <p>Return a <a href="./#LyapunovExponents.Examples.ExampleBase.LEDemo"><code>LEDemo</code></a> for the van der Pol oscillator with periodic forcing.</p>
@@ -130,103 +289,64 @@ plot(demo)
 <li>Parlitz, Ulrich, and Werner Lauterborn. “Period-Doubling Cascades and Devil’s Staircases of the Driven van Der Pol Oscillator.” Physical Review A 36, no. 3 (August 1, 1987): 1428–34. <a href="https://doi.org/10.1103/PhysRevA.36.1428">https://doi.org/10.1103/PhysRevA.36.1428</a>. (Figure 10a)</li>
 <li>Geist, K., Parlitz, U., &amp; Lauterborn, W. (1990). Comparison of Different Methods for Computing Lyapunov Exponents. Progress of Theoretical Physics, 83, 875–893. <a href="https://doi.org/10.1143/PTP.83.875">https://doi.org/10.1143/PTP.83.875</a>. (Figure 6)</li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/examples/van_der_pol.jl#L28-L50' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/13e54df874493132907bce5b35b5b7e6d5b07ebc/src/examples/van_der_pol.jl#L28-L50' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.Examples.RNN.beer_95' href='#LyapunovExponents.Examples.RNN.beer_95'>#</a>
 <strong><code>LyapunovExponents.Examples.RNN.beer_95</code></strong> &mdash; <em>Function</em>.</p>
 <p>Return a <a href="./#LyapunovExponents.Examples.ExampleBase.LEDemo"><code>LEDemo</code></a> for a low-dimensional chaotic continuous-time recurrent neural networks by Beer (1995).</p>
 <ul>
 <li>Beer, R. D. (1995). On the dynamics of small continuous-time recurrent neural networks. Adapt. Behav., 3(4), 469–509. <a href="https://doi.org/10.1177/105971239500300405">https://doi.org/10.1177/105971239500300405</a>. (Figure 9D)</li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/examples/rnn.jl#L28-L36' class='documenter-source'>source</a><br></p>
-            
-          
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/13e54df874493132907bce5b35b5b7e6d5b07ebc/src/examples/rnn.jl#L28-L36' class='documenter-source'>source</a><br></p></div>
+        
+    </div>
+
+    <footer class="col-md-12 text-center">
+        <hr>
+        <p>
+        <small>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p></small>
+    </footer>
+
+    <script src="../js/jquery-1.10.2.min.js"></script>
+    <script src="../js/bootstrap-3.0.3.min.js"></script>
+    <script src="../js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+    var base_url = '..';
+    </script>
+    <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
+    <script src="../js/base.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+    <script src="../assets/mathjaxhelper.js"></script>
+    <script src="../search/require.js"></script>
+    <script src="../search/search.js"></script>
+
+    <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        From here you can search these documents. Enter your search terms below.
+                    </p>
+                    <form role="form">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                        </div>
+                    </form>
+                    <div id="mkdocs-search-results"></div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-    <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-      <div class="sphinxsidebarwrapper">
-        
-  <h1 class="logo"><a href="..">LyapunovExponents.jl</a></h1>
 
+    </body>
 
-
-  <p class="blurb">A hackable Lyapunov exponents calculator</p>
-
-        
-          
-
-
-
-<h3>Table Of Contents</h3>
-
-<nav>
-  
-  
-    <ul>
-    
-      <li><a href="#discrete-systems">Discrete systems</a></li>
-      <ul>
-    
-  </ul>
-    
-      <li><a href="#continuous-systems">Continuous systems</a></li>
-      <ul>
-    
-  </ul>
-    
-  </ul>
-  
-
-  
-</nav>
-          
-  <h3>Related Topics</h3>
-  <ul>
-    
-      <li>Previous: <a href="../api/" title="previous chapter">
-        Api
-      </a></li>
-    
-    
-      <li>Next: <a href="../gallery/ginelli_07_fig1a/" title="next chapter">
-        Ginelli 07 fig1a
-      </a></li>
-    
-  </ul>
-
-        
-        <div id="searchbox" style="display: none;" role="search">
-  <h3>Quick search</h3>
-  <form class="search" action="../search.html" method="get">
-    <input name="q" type="text">
-    <input value="Go" type="submit">
-  </form>
-  <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-  </p>
-</div>
-<script type="text/javascript">
-  document.getElementById("searchbox").style.display = "block";
-</script>
-      </div>
-    </div>
-    <div class="clearer"></div>
-  </div>
-
-  
-    <div class="footer">
-      
-      
-        
-        Powered by <a href="http://www.mkdocs.org">MkDocs 0.17.2</a>
-        &amp; <a href="https://github.com/iamale/mkdocs-alabaster">Alabaster</a>
-      
-    </div>
-  
-
-  <!--
-  MkDocs version      : 0.17.2
-  Docs Build Date UTC : 2018-02-02 07:03:12
-  -->
-</body>
 </html>
