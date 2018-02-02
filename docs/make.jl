@@ -15,7 +15,7 @@ end
 makedocs()
 
 deploydocs(
-    deps   = Deps.pip("mkdocs", "python-markdown-math", "mkdocs-alabaster"),
+    deps   = Deps.pip("mkdocs", "python-markdown-math", "mkdocs-cinder"),
     repo   = "github.com/tkf/LyapunovExponents.jl.git",
     julia  = "0.6",
 )
