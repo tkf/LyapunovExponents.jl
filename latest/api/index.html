@@ -52,7 +52,7 @@
 
 <p>Construct an <code>ODEProblem</code> and use it for <code>ContinuousLEProblem</code>.  If <code>tspan</code> is a <code>Real</code> instead of a <code>Tuple</code>, then <code>(0, tspan)</code> is passed as the <code>tspan</code> argument of <code>ODEProblem</code>.</p>
 <p>For the list of usable keyword arguments, see <a href="./#LyapunovExponents.LEProblem"><code>LEProblem</code></a>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/continuous_exponents.jl#L13-L21' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/continuous_exponents.jl#L13-L21' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.DiscreteLEProblem' href='#LyapunovExponents.DiscreteLEProblem'>#</a>
 <strong><code>LyapunovExponents.DiscreteLEProblem</code></strong> &mdash; <em>Type</em>.</p>
 <pre><code>DiscreteLEProblem(phase_dynamics!, u0, tspan [, p]; &lt;keyword arguments&gt;)
@@ -60,29 +60,29 @@
 
 <p>Construct a <code>DiscretProblem</code> and use it for <code>DiscreteLEProblem</code>.</p>
 <p>For the list of usable keyword arguments, see <a href="./#LyapunovExponents.LEProblem"><code>LEProblem</code></a>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/discrete_exponents.jl#L30-L36' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/discrete_exponents.jl#L30-L36' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.lyapunov_exponents' href='#LyapunovExponents.lyapunov_exponents'>#</a>
 <strong><code>LyapunovExponents.lyapunov_exponents</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>lyapunov_exponents(solver)
 </code></pre>
 
 <p>Get the result of Lyapunov exponents calculation stored in <code>solver</code>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/core.jl#L248-L252' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/core.jl#L248-L252' class='documenter-source'>source</a><br></p>
 <pre><code>lyapunov_exponents(phase_dynamics!, u0, tspan; &lt;keyword arguments&gt;)
 </code></pre>
 
 <p>Calculate Lyapunov exponents of a dynamical system.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/interface.jl#L1-L5' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/interface.jl#L1-L5' class='documenter-source'>source</a><br></p>
 <p><a id='Low-level-API-1'></a></p>
 <h2 id="low-level-api">Low-level API</h2>
 <p><a id='LyapunovExponents.AbstractLEProblem' href='#LyapunovExponents.AbstractLEProblem'>#</a>
 <strong><code>LyapunovExponents.AbstractLEProblem</code></strong> &mdash; <em>Type</em>.</p>
 <p>The Problem type represents the setup of the Lyapunov exponents calculation.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/types.jl#L3-L5' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/types.jl#L3-L5' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.AbstractRelaxer' href='#LyapunovExponents.AbstractRelaxer'>#</a>
 <strong><code>LyapunovExponents.AbstractRelaxer</code></strong> &mdash; <em>Type</em>.</p>
 <p>The Relaxer type represents the calculation required for throwing away the transient part of the dynamics.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/types.jl#L8-L11' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/types.jl#L8-L11' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.AbstractLESolver' href='#LyapunovExponents.AbstractLESolver'>#</a>
 <strong><code>LyapunovExponents.AbstractLESolver</code></strong> &mdash; <em>Type</em>.</p>
 <p>The Solver type represents the core Lyapunov Exponents (LE) calculation.  The LE calculation is done by calling the in-place mutating function <a href="./#DiffEqBase.solve!"><code>solve!</code></a>.</p>
@@ -99,7 +99,7 @@
  │     │                                                              <br />
  │     ▼                                                              <br />
  └▶ Solver (<a href="./#LyapunovExponents.AbstractLESolver"><code>AbstractLESolver</code></a>) ┄┄ ⟲ <a href="./#DiffEqBase.solve!"><code>solve!</code></a>,                                                  <a href="./#DiffEqBase.step!"><code>step!</code></a></p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/types.jl#L14-L47' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/types.jl#L14-L47' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.LEProblem' href='#LyapunovExponents.LEProblem'>#</a>
 <strong><code>LyapunovExponents.LEProblem</code></strong> &mdash; <em>Type</em>.</p>
 <pre><code>LEProblem(phase_prob;  &lt;keyword arguments&gt;)
@@ -113,21 +113,21 @@
 <li><code>Q0::Array</code>: The initial guess of the Gram-Schmidt "Lyapunov vectors".</li>
 <li><code>tangent_dynamics::Function</code>: A vector field for solving phase space  evolution <em>and</em> tangent space evolution together.  If this is not  provided, <code>tangent_dynamics</code> is derived from <code>phase_prob.f</code>.  See  also <a href="./#LyapunovExponents.PhaseTangentDynamics"><code>PhaseTangentDynamics</code></a>.</li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/types.jl#L39-L55' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/types.jl#L39-L55' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.LESolver' href='#LyapunovExponents.LESolver'>#</a>
 <strong><code>LyapunovExponents.LESolver</code></strong> &mdash; <em>Type</em>.</p>
 <pre><code>LESolver(integrator; &lt;keyword arguments&gt;)
 </code></pre>
 
 <p>A type representing the main calculation of Lyapunov Exponents (LE). This struct holds all temporary state required for LE calculation.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/types.jl#L89-L94' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/types.jl#L89-L94' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.get_relaxer' href='#LyapunovExponents.get_relaxer'>#</a>
 <strong><code>LyapunovExponents.get_relaxer</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>get_relaxer(prob::AbstractLEProblem; &lt;keyword arguments&gt;) :: AbstractRelaxer
 </code></pre>
 
 <p>Get a relaxer for a LE problem.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/core.jl#L9-L13' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/core.jl#L9-L13' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.relaxed' href='#LyapunovExponents.relaxed'>#</a>
 <strong><code>LyapunovExponents.relaxed</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>relaxed(prob::AbstractLEProblem; &lt;keyword arguments&gt;) :: AbstractRelaxer
@@ -135,40 +135,40 @@
 
 <p>Throwaway the transient part of the phase space dynamics of the LE problem <code>prob</code>.</p>
 <p>That is to say, convert a LE problem (<a href="./#LyapunovExponents.AbstractLEProblem"><code>AbstractLEProblem</code></a>) to a relaxer (<a href="./#LyapunovExponents.AbstractRelaxer"><code>AbstractRelaxer</code></a>) and then call <a href="./#LyapunovExponents.relax!"><code>relax!</code></a>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/core.jl#L36-L44' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/core.jl#L36-L44' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.relax!' href='#LyapunovExponents.relax!'>#</a>
 <strong><code>LyapunovExponents.relax!</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>relax!(relaxer::AbstractRelaxer; &lt;keyword arguments&gt;)
 </code></pre>
 
 <p>Throwaway the transient part of the phase space dynamics of the LE problem <code>prob</code>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/core.jl#L17-L22' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/core.jl#L17-L22' class='documenter-source'>source</a><br></p>
 <p><a id='DiffEqBase.init' href='#DiffEqBase.init'>#</a>
 <strong><code>DiffEqBase.init</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>init(prob::AbstractLEProblem; &lt;keyword arguments&gt;) :: AbstractLESolver
 </code></pre>
 
 <p>Run phase space simulation to throw away the transient and then construct a LE solver.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/core.jl#L99-L104' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/core.jl#L99-L104' class='documenter-source'>source</a><br></p>
 <p><a id='DiffEqBase.step!' href='#DiffEqBase.step!'>#</a>
 <strong><code>DiffEqBase.step!</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>step!(solver::AbstractLESolver)
 </code></pre>
 
 <p>Evolve the dynamics and then do an orthonormalization.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/core.jl#L168-L172' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/core.jl#L168-L172' class='documenter-source'>source</a><br></p>
 <p><a id='DiffEqBase.solve!' href='#DiffEqBase.solve!'>#</a>
 <strong><code>DiffEqBase.solve!</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>solve!(solver::AbstractLESolver, num_attr; &lt;keyword arguments&gt;)
 </code></pre>
 
 <p>Do <code>num_attr</code> times of orthonormalization <code>step!(solver)</code>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/core.jl#L210-L214' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/core.jl#L210-L214' class='documenter-source'>source</a><br></p>
 <pre><code>solve!(demo::LEDemo; progress=-1, &lt;keyword arguments&gt;)
 </code></pre>
 
 <p>Initialize <code>demo.solver</code> from <code>demo.prob</code> and run <code>solve!(demo.solver)</code> to calculate the Lyapunov exponents.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/examples/example_base.jl#L72-L77' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/examples/example_base.jl#L72-L77' class='documenter-source'>source</a><br></p>
 <p><a id='DiffEqBase.solve' href='#DiffEqBase.solve'>#</a>
 <strong><code>DiffEqBase.solve</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>solve(prob::AbstractLEProblem, num_attr; &lt;keyword arguments&gt;)
@@ -176,11 +176,11 @@
 </code></pre>
 
 <p>Initialize the solver (<a href="./#DiffEqBase.init"><code>init</code></a>) and then go through the LE calculation (<a href="./#DiffEqBase.solve!"><code>solve!</code></a>).</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/core.jl#L227-L233' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/core.jl#L227-L233' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.PhaseTangentDynamics' href='#LyapunovExponents.PhaseTangentDynamics'>#</a>
 <strong><code>LyapunovExponents.PhaseTangentDynamics</code></strong> &mdash; <em>Type</em>.</p>
 <p>Auto-generated dynamics for solving phase and tangent dynamics together.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/coevolve.jl#L1-L3' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/coevolve.jl#L1-L3' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.CLVSolver' href='#LyapunovExponents.CLVSolver'>#</a>
 <strong><code>LyapunovExponents.CLVSolver</code></strong> &mdash; <em>Type</em>.</p>
 <pre><code>CLVSolver(solver::LESolver, num_attr::Int)
@@ -211,7 +211,7 @@ stephist(angles, bins=1000, normalize=true,
 <li>Ginelli, F., Poggi, P., Turchi, A., Chaté, H., Livi, R., &amp; Politi, A. (2007). <em>Characterizing Dynamics with Covariant Lyapunov Vectors.</em> Physical Review Letters, 99(13), 1–4. <a href="http://doi.org/10.1103/PhysRevLett.99.130601">http://doi.org/10.1103/PhysRevLett.99.130601</a></li>
 <li>Ginelli, F., Chaté, H., Livi, R., &amp; Politi, A. (2013). <em>Covariant Lyapunov vectors.</em> Journal of Physics A: Mathematical and Theoretical, 46(25), 254005. <a href="http://doi.org/10.1088/1751-8113/46/25/254005">http://doi.org/10.1088/1751-8113/46/25/254005</a></li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d7854368c27fad8e34cf9fe4bcc0a9dada7ae31c/src/clv.jl#L15-L56' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/df9584bc915bc6674ca27b391a7fc5c40350b858/src/clv.jl#L15-L56' class='documenter-source'>source</a><br></p>
             
           
         </div>
@@ -300,7 +300,7 @@ stephist(angles, bins=1000, normalize=true,
 
   <!--
   MkDocs version      : 0.17.2
-  Docs Build Date UTC : 2018-02-01 12:13:02
+  Docs Build Date UTC : 2018-02-02 07:03:12
   -->
 </body>
 </html>

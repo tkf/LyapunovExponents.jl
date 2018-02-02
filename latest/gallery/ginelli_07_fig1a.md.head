@@ -1,0 +1,16 @@
+<!-- -*- mode: markdown -*- -->
+# Ginelli et al. (2007), Figure 1a
+
+![Ginelli 07 Fig 1a reproduced](ginelli_07_fig1a.png "Ginelli 07 Fig 1a reproduced")
+
+This is an attempt to reproduce Figure 1a of [Ginelli et al. (2007)].
+The following code uses [`LyapunovExponents.CLVSolver`](@ref) to
+compute the covariant Lyapunov vectors (CLVs) of the two-dimensional
+maps, the Hénon map ([`LyapunovExponents.henon_map`](@ref)) and
+the Lozi map ([`LyapunovExponents.lozi_map`](@ref)).
+
+The probability density function of the angles between the two CLVs
+are plotted.  See [Ginelli et al. (2007)] for how the shape of this
+probability density function is related to hyperbolicity.
+
+[Ginelli et al. (2007)]: http://doi.org/10.1103/PhysRevLett.99.130601
