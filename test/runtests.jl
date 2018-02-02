@@ -3,6 +3,9 @@ module LyapunovExponentsTests
 using LyapunovExponents
 using Base.Test
 
+using Plots
+unicodeplots()  # to make tests faster
+
 tic()
 include("test_utils.jl")
 include("test_online_stats.jl")
