@@ -19,6 +19,7 @@ mutating function [`solve!`](@ref).
 The methods connecting the three principal types (Problem, Relaxer and
 Solver) for the LE calculation are shown in the following diagram:
 
+<code class=LE-diagram>  \\\n
 ┌─ Problem ([`AbstractLEProblem`](@ref))                               \\\n
 │     │                                                                \\\n
 │     │ [`get_relaxer`](@ref), [`relaxed`](@ref)                       \\\n
@@ -31,7 +32,8 @@ Solver) for the LE calculation are shown in the following diagram:
 │     │                                                                \\\n
 │     ▼                                                                \\\n
 └▶ Solver ([`AbstractLESolver`](@ref)) ┄┄ ⟲ [`solve!`](@ref),
-                                                 [`step!`](@ref)
+                                                 [`step!`](@ref)         \\\n
+</code>
 
 """
 abstract type AbstractLESolver{Intr} end
