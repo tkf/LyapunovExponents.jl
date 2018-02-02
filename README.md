@@ -21,7 +21,7 @@ Implemented:
 
 * Lyapunov exponents calculation based on QR decomposition.
 * Maximum Lyapunov exponent calculation.
-* Covariant Lyapunov vectors calculation.
+* [Covariant Lyapunov vectors calculation][CLV example].
   (Not well tested!)
 * Tangent space evolution based on the automatic differentiation tool
   [ForwardDiff.jl].
@@ -30,7 +30,7 @@ Implemented:
 * Continuous dynamical systems support based on [DifferentialEquations.jl].
   This means that [the rich set of ODE solvers](http://docs.juliadiffeq.org/latest/solvers/ode_solve.html)
   can be used.
-* [Various examples of continuous and discrete dynamical systems.](https://tkf.github.io/LyapunovExponents.jl/latest/examples/)
+* [Various examples of continuous and discrete dynamical systems.][Examples]
 * [OnlineStats.jl] support: on-the-fly calculation of Lyapunov
   exponents, their variance, covariance, and any other statics it
   supports.
@@ -42,6 +42,8 @@ Wanted list:
 * Stochastic dynamical systems.
 * Poincaré map.
 
+[Examples]: https://tkf.github.io/LyapunovExponents.jl/latest/examples/
+[CLV example]: https://tkf.github.io/LyapunovExponents.jl/latest/gallery/ginelli_07_fig1a/
 [DifferentialEquations.jl]: http://juliadiffeq.org
 [ForwardDiff.jl]: http://www.juliadiff.org/ForwardDiff.jl
 [ChaosTools.jl]: https://juliadynamics.github.io/DynamicalSystems.jl/latest/chaos/overview/
