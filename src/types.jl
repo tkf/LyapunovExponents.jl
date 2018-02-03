@@ -26,7 +26,7 @@ Solver) for the LE calculation are shown in the following diagram:
 │     ▼                                                                \\\n
 │   Relaxer ([`AbstractRelaxer`](@ref)) ┄┄ ⟲ [`relax!`](@ref)        \\\n
 │     │                                                                \\\n
-│     │ [`LESolver`](@ref)                                             \\\n
+│     │ [`init`](@ref)                                                 \\\n
 │     │                                                                \\\n
 │┄┄┄┄┄┄┄ [`init`](@ref), [`solve`](@ref)                         \\\n
 │     │                                                                \\\n

@@ -98,12 +98,14 @@ end
 
 """
     init(prob::AbstractLEProblem; <keyword arguments>) :: AbstractLESolver
+    init(relaxer::AbstractRelaxer; <keyword arguments>) :: AbstractLESolver
 
 Run phase space simulation to throw away the transient and then
 construct a LE solver.
 """
 init(prob::AbstractLEProblem; progress = -1, kwargs...) =
     get_solver(relaxed(prob; progress = progress); kwargs...)
+init(relaxer::AbstractRelaxer; kwargs...) = get_solver(relaxer; kwargs...)
 
 @inline function keepgoing!(solver::AbstractLESolver)
     u0 = current_state(solver)
