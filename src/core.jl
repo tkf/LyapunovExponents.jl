@@ -79,10 +79,11 @@ function get_solver(prob::LEProblem{DEP},
         phase_prob.tspan,
         phase_prob.p,
     )
-    get_solver(tangent_prob; kwargs...)
+    get_solver(tangent_prob, prob.num_attr; kwargs...)
 end
 
-function get_solver(tangent_prob::DEProblem; solver_type=nothing, kwargs...)
+function get_solver(tangent_prob::DEProblem, num_attr::Int;
+                    solver_type=nothing, kwargs...)
     if solver_type === nothing
         @assert ndims(tangent_prob.u0) == 2
         dim_lyap = size(tangent_prob.u0)[2] - 1
@@ -93,7 +94,8 @@ function get_solver(tangent_prob::DEProblem; solver_type=nothing, kwargs...)
         end
     end
 
-    return solver_type(get_integrator(tangent_prob); kwargs...)
+    return solver_type(get_integrator(tangent_prob), num_attr;
+                       kwargs...)
 end
 
 """
@@ -210,12 +212,12 @@ function post_evolve!(solver::MLESolver)
 end
 
 """
-    solve!(solver::AbstractLESolver, num_attr; <keyword arguments>)
+    solve!(solver::AbstractLESolver; <keyword arguments>)
 
-Do `num_attr` times of orthonormalization `step!(solver)`.
+Do `solver.num_attr` times of orthonormalization `step!(solver)`.
 """
-solve!(solver::AbstractLESolver, num_attr; kwargs...) =
-    forward!(solver, num_attr; kwargs...)
+solve!(solver::AbstractLESolver; kwargs...) =
+    forward!(solver, solver.num_attr; kwargs...)
 
 function forward!(solver::AbstractLESolver, num_attr; progress=-1)
     @showprogress_if(
@@ -227,23 +229,21 @@ function forward!(solver::AbstractLESolver, num_attr; progress=-1)
 end
 
 """
-    solve(prob::AbstractLEProblem, num_attr; <keyword arguments>)
+    solve(prob::AbstractLEProblem; <keyword arguments>)
         :: AbstractLESolver
 
 Initialize the solver ([`init`](@ref)) and then go through the LE
 calculation ([`solve!`](@ref)).
 """
-function solve(prob::AbstractLEProblem, num_attr;
+function solve(prob::AbstractLEProblem;
                progress = -1,
                record::Bool = false,
                kwargs...)
     solver = init(prob; progress=progress, kwargs...)
     if record
-        solver = LERecordingSolver(solver, num_attr)
-        solve!(solver; progress=progress)
-    else
-        solve!(solver, num_attr; progress=progress)
+        solver = LERecordingSolver(solver)
     end
+    solve!(solver; progress=progress)
     return solver
 end
 

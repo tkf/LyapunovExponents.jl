@@ -13,7 +13,7 @@ make_UTM(args...) = UpperTriangular(Matrix{Float64}(args...))
 
 
 """
-    CLVSolver(solver::LESolver, num_attr::Int)
+    CLVSolver(solver::LESolver)
     CLVSolver(demo::LEDemo)
 
 A covariant Lyapunov vector (CLV) calculator.
@@ -62,8 +62,8 @@ mutable struct CLVSolver{Intr, V, M} <: AbstractLESolver{Intr}
     num_back::Int
 
     function CLVSolver(solver::LESolver{Intr, V, M},
-                       num_attr,
                        ) where {Intr, V, M}
+        num_attr = solver.num_attr
         dim_phase, dim_lyap = size(solver.tangent_state)
         @assert dim_phase == dim_lyap
         dims = (dim_phase, dim_phase)

@@ -30,6 +30,7 @@ function LEProblem(example::LEExample{P}; kwargs...) where {P <: LEProblem}
       example.u0,
       example.tspan,
       example.param;
+      num_attr = example.num_attr,
       tangent_dynamics! = example.tangent_dynamics!,
       kwargs...)
 end
@@ -38,7 +39,7 @@ dimension(example::LEExample) = length(example.u0)
 
 function solve(example::LEExample;
                dim_lyap=dimension(example), kwargs...)
-    solve(LEProblem(example; dim_lyap=dim_lyap), example.num_attr;
+    solve(LEProblem(example; dim_lyap=dim_lyap);
           kwargs...)
 end
 
@@ -76,14 +77,14 @@ Initialize `demo.solver` from `demo.prob` and run
 `solve!(demo.solver)` to calculate the Lyapunov exponents.
 """
 function solve!(demo::LEDemo; progress = -1, record = true, kwargs...)
-    demo.solver = solve(demo.prob, demo.example.num_attr;
+    demo.solver = solve(demo.prob;
                         progress = progress,
                         record = record,
                         kwargs...)
     return demo
 end
 
-CLVSolver(demo::LEDemo) = CLVSolver(init(demo.prob), demo.example.num_attr)
+CLVSolver(demo::LEDemo) = CLVSolver(init(demo.prob))
 
 function Base.show(io::IO, demo::LEDemo)
     print(io, "Demo: ", demo.example.name)

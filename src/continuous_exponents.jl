@@ -11,7 +11,8 @@ end
 const ContinuousLEProblem = LEProblem{ODEProblem}
 
 """
-    ContinuousLEProblem(phase_dynamics!, u0, tspan [, p]; <keyword arguments>)
+    ContinuousLEProblem(phase_dynamics!, u0, tspan [, p [, num_attr]];
+                        <keyword arguments>)
 
 Construct an `ODEProblem` and use it for `ContinuousLEProblem`.  If
 `tspan` is a `Real` instead of a `Tuple`, then `(0, tspan)` is passed
@@ -19,8 +20,10 @@ as the `tspan` argument of `ODEProblem`.
 
 For the list of usable keyword arguments, see [`LEProblem`](@ref).
 """
-ContinuousLEProblem(phase_dynamics!, u0, tspan::Tuple, p=nothing; kwargs...) =
-    ContinuousLEProblem(ODEProblem(phase_dynamics!, u0, tspan, p); kwargs...)
+ContinuousLEProblem(phase_dynamics!, u0, tspan::Tuple, p=nothing,
+                    args...; kwargs...) =
+    ContinuousLEProblem(ODEProblem(phase_dynamics!, u0, tspan, p), args...;
+                        kwargs...)
 
 ContinuousLEProblem(phase_dynamics!, u0, tchunk::Real, args...; kwargs...) =
     ContinuousLEProblem(phase_dynamics!, u0, (zero(tchunk), tchunk), args...;

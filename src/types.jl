@@ -58,12 +58,13 @@ abstract type AbstractLESolver{Intr} end
 struct LEProblem{DEP} <: AbstractLEProblem
     phase_prob::DEP
     num_tran
+    num_attr
     dim_lyap
     Q0
     tangent_dynamics!
 
     function LEProblem{DEP}(
-            phase_prob::DEP;
+        phase_prob::DEP, num_attr::Int;
             num_tran=1,
             dim_lyap=dimension(phase_prob),
             Q0 = default_Q0(phase_prob, dimension(phase_prob), dim_lyap),
@@ -72,14 +73,21 @@ struct LEProblem{DEP} <: AbstractLEProblem
         if ! is_semi_unitary(Q0)
             error("Columns in Q0 are not orthonormal.")
         end
-        new{DEP}(phase_prob, num_tran, dim_lyap, Q0, tangent_dynamics!)
+        new{DEP}(phase_prob, num_tran, num_attr,
+                 dim_lyap, Q0, tangent_dynamics!)
     end
 end
 
-LEProblem(phase_prob::DEP; kwargs...) where {DEP <: ODEProblem} =
-    LEProblem{ODEProblem}(phase_prob; kwargs...)
-LEProblem(phase_prob::DEP; kwargs...) where {DEP <:DiscreteProblem} =
-    LEProblem{DiscreteProblem}(phase_prob; kwargs...)
+LEProblem(phase_prob::DEP, num_attr; kwargs...) where {DEP <: ODEProblem} =
+    LEProblem{ODEProblem}(phase_prob, num_attr; kwargs...)
+LEProblem(phase_prob::DEP, num_attr; kwargs...) where {DEP <:DiscreteProblem} =
+    LEProblem{DiscreteProblem}(phase_prob, num_attr; kwargs...)
+
+LEProblem{DEP}(phase_prob::DEP;
+               num_attr::Int = error("Positional or keyword argument",
+                                     " `num_attr` is required."),
+               kwargs...) where {DEP} =
+    LEProblem{DEP}(phase_prob, num_attr; kwargs...)
 
 struct Relaxer{LEP} <: AbstractRelaxer
     prob::LEP
@@ -99,6 +107,7 @@ mutable struct LESolver{Intr,
                         M <: AbstractMatrix,
                         } <: AbstractLESolver{Intr}
     integrator::Intr
+    num_attr::Int
     series::OnlineStats.Series
     main_stat::OnlineStatsBase.OnlineStat
     inst_exponents::V
@@ -111,7 +120,7 @@ mutable struct LESolver{Intr,
     # TODO: Make sure that they result in concrete types
 
     function LESolver(
-            integrator::Intr;
+            integrator::Intr, num_attr::Int;
             phase_state::V = init_phase_state(integrator),
             tangent_state::M = init_tangent_state(integrator),
             main_stat = VecMean,
@@ -135,6 +144,7 @@ mutable struct LESolver{Intr,
         sign_R = Array{Bool}(dim_lyap)
         new{Intr, V, M}(
             integrator,
+            num_attr,
             series,
             main_stat,
             inst_exponents,
@@ -160,6 +170,7 @@ mutable struct MLESolver{Intr,
                          M <: AbstractMatrix,
                          } <: AbstractLESolver{Intr}
     integrator::Intr
+    num_attr::Int
     exponent::T
     inst_exponent::T
     num_orth::Int
@@ -168,7 +179,7 @@ mutable struct MLESolver{Intr,
     # TODO: Make sure that they result in concrete types
 
     function MLESolver(
-            integrator::Intr;
+            integrator::Intr, num_attr::Int;
             phase_state::V = init_phase_state(integrator),
             tangent_state::M = init_tangent_state(integrator),
             ) where {Intr,
@@ -186,6 +197,7 @@ mutable struct MLESolver{Intr,
         exponent = T(0)
         new{Intr, T, V, M}(
             integrator,
+            num_attr,
             exponent,
             exponent,
             num_orth,

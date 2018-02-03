@@ -4,8 +4,8 @@ mutable struct LERecordingSolver{Intr} <: AbstractLESolver{Intr}
     i_hist
 end
 
-function LERecordingSolver(solver::AbstractLESolver{Intr},
-                           num_attr::Integer) where {Intr}
+function LERecordingSolver(solver::AbstractLESolver{Intr}) where {Intr}
+    num_attr = solver.num_attr
     exps = ftle(solver)
     dim_lyap = length(exps)
     ftle_history = similar(exps, (dim_lyap, num_attr))
@@ -25,7 +25,7 @@ end
 function solve!(solver::LERecordingSolver; kwargs...)
     _, num_attr = size(solver.ftle_history)
     solver.i_hist = 0
-    solve!(solver, num_attr; kwargs...)
+    forward!(solver, num_attr; kwargs...)
 end
 
 function exponents_history(solver::LERecordingSolver)

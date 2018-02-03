@@ -28,14 +28,17 @@ end
 const DiscreteLEProblem = LEProblem{DiscreteProblem}
 
 """
-    DiscreteLEProblem(phase_dynamics!, u0, tspan [, p]; <keyword arguments>)
+    DiscreteLEProblem(phase_dynamics!, u0, tspan [, p [, num_attr]];
+                      <keyword arguments>)
 
 Construct a `DiscretProblem` and use it for `DiscreteLEProblem`.
 
 For the list of usable keyword arguments, see [`LEProblem`](@ref).
 """
-DiscreteLEProblem(phase_dynamics!, u0, tspan, p=nothing; kwargs...) =
-    DiscreteLEProblem(DiscreteProblem(phase_dynamics!, u0, tspan, p); kwargs...)
+DiscreteLEProblem(phase_dynamics!, u0, tspan, p=nothing,
+                  args...; kwargs...) =
+    DiscreteLEProblem(DiscreteProblem(phase_dynamics!, u0, tspan, p),
+                      args...; kwargs...)
 
 const DiscreteRelaxer = Relaxer{<: DiscreteLEProblem}
 

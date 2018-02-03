@@ -119,7 +119,7 @@ function test_tangent_dynamics_against_autodiff(
         dim_lyap = dimension(prob.phase_prob),
         kwargs...)
     @assert prob.tangent_dynamics! != nothing
-    prob_ad = LEProblem(prob.phase_prob)
+    prob_ad = LEProblem(prob.phase_prob, prob.num_attr)
     u0 = phase_tangent_state(prob)
     test_same_dynamics(de_prob(get_solver(prob, u0)),
                        de_prob(get_solver(prob_ad, u0)),
