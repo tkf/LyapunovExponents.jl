@@ -12,9 +12,14 @@ function list_scripts(dir, ext=".jl")
     return paths
 end
 
-for path in list_scripts("src/gallery")
+for path in list_scripts(joinpath(dirname(@__FILE__), "src/gallery"))
+    pngpath = path[1:end-length(".jl")] * ".png"
+    if mtime(path) < mtime(pngpath)
+        println("Skip running: $path")
+        continue
+    end
     println("Plotting: $path")
     plt = @time include(path)
     plt = plot(plt, dpi=30)  # plot!(plt, dpi=30) didn't work
-    savefig(plt, path[1:end-length(".jl")] * ".png")
+    savefig(plt, pngpath)
 end
