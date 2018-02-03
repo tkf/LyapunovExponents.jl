@@ -83,6 +83,7 @@ function get_solver(prob::LEProblem{DEP},
 end
 
 function get_solver(tangent_prob::DEProblem, num_attr::Int;
+                    record::Bool = false,
                     solver_type=nothing, kwargs...)
     if solver_type === nothing
         @assert ndims(tangent_prob.u0) == 2
@@ -94,8 +95,11 @@ function get_solver(tangent_prob::DEProblem, num_attr::Int;
         end
     end
 
-    return solver_type(get_integrator(tangent_prob), num_attr;
-                       kwargs...)
+    solver = solver_type(get_integrator(tangent_prob), num_attr; kwargs...)
+    if record
+        solver = LERecordingSolver(solver)
+    end
+    return solver
 end
 
 """
@@ -237,12 +241,8 @@ calculation ([`solve!`](@ref)).
 """
 function solve(prob::AbstractLEProblem;
                progress = -1,
-               record::Bool = false,
                kwargs...)
     solver = init(prob; progress=progress, kwargs...)
-    if record
-        solver = LERecordingSolver(solver)
-    end
     solve!(solver; progress=progress)
     return solver
 end
