@@ -37,8 +37,8 @@ continuous-time recurrent neural networks by Beer (1995).
 function beer_95(;
         u0=[0.1, 0.1, 0.1],
         tspan=10.0,
-        num_attr=4000,
-        atol=0, rtol=1e-1,
+        num_attr=400,
+        atol=0, rtol=5e-1,
         kwargs...)
     param = ContinuousRNN(
         # w
