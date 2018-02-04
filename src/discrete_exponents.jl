@@ -37,12 +37,19 @@ This is a short-hand notation for:
 LEProblem(DiscreteProblem(...) [, num_attr]; ...)
 ```
 
+If `tspan` is a `Integer` instead of a `Tuple`, then `(1, tspan)` is
+passed as the `tspan` argument of `DiscreteProblem`.
+
 For the list of usable keyword arguments, see [`LEProblem`](@ref).
 """
-DiscreteLEProblem(phase_dynamics!, u0, tspan, p=nothing,
+DiscreteLEProblem(phase_dynamics!, u0, tspan::Tuple, p=nothing,
                   args...; kwargs...) =
     DiscreteLEProblem(DiscreteProblem(phase_dynamics!, u0, tspan, p),
                       args...; kwargs...)
+
+DiscreteLEProblem(phase_dynamics!, u0, tchunk::Integer, args...; kwargs...) =
+    DiscreteLEProblem(phase_dynamics!, u0, (one(tchunk), tchunk), args...;
+                      kwargs...)
 
 const DiscreteRelaxer = Relaxer{<: DiscreteLEProblem}
 
