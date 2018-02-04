@@ -17,7 +17,7 @@ function keepgoing!(diter::DiscreteIterator, u0=diter.u0)
     f = diter.prob.f
     p = diter.prob.p
     u1 = diter.u1
-    for t in tmin:tmax
+    for t in tmin:tmax-1
         f(u1, u0, p, t)
         u0, u1 = u1, u0
     end
@@ -37,7 +37,7 @@ This is a short-hand notation for:
 LEProblem(DiscreteProblem(...) [, num_attr]; ...)
 ```
 
-If `tspan` is a `Integer` instead of a `Tuple`, then `(1, tspan)` is
+If `tspan` is a `Integer` instead of a `Tuple`, then `(0, tspan)` is
 passed as the `tspan` argument of `DiscreteProblem`.
 
 For the list of usable keyword arguments, see [`LEProblem`](@ref).
@@ -48,7 +48,7 @@ DiscreteLEProblem(phase_dynamics!, u0, tspan::Tuple, p=nothing,
                       args...; kwargs...)
 
 DiscreteLEProblem(phase_dynamics!, u0, tchunk::Integer, args...; kwargs...) =
-    DiscreteLEProblem(phase_dynamics!, u0, (one(tchunk), tchunk), args...;
+    DiscreteLEProblem(phase_dynamics!, u0, (zero(tchunk), tchunk), args...;
                       kwargs...)
 
 const DiscreteRelaxer = Relaxer{<: DiscreteLEProblem}
@@ -67,5 +67,5 @@ end
 
 function t_chunk(solver::DiscreteLESolver)
     tspan = solver.integrator.prob.tspan
-    tspan[2] - tspan[1] + 1
+    return tspan[2] - tspan[1]
 end
