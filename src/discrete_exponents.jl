@@ -24,6 +24,10 @@ function keepgoing!(diter::DiscreteIterator, u0=diter.u0)
     diter.u0 = u0
     diter.u1 = u1
 end
+# See:
+# - [[../../OrdinaryDiffEq/src/perform_step/fixed_timestep_perform_step.jl::perform_step!.*DiscreteConstantCache]]
+# - [[../../OrdinaryDiffEq/src/solve.jl::solve!.*::ODEIntegrator]]
+# - http://devdocs.juliadiffeq.org/latest/contributing/diffeq_internals.html
 
 const DiscreteLEProblem = LEProblem{DiscreteProblem}
 

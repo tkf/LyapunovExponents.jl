@@ -7,6 +7,9 @@ function get_integrator(prob::ODEProblem; save_everystep=false, kwargs...)
                                           kwargs...)
     init(prob, alg; kwargs..., extra_kwargs...)
 end
+# See:
+# - [[../../OrdinaryDiffEq/src/solve.jl::function init\b]]
+# - http://docs.juliadiffeq.org/latest/basics/common_solver_opts.html
 
 const ContinuousLEProblem = LEProblem{ODEProblem}
 
