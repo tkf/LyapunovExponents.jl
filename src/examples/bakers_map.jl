@@ -9,7 +9,7 @@ Baker's map
 """
 function bakers_map(;
         u0=[0.6, 0.4],
-        tspan=(0, 10),
+        tspan=10,
         num_attr=10000,
         atol=0, rtol=1e-5,
         kwargs...)

@@ -22,7 +22,7 @@ Return a [`LEDemo`](@ref) for the Arnold's cat map
 function arnold_cat_map(;
         u0::AbstractVector = [0.1, 0.1],
         M::AbstractMatrix = [2 1; 1 1],
-        tspan=(0, 10),
+        tspan=10,
         num_attr=10000,
         atol=0, rtol=1e-4,
         kwargs...)

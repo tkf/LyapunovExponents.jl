@@ -26,7 +26,7 @@ dissipative chaotic flow.
 """
 function linz_sprott_99(;
         u0=[0.1, 0.1, 0.1],
-        tspan=(0.0, 1.0),
+        tspan=1.0,
         num_attr=10000,
         atol=1e-5, rtol=1e-2,
         kwargs...)

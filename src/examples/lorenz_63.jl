@@ -39,7 +39,7 @@ Return a [`LEDemo`](@ref) for the Lorenz system.
 """
 function lorenz_63(;
         u0=[0.1, 0.1, 0.1],
-        tspan=(0.0, 1.0),
+        tspan=1.0,
         num_attr=4000,
         atol=0, rtol=1e-2,
         kwargs...)

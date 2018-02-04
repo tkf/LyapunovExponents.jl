@@ -23,7 +23,7 @@ Return a [`LEDemo`](@ref) for the Chirikov standard map.
 """
 function standard_map(;
         u0=[2.68156, 2.31167],
-        tspan=(0, 10),
+        tspan=10,
         num_attr=10000,
         atol=0, rtol=0.2,
         kwargs...)

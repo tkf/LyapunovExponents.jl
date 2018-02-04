@@ -27,7 +27,7 @@ Return a [`LEDemo`](@ref) for the Lozi map.
 """
 function lozi_map(;
         u0=[0.1, 0.1],
-        tspan=(0, 10),
+        tspan=10,
         num_attr=10000,
         atol=0, rtol=0.2,
         kwargs...)

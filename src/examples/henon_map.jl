@@ -31,7 +31,7 @@ Return a [`LEDemo`](@ref) for the Hénon map.
 """
 function henon_map(;
         u0=[0.1, 0.1],
-        tspan=(0, 10),
+        tspan=10,
         num_attr=10000,
         atol=0, rtol=1e-2,
         kwargs...)
