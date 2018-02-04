@@ -1,5 +1,6 @@
 using Base.Test
 using LyapunovExponents
+using LyapunovExponents.Test: @test_nothrow
 
 @testset "User interface" begin
     args = [
@@ -9,14 +10,8 @@ using LyapunovExponents
         nothing,            # p
     ]
     for lep in [DiscreteLEProblem, ContinuousLEProblem]
-        @test begin
-            lep(args...; num_attr=1)
-            true
-        end
-        @test begin
-            lep(args..., 1)
-            true
-        end
+        @test_nothrow lep(args...; num_attr=1)
+        @test_nothrow lep(args..., 1)
         try
             lep(args...)
             println("Calling $lep w/o num_attr didn't throw.")

@@ -7,6 +7,16 @@ using LyapunovExponents: LEProblem, dimension, phase_tangent_state,
     get_solver, get_integrator, de_prob, keepgoing!, current_state
 
 
+macro test_nothrow(ex)
+    quote
+        @test begin
+            $(esc(ex))
+            true
+        end
+    end
+end
+
+
 macro display(ex)
     quote
         println($("$ex ="))
