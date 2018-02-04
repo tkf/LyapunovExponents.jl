@@ -24,7 +24,7 @@ Return a [`LEDemo`](@ref) for the Chirikov standard map.
 function standard_map(;
         u0=[2.68156, 2.31167],
         tspan=10,
-        num_attr=10000,
+        num_attr=100000,
         atol=0, rtol=0.2,
         kwargs...)
     # TODO: Improve the accuracy. Check the paper.  It looks like

@@ -26,9 +26,8 @@ end
     for dim_lyap in 1:dimension(ex)
         solver = solve(ex; dim_lyap=dim_lyap)
         @show dim = min(dim_lyap, length(ex.known_exponents))
-        if dim_lyap != length(ex.known_exponents) && (
+        if dim_lyap != length(ex.known_exponents) &&
                 contains(ex.name, "Linz & Sprott (1999)") ||
-                contains(ex.name, "standard map")) ||
                 dim_lyap == 1 && contains(ex.name, "van der Pol")
             # TODO: check why they don't work
             @test_skip isapprox((@show ex.known_exponents[1:dim]),
