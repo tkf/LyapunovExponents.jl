@@ -39,12 +39,18 @@ Solver) for the LE calculation are shown in the following diagram:
 abstract type AbstractLESolver{Intr} end
 
 """
-    LEProblem(phase_prob;  <keyword arguments>)
+    LEProblem(phase_prob, num_attr; <keyword arguments>)
+    LEProblem(phase_prob; num_attr, <keyword arguments>)
 
 # Arguments
 - `phase_prob`: Phase space dynamics represented in the form of
   `ODEProblem` or `DiscreteProblem` from DifferentialEquations.jl.
   `phase_prob.tspan` represents the inter-orthonormalization-interval.
+- `num_attr::Integer`: Number of orthonormalizations for calculating
+  Lyapunov Exponents.  The simulated time of the system for this
+  calculation is given by `num_attr * (tspan[1] - tspan[0])`.
+  This argument is always required and can be given as positional or
+  keyword argument.
 - `num_tran::Integer`: Number of iterations to through away to get rid
   of the transient dynamics.
 - `dim_lyap::Integer`: Number of Lyapunov exponents to be calculated.

@@ -31,7 +31,11 @@ const DiscreteLEProblem = LEProblem{DiscreteProblem}
     DiscreteLEProblem(phase_dynamics!, u0, tspan [, p [, num_attr]];
                       <keyword arguments>)
 
-Construct a `DiscretProblem` and use it for `DiscreteLEProblem`.
+This is a short-hand notation for:
+
+```julia
+LEProblem(DiscreteProblem(...) [, num_attr]; ...)
+```
 
 For the list of usable keyword arguments, see [`LEProblem`](@ref).
 """

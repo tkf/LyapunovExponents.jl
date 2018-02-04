@@ -14,9 +14,14 @@ const ContinuousLEProblem = LEProblem{ODEProblem}
     ContinuousLEProblem(phase_dynamics!, u0, tspan [, p [, num_attr]];
                         <keyword arguments>)
 
-Construct an `ODEProblem` and use it for `ContinuousLEProblem`.  If
-`tspan` is a `Real` instead of a `Tuple`, then `(0, tspan)` is passed
-as the `tspan` argument of `ODEProblem`.
+This is a short-hand notation for:
+
+```julia
+LEProblem(ODEProblem(...) [, num_attr]; ...)
+```
+
+If `tspan` is a `Real` instead of a `Tuple`, then `(0, tspan)` is
+passed as the `tspan` argument of `ODEProblem`.
 
 For the list of usable keyword arguments, see [`LEProblem`](@ref).
 """
