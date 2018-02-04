@@ -16,6 +16,7 @@ include("clv.jl")
 include("interface.jl")
 include("examples/examples.jl")
 include("test.jl")
+include("diffeq_hack.jl")
 
 @require RecipesBase include("plotting.jl")
 
