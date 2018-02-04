@@ -46,8 +46,10 @@ abstract type AbstractLESolver{Intr} end
 - `phase_prob`: Phase space dynamics represented in the form of
   `ODEProblem` or `DiscreteProblem` from DifferentialEquations.jl.
   `phase_prob.tspan` represents the inter-orthonormalization-interval.
-- `num_attr::Integer`: Number of orthonormalizations for calculating
-  Lyapunov Exponents.  The simulated time of the system for this
+- `num_attr::Integer`: Number of orthonormalizations (or some kind of
+  "renormalisation") for calculating Lyapunov Exponents.  In general,
+  this is the number of points (considered to be) on the attractor
+  used for the solver.  The simulated time of the system for this
   calculation is given by `num_attr * (tspan[1] - tspan[0])`.
   This argument is always required and can be given as positional or
   keyword argument.
