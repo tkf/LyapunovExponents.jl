@@ -21,6 +21,7 @@ Ginelli et al. (2007, 2013).
 
 ### Examples (in the online documentation)
 - [Ginelli et al. (2007), Figure 1a](@ref)
+- [Covariant Lyapunov vectors on the Lorenz attractor](@ref)
 
 See: <https://tkf.github.io/LyapunovExponents.jl/latest/gallery/>
 

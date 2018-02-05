@@ -30,6 +30,7 @@ pages:
   - Gallery:
       - gallery/index.md
       - gallery/ginelli_07_fig1a.md
+      - gallery/Lorenz_CLV.md
       - gallery/examples/arnold_cat_map.md
       - gallery/examples/bakers_map.md
       - gallery/examples/beer_95.md
