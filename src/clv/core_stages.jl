@@ -25,15 +25,19 @@ mutable struct ForwardDynamics{T <: LESolver} <: AbstractComputationStage
 end
 
 ForwardDynamics(frx::ForwardRelaxer, prob::CLVProblem) =
-    ForwardDynamics(frx.le_solver,
-                    prob.num_clv + prob.num_backward_tran)
+    ForwardDynamics(frx.le_solver, prob::CLVProblem)
+ForwardDynamics(le_solver::LESolver, prob::CLVProblem) =
+    ForwardDynamics(le_solver,
+                    allocate_forward_history(le_solver, prob, UTM, make_UTM),
+                    0)
 
-function ForwardDynamics(le_solver::LESolver, num::Int)
+function allocate_forward_history(le_solver::LESolver, prob::CLVProblem,
+                                  inner_type, args...)
+    num = prob.num_clv + prob.num_backward_tran
     dim_phase, dim_lyap = size(le_solver.tangent_state)
     @assert dim_phase == dim_lyap
     dims = (dim_phase, dim_phase)
-    R_history = allocate_array_of_arrays(num, dims, UTM, make_UTM)
-    return ForwardDynamics(le_solver, R_history, 0)
+    return allocate_array_of_arrays(num, dims, inner_type, args...)
 end
 
 stage_length(fitr::ForwardDynamics) = length(fitr.R_history)

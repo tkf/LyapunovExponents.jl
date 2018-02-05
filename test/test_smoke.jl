@@ -4,6 +4,8 @@ using OnlineStats: CovMatrix
 using LyapunovExponents
 using LyapunovExponents: VecVariance, CLVSolver
 using LyapunovExponents: CovariantVectors
+using LyapunovExponents.CovariantVectors: ForwardDynamicsWithGHistory,
+    BackwardDynamicsWithCHistory
 using LyapunovExponents.Test: @test_nothrow
 
 @time @testset "Smoke test CLV" begin
@@ -11,6 +13,20 @@ using LyapunovExponents.Test: @test_nothrow
         prob = LyapunovExponents.lorenz_63(num_attr=3).prob :: LEProblem
         solver = CovariantVectors.CLVSolver(prob)
         solve!(solver)
+    end
+    @testset "Recording CLV" begin
+        prob = LyapunovExponents.lorenz_63(num_attr=3).prob :: LEProblem
+        solver = CovariantVectors.CLVSolver(
+            prob;
+            forward_dynamics = ForwardDynamicsWithGHistory,
+            backward_dynamics = BackwardDynamicsWithCHistory,
+        )
+        solve!(solver)
+        @test isdefined(solver.sol, :G_history)
+        @test isdefined(solver.sol, :C_history)
+        num_fwd = solver.prob.num_clv + solver.prob.num_backward_tran
+        @test length(solver.sol.G_history) == num_fwd
+        @test length(solver.sol.C_history) == solver.prob.num_clv
     end
     @test_nothrow begin
         demo = LyapunovExponents.lorenz_63(num_attr=3)

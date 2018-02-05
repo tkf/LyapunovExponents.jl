@@ -21,18 +21,23 @@ mutable struct CLVSolver
     sol::CLVSolution
 end
 
-function CLVSolver(prob::CLVProblem)
+function CLVSolver(prob::CLVProblem;
+                   forward_relaxer::Type = ForwardRelaxer,
+                   forward_dynamics::Type = ForwardDynamics,
+                   backward_relaxer::Type = BackwardRelaxer,
+                   backward_dynamics::Type = BackwardDynamics,
+                   )
     stage_types = [
         # PhaseRelaxer,
-        ForwardRelaxer,
-        ForwardDynamics,
-        BackwardRelaxer,
-        BackwardDynamics,
+        forward_relaxer,
+        forward_dynamics,
+        backward_relaxer,
+        backward_dynamics,
     ]
     return CLVSolver(prob, stage_types)
 end
 
-function CLVSolver(prob::CLVProblem, stage_types)
+function CLVSolver(prob::CLVProblem, stage_types::AbstractVector)
     sol = CLVSolution()
     iter = StageIterator(
         prob,
@@ -43,19 +48,23 @@ function CLVSolver(prob::CLVProblem, stage_types)
     return CLVSolver(prob, iter, state, sol)
 end
 
-CLVSolver(prob::LEProblem) = CLVSolver(CLVProblem(prob))
+CLVSolver(prob::LEProblem; kwargs...) = CLVSolver(CLVProblem(prob); kwargs...)
+
+function record_finished!(solver::CLVSolver)
+    finish_if_not!(solver.state.stage)
+    record!(solver.sol, solver.state.stage)
+end
 
 function advance!(solver::CLVSolver)
     if done(solver.iter, solver.state)
         return nothing
     end
-    finish_if_not!(solver.state.stage)
-    record!(solver.sol, solver.state.stage)
+    record_finished!(solver)
     _, solver.state = next(solver.iter, solver.state)
     return solver.state.stage
 end
 
-function get_last_stage(solver::CLVSolver)
+function get_last_stage!(solver::CLVSolver)
     while advance!(solver) !== nothing end
     return solver.state.stage
 end
@@ -65,7 +74,8 @@ function solve!(solver::CLVSolver)
         error("No further computation is required.")
         # Should it be just a no-op?
     end
-    finish!(get_last_stage(solver))
+    get_last_stage!(solver)
+    record_finished!(solver)
     return solver
 end
 
@@ -91,6 +101,7 @@ init(prob::CLVProblem) = CLVSolver(prob)
 
 Solve the CLV problem up to the forward dynamics stage and return an
 iterator to step through the forward dynamics.
+See also: [`backward_dynamics!`](@ref), [`goto!`](@ref).
 """
 forward_dynamics!(solver::CLVSolver) = goto!(solver, ForwardDynamics)
 
@@ -99,6 +110,12 @@ forward_dynamics!(solver::CLVSolver) = goto!(solver, ForwardDynamics)
 
 Solve the CLV problem up to the (final) backward dynamics stage and
 return an iterator to step through the backward dynamics.
+See also [`forward_dynamics!`](@ref), [`goto!`](@ref).
+
+Note that finishing iteration of the returned iterator does not
+finalize all the solver stages (namely, recording to `solver.sol`, if
+non-default `backward_dynamics` is used).  In this case,
+`solve!(solver)` has to be called after the iteration.
 
 ### Example
 ```julia
