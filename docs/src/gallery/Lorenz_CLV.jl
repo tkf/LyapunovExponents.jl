@@ -1,9 +1,11 @@
 using LyapunovExponents
 
 num_rec = 10
-sampling_interval = 100
+sampling_interval = 2
 num_clv = num_rec * sampling_interval
 prob = CLVProblem(LyapunovExponents.lorenz_63().prob,
+                  num_forward_tran = 4000,
+                  num_backward_tran = 4000,
                   num_clv = num_clv)
 solver = init(prob)
 
@@ -38,21 +40,21 @@ using DifferentialEquations
 sol = solve(ODEProblem(
     prob.phase_prob.f,
     x_history[1],
-    (0.0, 50),
+    (0.0, prob.phase_prob.tspan[end] * num_clv * 3),
     prob.phase_prob.p
 ))
 
 using Plots
-plt = plot(sol, vars=(2, 3), linewidth=1, label="")
+plt = plot(sol, vars=(2, 3), linewidth=0.5, label="")
 vec_scale = 3
-for (x, V) in zip(x_history, CLV_history)
+for (n, (x, V)) in enumerate(zip(x_history, CLV_history))
     for i in 1:3
         plot!(plt,
               [x[2], x[2] + vec_scale * V[2, i]],
               [x[3], x[3] + vec_scale * V[3, i]],
               color = i + 1,
               arrow = 0.4,
-              label = "")
+              label = (n == 1 ? "CLV$i" : ""))
     end
 end
 plt
