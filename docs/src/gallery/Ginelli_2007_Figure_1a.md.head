@@ -1,7 +1,7 @@
 <!-- -*- mode: markdown -*- -->
 # Ginelli et al. (2007), Figure 1a
 
-![Ginelli 07 Fig 1a reproduced](ginelli_07_fig1a.png "Ginelli 07 Fig 1a reproduced")
+![Ginelli 07 Fig 1a reproduced](Ginelli_2007_Figure_1a.png "Ginelli 07 Fig 1a reproduced")
 
 This is an attempt to reproduce Figure 1a of [Ginelli et al. (2007)].
 The following code sets up two problems [`CLVProblem`](@ref) to

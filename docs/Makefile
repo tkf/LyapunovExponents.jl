@@ -1,6 +1,6 @@
 EXAMPLE_SCRIPTS = $(sort $(wildcard src/gallery/examples/*.jl))
 EXAMPLE_MD = $(patsubst %.jl, %.md, $(EXAMPLE_SCRIPTS))
-GALLERY_MD = src/gallery/ginelli_07_fig1a.md \
+GALLERY_MD = src/gallery/Ginelli_2007_Figure_1a.md \
 src/gallery/Lorenz_CLV.md
 
 .PHONY: gallery_md

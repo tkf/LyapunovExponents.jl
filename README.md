@@ -43,7 +43,7 @@ Wanted list:
 * Poincaré map.
 
 [Examples]: https://tkf.github.io/LyapunovExponents.jl/latest/examples/
-[CLV example]: https://tkf.github.io/LyapunovExponents.jl/latest/gallery/ginelli_07_fig1a/
+[CLV example]: https://tkf.github.io/LyapunovExponents.jl/latest/gallery/Ginelli_2007_Figure_1a/
 [DifferentialEquations.jl]: http://juliadiffeq.org
 [ForwardDiff.jl]: http://www.juliadiff.org/ForwardDiff.jl
 [ChaosTools.jl]: https://juliadynamics.github.io/DynamicalSystems.jl/latest/chaos/overview/
