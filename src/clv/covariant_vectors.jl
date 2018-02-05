@@ -22,6 +22,6 @@ include("accessors.jl")
 end
 
 using .CovariantVectors:
-    CLVProblem, CLV, backward_dynamics!, forward_dynamics!
+    CLVProblem, CLVSolver, CLV, backward_dynamics!, forward_dynamics!
 export
-    CLVProblem, CLV, backward_dynamics!, forward_dynamics!
+    CLVProblem, CLVSolver, CLV, backward_dynamics!, forward_dynamics!
