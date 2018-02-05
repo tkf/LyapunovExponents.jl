@@ -1,5 +1,35 @@
 using DiffEqBase: ODEProblem, DiscreteProblem
 
+"""
+    CLVProblem(phase_prob, num_clv; <keyword arguments>)
+    CLVProblem(le_prob::LEProblem; <keyword arguments>)
+
+Covariant Lyapunov vector (CLV) problem.  This is a struc that holds
+the dynamical system definition (`phase_prob` and `tangent_dynamics!`)
+and the configuration parameters for the algorithm (`num_clv`, etc.).
+
+The CLVs are calculated using the 'dynamical' algorithm proposed by
+Ginelli et al. (2007, 2013).
+
+### Arguments
+- `num_clv::Int`: Number of points at which CLV are sampled.
+  It is `0.8 * le_prob.num_attr` when constructed from [`LEProblem`](@ref).
+- `num_forward_tran::Int`, `num_backward_tran::Int`:
+  Forward and backward transient dynamics.  They are
+  `0.1 * le_prob.num_attr` when constructed from [`LEProblem`](@ref).
+- See [`LEProblem`](@ref) for `phase_prob`, `tangent_dynamics!` and `Q0`.
+
+### Reference
+
+* Ginelli, F., Poggi, P., Turchi, A., Chaté, H., Livi, R., & Politi, A. (2007).
+  *Characterizing Dynamics with Covariant Lyapunov Vectors.*
+  Physical Review Letters, 99(13), 1–4.
+  <http://doi.org/10.1103/PhysRevLett.99.130601>
+* Ginelli, F., Chaté, H., Livi, R., & Politi, A. (2013).
+  *Covariant Lyapunov vectors.*
+  Journal of Physics A: Mathematical and Theoretical, 46(25), 254005.
+  <http://doi.org/10.1088/1751-8113/46/25/254005>
+"""
 struct CLVProblem{DEP} <: AbstractStage
     phase_prob::DEP
     # num_phase_tran
