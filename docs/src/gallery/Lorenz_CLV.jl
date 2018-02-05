@@ -11,7 +11,7 @@ x_history = [Vector{Float64}(3) for _ in 1:num_rec]
 G_history = [Matrix{Float64}(3, 3) for _ in 1:num_rec]
 C_history = [Matrix{Float64}(3, 3) for _ in 1:num_rec]
 
-forward = @time goto!(solver, ForwardDynamics)
+forward = @time forward_dynamics!(solver)
 let j = 1
     @time for (i, _) in enumerate(forward)
         if i % sampling_interval == 1 && j <= num_rec
@@ -22,7 +22,7 @@ let j = 1
     end
 end
 
-backward = @time goto!(solver, BackwardDynamics)
+backward = @time backward_dynamics!(solver)
 let j = num_rec
     @time for (i, C) in enumerate(backward)
         if (num_clv - i) % sampling_interval == 1

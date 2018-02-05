@@ -85,3 +85,25 @@ function goto!(solver::CLVSolver, stage_type::Type)
 end
 
 init(prob::CLVProblem) = CLVSolver(prob)
+
+"""
+    forward_dynamics!(solver::CLVSolver) :: ForwardDynamics
+
+Solve the CLV problem up to the forward dynamics stage and return an
+iterator to step through the forward dynamics.
+"""
+forward_dynamics!(solver::CLVSolver) = goto!(solver, ForwardDynamics)
+
+"""
+    backward_dynamics!(solver::CLVSolver) :: BackwardDynamics
+
+Solve the CLV problem up to the (final) backward dynamics stage and
+return an iterator to step through the backward dynamics.
+
+### Example
+```julia
+angles = [acos(abs(dot(C[:, 1], C[:, 2]))) * 2 / π for C
+          in backward_dynamics!(solver)]
+```
+"""
+backward_dynamics!(solver::CLVSolver) = goto!(solver, BackwardDynamics)
