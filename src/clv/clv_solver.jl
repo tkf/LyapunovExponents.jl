@@ -88,6 +88,14 @@ function solve!(solver::CLVSolver)
 end
 
 
+"""
+    goto!(solver::CLVSolver, stage_type::Type{T}) :: T
+
+Solve the CLV problem up to the stage of type `stage_type` and return
+it.  Instead of directly calling `goto!(solver, ForwardDynamics)` and
+`goto!(solver, BackwardDynamics)`, use the convenience methods
+[`forward_dynamics!`](@ref) and [`backward_dynamics!`](@ref).
+"""
 function goto!(solver::CLVSolver, stage_type::Type)
     @assert is_reachable(solver.iter, stage_type, solver.state)
     if solver.state.stage isa stage_type
