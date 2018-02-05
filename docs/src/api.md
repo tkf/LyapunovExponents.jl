@@ -24,5 +24,13 @@ LyapunovExponents.step!
 LyapunovExponents.solve!
 LyapunovExponents.solve
 LyapunovExponents.PhaseTangentDynamics
-LyapunovExponents.CLVSolver
+```
+
+## API for CLV solver
+
+```@docs
+CLVProblem
+CLV
+forward_dynamics!
+backward_dynamics!
 ```

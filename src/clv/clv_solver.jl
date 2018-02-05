@@ -21,6 +21,14 @@ mutable struct CLVSolver
     sol::CLVSolution
 end
 
+"""
+    CLVSolver(prob::CLVProblem; <keyword arguments>)
+    CLVSolver(prob::LEProblem; <keyword arguments>)
+
+The preferred and equivalent method to get a solver for a `CLVProblem`
+is `init(prob::CLVProblem)`.  Note that `CLVSolver(prob::LEProblem)`
+is equivalent to `init(CLVProblem(prob))`.
+"""
 function CLVSolver(prob::CLVProblem;
                    forward_relaxer::Type = ForwardRelaxer,
                    forward_dynamics::Type = ForwardDynamics,
@@ -94,7 +102,7 @@ function goto!(solver::CLVSolver, stage_type::Type)
     error("Unreachable!")
 end
 
-init(prob::CLVProblem) = CLVSolver(prob)
+init(prob::CLVProblem; kwargs...) = CLVSolver(prob; kwargs...)
 
 """
     forward_dynamics!(solver::CLVSolver) :: ForwardDynamics

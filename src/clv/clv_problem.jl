@@ -19,6 +19,11 @@ Ginelli et al. (2007, 2013).
   `0.1 * le_prob.num_attr` when constructed from [`LEProblem`](@ref).
 - See [`LEProblem`](@ref) for `phase_prob`, `tangent_dynamics!` and `Q0`.
 
+### Examples (in the online documentation)
+- [Ginelli et al. (2007), Figure 1a](@ref)
+
+See: <https://tkf.github.io/LyapunovExponents.jl/latest/gallery/>
+
 ### Reference
 
 * Ginelli, F., Poggi, P., Turchi, A., Chaté, H., Livi, R., & Politi, A. (2007).
