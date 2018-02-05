@@ -215,6 +215,15 @@ mutable struct MLESolver{Intr,
     end
 end
 
+
+"""
+    phase_state(solverish) :: Vector
+
+Get current phase-space state stored in `solverish`.
+"""
+phase_state(solver::LESolver) = solver.phase_state
+
+
 Base.show(io::IO, solver::LESolver) =
     print(io,
           "#Orth.: ", solver.num_orth, ", ",

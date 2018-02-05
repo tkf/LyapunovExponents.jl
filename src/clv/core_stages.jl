@@ -48,7 +48,8 @@ end
 
 const ForwardPass = Union{ForwardRelaxer, ForwardDynamics}
 
-current_result(fitr::ForwardPass) = CLV.C(fitr)
+current_result(fitr::ForwardPass) = CLV.R(fitr)
+phase_state(fitr::ForwardPass) = phase_state(fitr.le_solver)
 
 
 mutable struct BackwardRelaxer <: AbstractComputationStage

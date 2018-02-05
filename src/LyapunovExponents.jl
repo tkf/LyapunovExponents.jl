@@ -1,6 +1,7 @@
 module LyapunovExponents
 
-export LEProblem, ContinuousLEProblem, DiscreteLEProblem, lyapunov_exponents
+export LEProblem, ContinuousLEProblem, DiscreteLEProblem, lyapunov_exponents,
+    phase_state
 
 using Requires
 

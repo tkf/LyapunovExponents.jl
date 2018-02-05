@@ -9,7 +9,7 @@ import DifferentialEquations: init, solve, solve!, step!
 using ..LyapunovExponents: LEProblem, LESolver, dimension, is_semi_unitary,
     default_Q0, get_tangent_dynamics
 import ..LyapunovExponents: phase_tangent_state, get_tangent_prob,
-    get_le_solver
+    get_le_solver, phase_state
 
 include("utils.jl")
 include("stage_base.jl")
@@ -21,5 +21,7 @@ include("accessors.jl")
 
 end
 
-using .CovariantVectors: CLVProblem, CLV, goto!, BackwardDynamics
-export CLVProblem, CLV, goto!, BackwardDynamics
+using .CovariantVectors:
+    CLVProblem, CLV, goto!, BackwardDynamics, ForwardDynamics
+export
+    CLVProblem, CLV, goto!, BackwardDynamics, ForwardDynamics
