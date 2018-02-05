@@ -1,23 +1,22 @@
 using LyapunovExponents
 
-henon_demo = LyapunovExponents.henon_map(num_attr=100000)
-henon_solver = LyapunovExponents.CLVSolver(henon_demo)
-@time solve!(henon_solver)
-
-lozi_demo = LyapunovExponents.lozi_map(num_attr=100000)
-lozi_solver = LyapunovExponents.CLVSolver(lozi_demo)
-@time solve!(lozi_solver)
-
 function get_angles(solver)
-    Cs = solver.C_history
-    limit = floor(Int, length(Cs) * 0.9)
-    return [acos(abs(dot(C[:, 1], C[:, 2]))) * 2 / π for C in Cs[1:limit]]
+    return [acos(abs(dot(C[:, 1], C[:, 2]))) * 2 / π for C
+            in goto!(solver, BackwardDynamics)]
 end
+
+henon_demo = LyapunovExponents.henon_map(num_attr=100000)
+henon_demo.prob :: LEProblem
+henon_prob = CLVProblem(henon_demo.prob)  # convert it to CLVProblem
+henon_angles = @time get_angles(init(henon_prob))
+
+lozi_prob = CLVProblem(LyapunovExponents.lozi_map(num_attr=100000).prob)
+lozi_angles = @time get_angles(init(lozi_prob))
 
 using Plots
 plt = plot(xlabel="Angle [pi/2 rad]", ylabel="Density", legend=:topleft)
-stephist!(plt, get_angles(henon_solver),
+stephist!(plt, henon_angles,
           bins=1000, normalize=true, linecolor=1, label="Henon")
-stephist!(twinx(plt), get_angles(lozi_solver),
+stephist!(twinx(plt), lozi_angles,
           bins=1000, normalize=true, linecolor=2, label="Lozi")
 plt

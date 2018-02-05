@@ -32,11 +32,12 @@ end
 current_result(stage::AbstractComputationStage) = nothing
 
 Base.start(stage::AbstractComputationStage) = nothing
-Base.done(stage::AbstractComputationStage) = is_finished(stage)
-@inline function Base.next(stage::AbstractComputationStage, _)
+Base.done(stage::AbstractComputationStage, _state) = is_finished(stage)
+@inline function Base.next(stage::AbstractComputationStage, _state)
     step!(stage)
     return (current_result(stage), nothing)
 end
+Base.length(stage::AbstractComputationStage) = stage_length(stage)
 
 
 struct StageIterator

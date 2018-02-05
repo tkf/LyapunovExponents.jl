@@ -69,8 +69,6 @@ function solve!(solver::CLVSolver)
     return solver
 end
 
-Base.start(solver::CLVSolver) = start(get_last_stage(solver))
-
 
 function goto!(solver::CLVSolver, stage_type::Type)
     @assert is_reachable(solver.iter, stage_type, solver.state)

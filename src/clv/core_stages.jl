@@ -46,7 +46,7 @@ stage_length(fitr::ForwardDynamics) = length(fitr.R_history)
     return fitr
 end
 
-current_state(fitr::Union{ForwardRelaxer, ForwardDynamics}) = CLV.C(fitr)
+current_result(fitr::Union{ForwardRelaxer, ForwardDynamics}) = CLV.C(fitr)
 
 
 mutable struct BackwardRelaxer <: AbstractComputationStage
@@ -89,4 +89,4 @@ stage_length(bitr::BackwardDynamics) = length(bitr.R_history)
     end
 end
 
-current_state(bitr::Union{BackwardRelaxer, BackwardDynamics}) = bitr.C
+current_result(bitr::Union{BackwardRelaxer, BackwardDynamics}) = bitr.C
