@@ -3,9 +3,15 @@ using Plots
 using OnlineStats: CovMatrix
 using LyapunovExponents
 using LyapunovExponents: VecVariance, CLVSolver
+using LyapunovExponents: CovariantVectors
 using LyapunovExponents.Test: @test_nothrow
 
 @time @testset "Smoke test CLV" begin
+    @test_nothrow begin
+        prob = LyapunovExponents.lorenz_63(num_attr=3).prob :: LEProblem
+        solver = CovariantVectors.CLVSolver(prob)
+        solve!(solver)
+    end
     @test_nothrow begin
         demo = LyapunovExponents.lorenz_63(num_attr=3)
         solver = CLVSolver(demo)

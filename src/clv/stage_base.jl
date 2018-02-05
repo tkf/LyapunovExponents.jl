@@ -22,16 +22,26 @@ Ask if `stage`'s computation is done.
 """
 function is_finished end
 
-is_finished(stage::AbstractComputationStage) = stage.i <= stage.num
-
 function finish_if_not!(stage::AbstractStage)
     is_finished(stage) || finish!(stage)
     return stage
 end
 
+
+# Default iterator interface ("mix-in")
+current_result(stage::AbstractComputationStage) = nothing
+
+Base.start(stage::AbstractComputationStage) = nothing
+Base.done(stage::AbstractComputationStage) = is_finished(stage)
+@inline function Base.next(stage::AbstractComputationStage, _)
+    step!(stage)
+    return (current_result(stage), nothing)
+end
+
+
 struct StageIterator
     source::AbstractStage
-    stage_types::Vector{Type{AbstractComputationStage}}
+    stage_types::Vector{Type{<: AbstractComputationStage}}
     args::Tuple
 end
 

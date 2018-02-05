@@ -31,3 +31,5 @@ default_Q0(array::AbstractArray, dim_phase, dim_lyap) =
 
 default_Q0(prob::DEProblem, dim_phase, dim_lyap) =
     default_Q0(prob.u0, dim_phase, dim_lyap)
+
+default_Q0(x, dim) = default_Q0(x, dim, dim)

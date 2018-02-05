@@ -2,7 +2,7 @@
 function stage_length end
 stage_index(stage::AbstractComputationStage) = stage.i
 is_finished(stage::AbstractComputationStage) =
-    stage_index(stage) >= stage_length(stage)
+    stage_index(stage) + 1 >= stage_length(stage)
 
 
 mutable struct ForwardRelaxer{T <: LESolver} <: AbstractComputationStage
@@ -14,9 +14,9 @@ ForwardRelaxer(prob::CLVProblem, _) = ForwardRelaxer(prob)
 ForwardRelaxer(prob::CLVProblem) = ForwardRelaxer(get_le_solver(prob),
                                                   prob.num_forward_tran)
 
-stage_index(frx::ForwardRelaxer) = fitr.le_solver.num_orth
+stage_index(frx::ForwardRelaxer) = frx.le_solver.num_orth
 stage_length(frx::ForwardRelaxer) = frx.num_forward_tran
-step!(frx::ForwardRelaxer) = step!(fitr.le_solver)
+step!(frx::ForwardRelaxer) = step!(frx.le_solver)
 
 mutable struct ForwardDynamics{T <: LESolver} <: AbstractComputationStage
     le_solver::T
@@ -31,6 +31,7 @@ ForwardDynamics(frx::ForwardRelaxer, prob::CLVProblem) =
 function ForwardDynamics(le_solver::LESolver, num::Int)
     dim_phase, dim_lyap = size(le_solver.tangent_state)
     @assert dim_phase == dim_lyap
+    dims = (dim_phase, dim_phase)
     R_history = allocate_array_of_arrays(num, dims, UTM, make_UTM)
     return ForwardDynamics(le_solver, R_history, 0)
 end
@@ -44,6 +45,8 @@ stage_length(fitr::ForwardDynamics) = length(fitr.R_history)
     fitr.R_history[end-i] .= CLV.R(fitr)
     return fitr
 end
+
+current_state(fitr::Union{ForwardRelaxer, ForwardDynamics}) = CLV.C(fitr)
 
 
 mutable struct BackwardRelaxer <: AbstractComputationStage
@@ -68,6 +71,7 @@ mutable struct BackwardDynamics <: AbstractComputationStage
     i
 end
 
+BackwardDynamics(brx::BackwardRelaxer, _) = BackwardDynamics(brx)
 BackwardDynamics(brx::BackwardRelaxer) =
     BackwardDynamics(brx.R_history[1:end - brx.i], brx.C, 0)
 
@@ -84,3 +88,5 @@ stage_length(bitr::BackwardDynamics) = length(bitr.R_history)
         C[:, i] /= norm(@view C[:, i])
     end
 end
+
+current_state(bitr::Union{BackwardRelaxer, BackwardDynamics}) = bitr.C

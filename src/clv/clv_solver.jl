@@ -8,11 +8,11 @@ mutable struct CLVSolution
 end
 
 """
-    record!(sol::CLVSolution, stage::AbstractComputationStage)
+    record!(sol::CLVSolution, stage::AbstractStage)
 
 Record solution of the computation `stage` to solution object `sol`.
 """
-function record!(::CLVSolution, ::AbstractComputationStage) end
+function record!(::CLVSolution, ::AbstractStage) end
 
 mutable struct CLVSolver
     prob::CLVProblem
@@ -85,3 +85,5 @@ function goto!(solver::CLVSolver, stage_type::Type)
     end
     error("Unreachable!")
 end
+
+init(prob::CLVProblem) = CLVSolver(prob)
