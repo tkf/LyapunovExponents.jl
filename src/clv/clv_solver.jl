@@ -123,6 +123,7 @@ forward_dynamics!(solver::CLVSolver) = goto!(solver, ForwardDynamics)
 
 """
     indexed_forward_dynamics!(solver::CLVSolver)
+    indexed_forward_dynamics!(stage::ForwardDynamics)
 
 Just a short-hand for `enumerate(forward_dynamics!(solver))`.
 It's for symmetry with [`indexed_backward_dynamics!`](@ref).
@@ -153,6 +154,28 @@ backward_dynamics!(solver::CLVSolver) = goto!(solver, BackwardDynamics)
 
 """
     indexed_backward_dynamics!(solver::CLVSolver)
+    indexed_backward_dynamics!(stage::BackwardDynamics)
+
+It is equivalent to `zip(some_counter, backward_dynamics!(solver))`
+where `some_counter` is an iterator over integers such that the same
+indices returned by [`indexed_forward_dynamics!`](@ref) indicate that
+those events are at the same time point of the backward and forward
+passes.  This is useful when combining matrices [`CLV.G`](@ref) and
+[`CLV.C`](@ref) to obtain the CLV in the (original) tangent space.
+
+For such example, see:
+[Covariant Lyapunov vectors on the Lorenz attractor](@ref)
+in the online manual.
+
+Note that `indexed_backward_dynamics!(solver::CLVSolver)` is
+equivalent to
+```julia
+backward = backward_dynamics!(solver)
+indexed_backward_dynamics!(backward)
+```
+Separately calling [`backward_dynamics!`](@ref) is useful when the
+quantities other than [`CLV.G`](@ref) (e.g., [`CLV.R`](@ref)) are
+required.
 
 See also [`indexed_forward_dynamics!`](@ref).
 """

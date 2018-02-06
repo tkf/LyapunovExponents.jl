@@ -30,8 +30,8 @@ using LyapunovExponents.CovariantVectors: goto!
         # (Eq. 32, Ginelli et al., 2013)
 
         for (n, _) in indexed_forward_dynamics!(forward)
-            G[n] .= CLV.G(forward)  # 𝑮ₙ₊ₖ
-            M[n] .= CLV.M(forward)  # 𝑴ₖ,ₙ₊ₖ
+            G[n] .= CLV.G(forward)  # 𝑮ₙ
+            M[n] .= CLV.M(forward)  # 𝑴ₖ,ₙ
             R_prev[n] .= CLV.R_prev(forward)  # 𝑹ₖ,ₙ
         end
         @testset "forward.R_history[$n]" for n in 1:length(forward.R_history)

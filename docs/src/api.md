@@ -31,8 +31,16 @@ LyapunovExponents.PhaseTangentDynamics
 ```@docs
 CLVProblem
 CLV
+CLV.M
+CLV.G
+CLV.R
+CLV.R_prev
+CLV.C
+CLV.D
 forward_dynamics!
 backward_dynamics!
+indexed_forward_dynamics!
+indexed_backward_dynamics!
 ```
 
 ### Low-level API for CLV solver
