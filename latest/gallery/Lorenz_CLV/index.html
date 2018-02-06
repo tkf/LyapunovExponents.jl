@@ -98,8 +98,14 @@
 
                         
                             
+<li >
+    <a href="../Ginelli_2007_Figure_1a/">Ginelli 2007 Figure 1a</a>
+</li>
+
+                        
+                            
 <li class="active">
-    <a href="./">Ginelli 07 fig1a</a>
+    <a href="./">Lorenz CLV</a>
 </li>
 
                         
@@ -170,7 +176,7 @@
                         </a>
                     </li>
                     <li >
-                        <a rel="next" href="../">
+                        <a rel="next" href="../Ginelli_2007_Figure_1a/">
                             <i class="fa fa-arrow-left"></i> Previous
                         </a>
                     </li>
@@ -180,7 +186,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="https://github.com/tkf/LyapunovExponents.jl/blob/master/docs/src/gallery/ginelli_07_fig1a.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                        <a href="https://github.com/tkf/LyapunovExponents.jl/blob/master/docs/src/gallery/Lorenz_CLV.md"><i class="fa fa-github"></i> Edit on GitHub</a>
                     </li>
             </ul>
         </div>
@@ -191,40 +197,73 @@
         
         <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
-        <li class="first-level active"><a href="#ginelli-et-al-2007-figure-1a">Ginelli et al. (2007), Figure 1a</a></li>
+        <li class="first-level active"><a href="#covariant-lyapunov-vectors-on-the-lorenz-attractor">Covariant Lyapunov vectors on the Lorenz attractor</a></li>
     </ul>
 </div></div>
         <div class="col-md-9" role="main">
 
 <!– -*- mode: markdown -*- –>
 
-<p><a id='Ginelli-et-al.-(2007),-Figure-1a-1'></a></p>
-<h1 id="ginelli-et-al-2007-figure-1a">Ginelli et al. (2007), Figure 1a</h1>
-<p><img alt="Ginelli 07 Fig 1a reproduced" src="../ginelli_07_fig1a.png" title="Ginelli 07 Fig 1a reproduced" /></p>
-<p>This is an attempt to reproduce Figure 1a of <a href="http://doi.org/10.1103/PhysRevLett.99.130601">Ginelli et al. (2007)</a>. The following code uses <a href="../../api/#LyapunovExponents.CLVSolver"><code>LyapunovExponents.CLVSolver</code></a> to compute the covariant Lyapunov vectors (CLVs) of the two-dimensional maps, the Hénon map (<a href="../../examples/#LyapunovExponents.Examples.HenonMap.henon_map"><code>LyapunovExponents.henon_map</code></a>) and the Lozi map (<a href="../../examples/#LyapunovExponents.Examples.LoziMap.lozi_map"><code>LyapunovExponents.lozi_map</code></a>).</p>
-<p>The probability density function of the angles between the two CLVs are plotted.  See <a href="http://doi.org/10.1103/PhysRevLett.99.130601">Ginelli et al. (2007)</a> for how the shape of this probability density function is related to hyperbolicity.</p>
+<p><a id='Covariant-Lyapunov-vectors-on-the-Lorenz-attractor-1'></a></p>
+<h1 id="covariant-lyapunov-vectors-on-the-lorenz-attractor">Covariant Lyapunov vectors on the Lorenz attractor</h1>
+<p><img alt="CLVs on Lorenz attractor" src="../Lorenz_CLV.png" title="CLVs on Lorenz attractor" /></p>
+<p>This is a demonstration for solving CLV problem <a href="../../api/#LyapunovExponents.CovariantVectors.CLVProblem"><code>CLVProblem</code></a> and receiving the results via the iterator-based APIs <a href="../../api/#LyapunovExponents.CovariantVectors.indexed_forward_dynamics!"><code>indexed_forward_dynamics!</code></a>, <a href="../../api/#LyapunovExponents.CovariantVectors.indexed_backward_dynamics!"><code>indexed_backward_dynamics!</code></a>, <a href="../../api/#LyapunovExponents.CovariantVectors.CLV"><code>CLV</code></a>, etc.</p>
 <pre><code class="julia">using LyapunovExponents
 
-henon_demo = LyapunovExponents.henon_map(num_attr=100000)
-henon_solver = LyapunovExponents.CLVSolver(henon_demo)
-@time solve!(henon_solver)
+num_rec = 10
+sampling_interval = 2
+num_clv = num_rec * sampling_interval
+prob = CLVProblem(LyapunovExponents.lorenz_63().prob,
+                  num_forward_tran = 4000,
+                  num_backward_tran = 4000,
+                  num_clv = num_clv)
+solver = init(prob)
 
-lozi_demo = LyapunovExponents.lozi_map(num_attr=100000)
-lozi_solver = LyapunovExponents.CLVSolver(lozi_demo)
-@time solve!(lozi_solver)
+x_history = [Vector{Float64}(3) for _ in 1:num_rec]
+G_history = [Matrix{Float64}(3, 3) for _ in 1:num_rec]
+C_history = [Matrix{Float64}(3, 3) for _ in 1:num_rec]
 
-function get_angles(solver)
-    Cs = solver.C_history
-    limit = floor(Int, length(Cs) * 0.9)
-    return [acos(abs(dot(C[:, 1], C[:, 2]))) * 2 / π for C in Cs[1:limit]]
+forward = @time forward_dynamics!(solver)
+@time for (i, G) in indexed_forward_dynamics!(forward)
+    k, r = divrem(i, sampling_interval)
+    j = k + 1
+    if r == 1 &amp;&amp; j &lt;= num_rec
+        x_history[j] .= phase_state(forward)
+        G_history[j] .= G
+    end
 end
 
+@time for (i, C) in @time indexed_backward_dynamics!(solver)
+    k, r = divrem(i, sampling_interval)
+    j = k + 1
+    if r == 1
+        C_history[j] .= C
+    end
+end
+
+CLV_history = [G * C for (G, C) in zip(G_history, C_history)]
+
+using DifferentialEquations
+sol = solve(ODEProblem(
+    prob.phase_prob.f,
+    x_history[1],
+    (0.0, prob.phase_prob.tspan[end] * num_clv * 3),
+    prob.phase_prob.p
+))
+
 using Plots
-plt = plot(xlabel=&quot;Angle [pi/2 rad]&quot;, ylabel=&quot;Density&quot;, legend=:topleft)
-stephist!(plt, get_angles(henon_solver),
-          bins=1000, normalize=true, linecolor=1, label=&quot;Henon&quot;)
-stephist!(twinx(plt), get_angles(lozi_solver),
-          bins=1000, normalize=true, linecolor=2, label=&quot;Lozi&quot;)
+plt = plot(sol, vars=(2, 3), linewidth=0.5, label=&quot;&quot;)
+vec_scale = 3
+for (n, (x, V)) in enumerate(zip(x_history, CLV_history))
+    for i in 1:3
+        plot!(plt,
+              [x[2], x[2] + vec_scale * V[2, i]],
+              [x[3], x[3] + vec_scale * V[3, i]],
+              color = i + 1,
+              arrow = 0.4,
+              label = (n == 1 ? &quot;CLV$i&quot; : &quot;&quot;))
+    end
+end
 plt
 </code></pre></div>
         
