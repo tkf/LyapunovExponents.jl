@@ -2,7 +2,7 @@
 function stage_length end
 stage_index(stage::AbstractComputationStage) = stage.i
 is_finished(stage::AbstractComputationStage) =
-    stage_index(stage) + 1 >= stage_length(stage)
+    stage_index(stage) >= stage_length(stage)
 
 
 mutable struct ForwardRelaxer{T <: LESolver} <: AbstractComputationStage
@@ -46,13 +46,13 @@ stage_length(fitr::ForwardDynamics) = length(fitr.R_history)
     step!(fitr.le_solver)
     i = (fitr.i += 1)
     # TODO: this assignment check if lower half triangle is zero; skip that
-    fitr.R_history[end-i] .= CLV.R(fitr)
+    fitr.R_history[i] .= CLV.R_prev(fitr)
     return fitr
 end
 
 const ForwardPass = Union{ForwardRelaxer, ForwardDynamics}
 
-current_result(fitr::ForwardPass) = CLV.R(fitr)
+current_result(fitr::ForwardPass) = CLV.R_prev(fitr)
 phase_state(fitr::ForwardPass) = phase_state(fitr.le_solver)
 
 
@@ -72,15 +72,29 @@ BackwardRelaxer(fitr::ForwardDynamics, prob::CLVProblem) =
 stage_length(brx::BackwardRelaxer) = brx.num_backward_tran
 
 
-mutable struct BackwardDynamics <: AbstractComputationStage
+mutable struct BackwardDynamics{with_D} <: AbstractComputationStage
     R_history
     C
     i
+    D_diag
+
+    function BackwardDynamics{with_D}(R_history, C, i = -1) where {with_D}
+        bitr = new{with_D}(R_history, C, i)
+        if with_D
+            bitr.D_diag = similar(C, size(C, 1))
+        end
+        return bitr
+    end
 end
 
-BackwardDynamics(brx::BackwardRelaxer, _) = BackwardDynamics(brx)
-BackwardDynamics(brx::BackwardRelaxer) =
-    BackwardDynamics(brx.R_history[1:end - brx.i], brx.C, 0)
+const BackwardDynamicsWithD = BackwardDynamics{true}
+
+BackwardDynamics(brx::BackwardRelaxer, args...) =
+    BackwardDynamics{false}(brx, args...)
+BackwardDynamics{with_D}(brx::BackwardRelaxer, _) where {with_D} =
+    BackwardDynamics{with_D}(brx)
+BackwardDynamics{with_D}(brx::BackwardRelaxer) where {with_D} =
+    BackwardDynamics{with_D}(brx.R_history[1:end - brx.i], brx.C)
 
 stage_length(bitr::BackwardDynamics) = length(bitr.R_history)
 
@@ -93,9 +107,20 @@ const BackwardPass = Union{BackwardRelaxer, BackwardDynamics}
 
     # C₀ = R⁻¹ C₁ D  (Eq. 32, Ginelli et al., 2013)
     A_ldiv_B!(R, C)
+    # now:  C = R⁻¹ C₁
     for i in 1:size(C, 1)
-        C[:, i] /= norm(@view C[:, i])
+        # C[:, i] /= norm(@view C[:, i])
+        C[:, i] /= Dᵢᵢ⁻¹(bitr, i)
     end
+    # now:  C = C₀ = R⁻¹ C₁ D
+end
+
+@inline Dᵢᵢ⁻¹(C::AbstractArray, i) = norm(@view C[:, i])
+@inline Dᵢᵢ⁻¹(bitr::BackwardPass, i) = Dᵢᵢ⁻¹(bitr.C, i)
+@inline function Dᵢᵢ⁻¹(bitr::BackwardDynamicsWithD, i)
+    di = Dᵢᵢ⁻¹(bitr.C, i)
+    bitr.D_diag[i] = 1 / di
+    return di
 end
 
 current_result(bitr::BackwardPass) = bitr.C

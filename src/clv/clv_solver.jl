@@ -122,6 +122,16 @@ See also: [`backward_dynamics!`](@ref), [`goto!`](@ref).
 forward_dynamics!(solver::CLVSolver) = goto!(solver, ForwardDynamics)
 
 """
+    indexed_forward_dynamics!(solver::CLVSolver)
+
+Just a short-hand for `enumerate(forward_dynamics!(solver))`.
+It's for symmetry with [`indexed_backward_dynamics!`](@ref).
+"""
+indexed_forward_dynamics!(solver::CLVSolver) =
+    indexed_forward_dynamics!(forward_dynamics!(solver))
+indexed_forward_dynamics!(fitr::ForwardDynamics) = enumerate(fitr)
+
+"""
     backward_dynamics!(solver::CLVSolver) :: BackwardDynamics
 
 Solve the CLV problem up to the (final) backward dynamics stage and
@@ -140,3 +150,13 @@ angles = [acos(abs(dot(C[:, 1], C[:, 2]))) * 2 / π for C
 ```
 """
 backward_dynamics!(solver::CLVSolver) = goto!(solver, BackwardDynamics)
+
+"""
+    indexed_backward_dynamics!(solver::CLVSolver)
+
+See also [`indexed_forward_dynamics!`](@ref).
+"""
+indexed_backward_dynamics!(solver::CLVSolver) =
+    indexed_backward_dynamics!(backward_dynamics!(solver))
+indexed_backward_dynamics!(bitr::BackwardDynamics) =
+    zip(length(bitr)-1:-1:0, bitr)

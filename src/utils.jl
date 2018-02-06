@@ -11,6 +11,8 @@ macro showprogress_if(pred, args...)
     end
 end
 
+objname(f) = rsplit(string(f), "."; limit=2)[end]
+
 function is_semi_unitary(U, error=1e-7)
     n, m = size(U)
     I = n > m ? U' * U : U * U'

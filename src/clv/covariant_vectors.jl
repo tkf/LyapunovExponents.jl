@@ -24,6 +24,8 @@ end
 using .CovariantVectors: goto!
 
 using .CovariantVectors:
-    CLVProblem, CLVSolver, CLV, backward_dynamics!, forward_dynamics!
+    CLVProblem, CLVSolver, CLV, backward_dynamics!, forward_dynamics!,
+    indexed_backward_dynamics!, indexed_forward_dynamics!
 export
-    CLVProblem, CLVSolver, CLV, backward_dynamics!, forward_dynamics!
+    CLVProblem, CLVSolver, CLV, backward_dynamics!, forward_dynamics!,
+    indexed_backward_dynamics!, indexed_forward_dynamics!

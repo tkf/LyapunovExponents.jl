@@ -14,12 +14,24 @@ G_{n+k} R_{k,n} C_n
 """
 module CLV
 using ..CovariantVectors: ForwardDynamics, BackwardRelaxer, BackwardDynamics,
+    BackwardDynamicsWithD, BackwardPass,
     ForwardDynamicsWithGHistory, BackwardDynamicsWithCHistory
+import ...LyapunovExponents: tangent_propagate
 
-R(fitr::ForwardDynamics) = fitr.le_solver.R
+R_prev(fitr::ForwardDynamics) = fitr.le_solver.R
+R_prev(bitr::BackwardPass) = bitr.R_history[end-bitr.i-1]
+R(bitr::BackwardPass)      = bitr.R_history[end-bitr.i]
+R_next(bitr::BackwardPass) = bitr.R_history[end-bitr.i+1]
+
+const R₋ = R_prev
+const R₊ = R_next
+
 G(fitr::ForwardDynamics) = fitr.le_solver.tangent_state
 G(fitr::ForwardDynamicsWithGHistory) = G(fitr.stage)
 C(bitr::Union{BackwardRelaxer, BackwardDynamics}) = bitr.C
 C(bitr::BackwardDynamicsWithCHistory) = C(bitr.stage)
+
+D(bitr::BackwardDynamicsWithD) = Diagonal(bitr.D_diag)
+M(fitr::ForwardDynamics) = tangent_propagate(fitr.le_solver, I)
 
 end

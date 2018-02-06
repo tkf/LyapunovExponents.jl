@@ -211,6 +211,9 @@ function post_evolve!(solver::LESolver)
 
     solver.num_orth += 1
     solver.tangent_state, solver.Q = Q, solver.tangent_state
+    # At this point:
+    # solver.tangent_state === Q == 𝑮ₙ₊ₖ
+    # solver.Q is a mess, as qrfact! use it as a "buffer"
 end
 
 function post_evolve!(solver::MLESolver)
