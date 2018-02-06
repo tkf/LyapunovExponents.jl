@@ -14,12 +14,12 @@ G_history = [Matrix{Float64}(3, 3) for _ in 1:num_rec]
 C_history = [Matrix{Float64}(3, 3) for _ in 1:num_rec]
 
 forward = @time forward_dynamics!(solver)
-@time for (i, _) in indexed_forward_dynamics!(forward)
+@time for (i, G) in indexed_forward_dynamics!(forward)
     k, r = divrem(i, sampling_interval)
     j = k + 1
     if r == 1 && j <= num_rec
         x_history[j] .= phase_state(forward)
-        G_history[j] .= CLV.G(forward)
+        G_history[j] .= G
     end
 end
 

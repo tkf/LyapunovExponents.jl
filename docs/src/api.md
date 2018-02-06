@@ -37,6 +37,7 @@ CLV.R
 CLV.R_prev
 CLV.C
 CLV.D
+phase_state
 forward_dynamics!
 backward_dynamics!
 indexed_forward_dynamics!

@@ -52,7 +52,7 @@ end
 
 const ForwardPass = Union{ForwardRelaxer, ForwardDynamics}
 
-current_result(fitr::ForwardPass) = CLV.R_prev(fitr)
+current_result(fitr::ForwardPass) = CLV.G(fitr)
 phase_state(fitr::ForwardPass) = phase_state(fitr.le_solver)
 
 
