@@ -57,26 +57,26 @@ phase_state(fitr::ForwardPass) = phase_state(fitr.le_solver)
 
 
 mutable struct BackwardRelaxer <: AbstractComputationStage
-    num_backward_tran
-    R_history
-    C
-    i
+    num_backward_tran::Int
+    R_history::Vector{UTM}
+    C::UTM
+    i::Int
 end
 
 BackwardRelaxer(fitr::ForwardDynamics, prob::CLVProblem) =
     BackwardRelaxer(prob.num_backward_tran,
                     fitr.R_history,
-                    eye(fitr.R_history[end]),  # TODO: randomize
+                    UTM(eye(fitr.R_history[end])),  # TODO: randomize
                     0)
 
 stage_length(brx::BackwardRelaxer) = brx.num_backward_tran
 
 
 mutable struct BackwardDynamics{with_D} <: AbstractComputationStage
-    R_history
-    C
-    i
-    D_diag
+    R_history::Vector{UTM}
+    C::UTM
+    i::Int
+    D_diag::Vector{Float64}
 
     function BackwardDynamics{with_D}(R_history, C, i = -1) where {with_D}
         bitr = new{with_D}(R_history, C, i)
