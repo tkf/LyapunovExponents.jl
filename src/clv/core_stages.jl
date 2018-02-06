@@ -67,7 +67,7 @@ BackwardRelaxer(fitr::ForwardDynamics, prob::CLVProblem) =
     BackwardRelaxer(prob.num_backward_tran,
                     fitr.R_history,
                     UTM(eye(fitr.R_history[end])),  # TODO: randomize
-                    0)
+                    -1)
 
 stage_length(brx::BackwardRelaxer) = brx.num_backward_tran
 
@@ -94,11 +94,13 @@ BackwardDynamics(brx::BackwardRelaxer, args...) =
 BackwardDynamics{with_D}(brx::BackwardRelaxer, _) where {with_D} =
     BackwardDynamics{with_D}(brx)
 BackwardDynamics{with_D}(brx::BackwardRelaxer) where {with_D} =
-    BackwardDynamics{with_D}(brx.R_history[1:end - brx.i], brx.C)
+    BackwardDynamics{with_D}(brx.R_history[1:end - brx.i - 1], brx.C)
 
 stage_length(bitr::BackwardDynamics) = length(bitr.R_history)
 
 const BackwardPass = Union{BackwardRelaxer, BackwardDynamics}
+
+stage_index(stage::BackwardPass) = stage.i + 1  # TODO: don't
 
 @inline function step!(bitr::BackwardPass)
     i = (bitr.i += 1)

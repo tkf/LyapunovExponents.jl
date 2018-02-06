@@ -44,13 +44,15 @@ end
 
 BackwardDynamicsWithCHistory(brx::BackwardRelaxer, _) =
     BackwardDynamicsWithCHistory(brx)
-BackwardDynamicsWithCHistory(brx::BackwardRelaxer) =
-    BackwardDynamicsWithCHistory(
-        BackwardDynamics(brx),
-        allocate_array_of_arrays(length(brx.R_history) - brx.i,
+function BackwardDynamicsWithCHistory(brx::BackwardRelaxer)
+    stage = BackwardDynamics(brx)
+    return BackwardDynamicsWithCHistory(
+        stage,
+        allocate_array_of_arrays(length(stage),
                                  size(brx.C),
                                  UTM, make_UTM),
     )
+end
 
 @inline function step!(bitr::BackwardDynamicsWithCHistory)
     step!(bitr.stage)
