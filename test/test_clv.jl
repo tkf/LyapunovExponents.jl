@@ -54,9 +54,6 @@ using LyapunovExponents.CovariantVectors: goto!
         D = [Matrix{Float64}(dims) for _ in 1:num_clv]
         C[end] .= CLV.C(backward)
         for (n, Cn) in indexed_backward_dynamics!(backward)
-            if n < 1
-                break
-            end
             @test CLV.R(backward) == R_prev[n+1]  # 𝑹ₖ,ₙ
             C[n] .= Cn               # 𝑪ₙ
             D[n] .= CLV.D(backward)  # 𝑫ₖ,ₙ

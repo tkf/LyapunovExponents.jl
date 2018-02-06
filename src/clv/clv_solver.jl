@@ -158,5 +158,8 @@ See also [`indexed_forward_dynamics!`](@ref).
 """
 indexed_backward_dynamics!(solver::CLVSolver) =
     indexed_backward_dynamics!(backward_dynamics!(solver))
-indexed_backward_dynamics!(bitr::BackwardDynamics) =
-    zip(length(bitr)-1:-1:0, bitr)
+
+function indexed_backward_dynamics!(bitr::BackwardDynamics;
+                                    until::Int = 1)
+    return zip(length(bitr)-1:-1:until, bitr)
+end
