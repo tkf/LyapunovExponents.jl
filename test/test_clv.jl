@@ -1,10 +1,16 @@
 using Base.Test
+using IterTools: product
 using LyapunovExponents
 using LyapunovExponents: DEMOS, objname
 using LyapunovExponents.CovariantVectors: goto!
 
 @time @testset "CLV: $(objname(f))" for f in DEMOS
-    @testset "num_backward_tran=$nbt" for nbt in 0:2
+    @testset "num_backward_tran=$nbt brx=$test_brx" for (
+                nbt, test_brx,
+            ) in product(
+                0:2,            # num_backward_tran
+                [true, false],  # test_brx
+            )
         prob = CLVProblem(f().prob;
                           num_clv = 5,
                           num_forward_tran = nbt * 11,  # for extra variation
@@ -33,11 +39,13 @@ using LyapunovExponents.CovariantVectors: goto!
         end
         @assert forward.R_history == R_prev
 
-        brx = goto!(solver, CLV.BackwardRelaxer)
-        @testset "brx.R[$n]" for n in 1:length(brx.R_history)
-            @test brx.R_history[n] == R_prev[n]
+        if test_brx
+            brx = goto!(solver, CLV.BackwardRelaxer)
+            @testset "brx.R[$n]" for n in 1:length(brx.R_history)
+                @test brx.R_history[n] == R_prev[n]
+            end
+            @assert all(brx.R_history .== R_prev)
         end
-        @assert all(brx.R_history .== R_prev)
 
         backward = backward_dynamics!(solver)
         num_clv = length(backward)
