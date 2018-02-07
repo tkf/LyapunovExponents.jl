@@ -210,8 +210,8 @@
 <p>This is a demonstration for solving CLV problem <a href="../../api/#LyapunovExponents.CovariantVectors.CLVProblem"><code>CLVProblem</code></a> and receiving the results via the iterator-based APIs <a href="../../api/#LyapunovExponents.CovariantVectors.indexed_forward_dynamics!"><code>indexed_forward_dynamics!</code></a>, <a href="../../api/#LyapunovExponents.CovariantVectors.indexed_backward_dynamics!"><code>indexed_backward_dynamics!</code></a>, <a href="../../api/#LyapunovExponents.CovariantVectors.CLV"><code>CLV</code></a>, etc.</p>
 <pre><code class="julia">using LyapunovExponents
 
-num_rec = 10
-sampling_interval = 2
+num_rec = 20
+sampling_interval = 5
 num_clv = num_rec * sampling_interval
 prob = CLVProblem(LyapunovExponents.lorenz_63().prob,
                   num_forward_tran = 4000,
@@ -252,7 +252,7 @@ sol = solve(ODEProblem(
 ))
 
 using Plots
-plt = plot(sol, vars=(2, 3), linewidth=0.5, label=&quot;&quot;)
+plt = plot(sol, vars=(2, 3), linewidth=0.5, linealpha=0.5, label=&quot;&quot;)
 vec_scale = 3
 for (n, (x, V)) in enumerate(zip(x_history, CLV_history))
     for i in 1:3
