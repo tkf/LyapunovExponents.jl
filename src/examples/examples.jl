@@ -14,7 +14,8 @@ include("van_der_pol.jl")
 
 end
 
-using .Examples.ExampleBase: LEDemo, LEExample
+using .Examples.ExampleBase: LEDemo, LEExample,
+    ContinuousExample, DiscreteExample
 
 # Make LyapunovExponents.lorenz_63 etc. available:
 using .Examples.ArnoldCatMap

@@ -10,6 +10,7 @@ include("test_smoke.jl")
 include("test_ui.jl")
 include("test_examples.jl")
 include("test_clv.jl")
+include("test_null_clv.jl")
 toc()
 
 end
