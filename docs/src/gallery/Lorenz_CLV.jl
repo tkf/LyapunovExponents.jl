@@ -1,7 +1,7 @@
 using LyapunovExponents
 
-num_rec = 10
-sampling_interval = 2
+num_rec = 20
+sampling_interval = 5
 num_clv = num_rec * sampling_interval
 prob = CLVProblem(LyapunovExponents.lorenz_63().prob,
                   num_forward_tran = 4000,
@@ -42,7 +42,7 @@ sol = solve(ODEProblem(
 ))
 
 using Plots
-plt = plot(sol, vars=(2, 3), linewidth=0.5, label="")
+plt = plot(sol, vars=(2, 3), linewidth=0.5, linealpha=0.5, label="")
 vec_scale = 3
 for (n, (x, V)) in enumerate(zip(x_history, CLV_history))
     for i in 1:3
