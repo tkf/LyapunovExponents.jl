@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">   
+    <link rel="shortcut icon" href="../img/favicon.ico">
+
+    <title></title>
+
+    <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.018/css/hack.min.css">
+    <link href='//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700,700italic&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href="../css/base.css" rel="stylesheet">
+    <link href="../css/cinder.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/highlight.css">
+
+
+    <link href="../assets/Documenter.css" rel="stylesheet">
+
+
+    <link href="../extra.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js"></script>
+    <script>
+    WebFont.load({
+        google: {
+            families: ['Open Sans', 'PT Sans']
+        }
+    });
+    </script>
+
+    
+</head>
+
+<body>
+
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+
+            <a class="navbar-brand" href="..">LyapunovExponents.jl</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="..">Home</a>
+                    </li>
+                
+                
+                
+                    <li class="active">
+                        <a href="./">API</a>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="../examples/">Examples</a>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Gallery <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../gallery/">Home</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/Ginelli_2007_Figure_1a/">Ginelli 2007 Figure 1a</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/Lorenz_CLV/">Lorenz CLV</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/arnold_cat_map/">Arnold cat map</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/bakers_map/">Bakers map</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/beer_95/">Beer 95</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/henon_map/">Henon map</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/linz_sprott_99/">Linz sprott 99</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/lorenz_63/">Lorenz 63</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/lozi_map/">Lozi map</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/standard_map/">Standard map</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../gallery/examples/van_der_pol/">Van der pol</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                            <i class="fa fa-search"></i> Search
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="next" href="..">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="../examples/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/tkf/LyapunovExponents.jl/blob/master/docs/src/api.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <div class="container">
+        
+        <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="first-level active"><a href="#interface">Interface</a></li>
+            <li class="second-level"><a href="#high-level-api">High-level API</a></li>
+                
+            <li class="second-level"><a href="#low-level-api">Low-level API</a></li>
+                
+            <li class="second-level"><a href="#api-for-clv-solver">API for CLV solver</a></li>
+                
+                <li class="third-level"><a href="#low-level-api-for-clv-solver">Low-level API for CLV solver</a></li>
+    </ul>
+</div></div>
+        <div class="col-md-9" role="main">
+
+<p><a id='Interface-1'></a></p>
+<h1 id="interface">Interface</h1>
+<p><a id='High-level-API-1'></a></p>
+<h2 id="high-level-api">High-level API</h2>
+<p><a id='LyapunovExponents.ContinuousLEProblem' href='#LyapunovExponents.ContinuousLEProblem'>#</a>
+<strong><code>LyapunovExponents.ContinuousLEProblem</code></strong> &mdash; <em>Type</em>.</p>
+<pre><code>ContinuousLEProblem(phase_dynamics!, u0, tspan [, p [, num_attr]];
+                    &lt;keyword arguments&gt;)
+</code></pre>
+
+<p>This is a short-hand notation for:</p>
+<pre><code class="julia">LEProblem(ODEProblem(...) [, num_attr]; ...)
+</code></pre>
+
+<p>If <code>tspan</code> is a <code>Real</code> instead of a <code>Tuple</code>, then <code>(0, tspan)</code> is passed as the <code>tspan</code> argument of <code>ODEProblem</code>.</p>
+<p>For the list of usable keyword arguments, see <a href="./#LyapunovExponents.LEProblem"><code>LEProblem</code></a>.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/continuous_exponents.jl#L16-L30' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.DiscreteLEProblem' href='#LyapunovExponents.DiscreteLEProblem'>#</a>
+<strong><code>LyapunovExponents.DiscreteLEProblem</code></strong> &mdash; <em>Type</em>.</p>
+<pre><code>DiscreteLEProblem(phase_dynamics!, u0, tspan [, p [, num_attr]];
+                  &lt;keyword arguments&gt;)
+</code></pre>
+
+<p>This is a short-hand notation for:</p>
+<pre><code class="julia">LEProblem(DiscreteProblem(...) [, num_attr]; ...)
+</code></pre>
+
+<p>If <code>tspan</code> is a <code>Integer</code> instead of a <code>Tuple</code>, then <code>(0, tspan)</code> is passed as the <code>tspan</code> argument of <code>DiscreteProblem</code>.</p>
+<p>For the list of usable keyword arguments, see <a href="./#LyapunovExponents.LEProblem"><code>LEProblem</code></a>.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/discrete_exponents.jl#L34-L48' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.lyapunov_exponents' href='#LyapunovExponents.lyapunov_exponents'>#</a>
+<strong><code>LyapunovExponents.lyapunov_exponents</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>lyapunov_exponents(solver)
+</code></pre>
+
+<p>Get the result of Lyapunov exponents calculation stored in <code>solver</code>.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L260-L264' class='documenter-source'>source</a><br></p>
+<pre><code>lyapunov_exponents(phase_dynamics!, u0, tspan; &lt;keyword arguments&gt;)
+</code></pre>
+
+<p>Calculate Lyapunov exponents of a dynamical system.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/interface.jl#L1-L5' class='documenter-source'>source</a><br></p>
+<p><a id='Low-level-API-1'></a></p>
+<h2 id="low-level-api">Low-level API</h2>
+<p><a id='LyapunovExponents.AbstractLEProblem' href='#LyapunovExponents.AbstractLEProblem'>#</a>
+<strong><code>LyapunovExponents.AbstractLEProblem</code></strong> &mdash; <em>Type</em>.</p>
+<p>The Problem type represents the setup of the Lyapunov exponents calculation.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/types.jl#L3-L5' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.AbstractRelaxer' href='#LyapunovExponents.AbstractRelaxer'>#</a>
+<strong><code>LyapunovExponents.AbstractRelaxer</code></strong> &mdash; <em>Type</em>.</p>
+<p>The Relaxer type represents the calculation required for throwing away the transient part of the dynamics.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/types.jl#L8-L11' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.AbstractLESolver' href='#LyapunovExponents.AbstractLESolver'>#</a>
+<strong><code>LyapunovExponents.AbstractLESolver</code></strong> &mdash; <em>Type</em>.</p>
+<p>The Solver type represents the core Lyapunov Exponents (LE) calculation.  The LE calculation is done by calling the in-place mutating function <a href="./#DiffEqBase.solve!"><code>solve!</code></a>.</p>
+<p>The methods connecting the three principal types (Problem, Relaxer and Solver) for the LE calculation are shown in the following diagram:</p>
+<p><code class=LE-diagram><br />
+ ┌─ Problem (<a href="./#LyapunovExponents.AbstractLEProblem"><code>AbstractLEProblem</code></a>)                             <br />
+ │     │                                                              <br />
+ │     │ <a href="./#LyapunovExponents.get_relaxer"><code>get_relaxer</code></a>, <a href="./#LyapunovExponents.relaxed"><code>relaxed</code></a>                     <br />
+ │     ▼                                                              <br />
+ │   Relaxer (<a href="./#LyapunovExponents.AbstractRelaxer"><code>AbstractRelaxer</code></a>) ┄┄ ⟲ <a href="./#LyapunovExponents.relax!"><code>relax!</code></a>      <br />
+ │     │                                                              <br />
+ │     │ <a href="./#DiffEqBase.init"><code>init</code></a>                                               <br />
+ │     │                                                              <br />
+ │┄┄┄┄┄┄┄ <a href="./#DiffEqBase.init"><code>init</code></a>, <a href="./#DiffEqBase.solve"><code>solve</code></a>                       <br />
+ │     │                                                              <br />
+ │     ▼                                                              <br />
+ └▶ Solver (<a href="./#LyapunovExponents.AbstractLESolver"><code>AbstractLESolver</code></a>) ┄┄ ⟲ <a href="./#DiffEqBase.solve!"><code>solve!</code></a>,                                                  <a href="./#DiffEqBase.step!"><code>step!</code></a>       <br />
+ </code></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/types.jl#L14-L51' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.LEProblem' href='#LyapunovExponents.LEProblem'>#</a>
+<strong><code>LyapunovExponents.LEProblem</code></strong> &mdash; <em>Type</em>.</p>
+<pre><code>LEProblem(phase_prob, num_attr; &lt;keyword arguments&gt;)
+LEProblem(phase_prob; num_attr, &lt;keyword arguments&gt;)
+</code></pre>
+
+<p><strong>Arguments</strong></p>
+<ul>
+<li><code>phase_prob</code>: Phase space dynamics represented in the form of <code>ODEProblem</code> or <code>DiscreteProblem</code> from DifferentialEquations.jl. <code>phase_prob.tspan</code> represents the inter-orthonormalization-interval.</li>
+<li><code>num_attr::Integer</code>: Number of orthonormalizations (or some kind of "renormalisation") for calculating Lyapunov Exponents.  In general, this is the number of points (considered to be) on the attractor used for the solver.  The simulated time of the system for this calculation is given by <code>num_attr * (tspan[1] - tspan[0])</code>. This argument is always required and can be given as positional or keyword argument.</li>
+<li><code>num_tran::Integer</code>: Number of iterations to through away to get rid of the transient dynamics.</li>
+<li><code>dim_lyap::Integer</code>: Number of Lyapunov exponents to be calculated. Default to the full system dimension.</li>
+<li><code>Q0::Array</code>: The initial guess of the Gram-Schmidt "Lyapunov vectors".</li>
+<li><code>tangent_dynamics::Function</code>: A vector field for solving phase space  evolution <em>and</em> tangent space evolution together.  If this is not  provided, <code>tangent_dynamics</code> is derived from <code>phase_prob.f</code>.  See  also <a href="./#LyapunovExponents.PhaseTangentDynamics"><code>PhaseTangentDynamics</code></a>.</li>
+</ul>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/types.jl#L41-L65' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.LESolver' href='#LyapunovExponents.LESolver'>#</a>
+<strong><code>LyapunovExponents.LESolver</code></strong> &mdash; <em>Type</em>.</p>
+<pre><code>LESolver(integrator; &lt;keyword arguments&gt;)
+</code></pre>
+
+<p>A type representing the main calculation of Lyapunov Exponents (LE). This struct holds all temporary state required for LE calculation.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/types.jl#L107-L112' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.get_relaxer' href='#LyapunovExponents.get_relaxer'>#</a>
+<strong><code>LyapunovExponents.get_relaxer</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>get_relaxer(prob::AbstractLEProblem; &lt;keyword arguments&gt;) :: AbstractRelaxer
+</code></pre>
+
+<p>Get a relaxer for a LE problem.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L9-L13' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.relaxed' href='#LyapunovExponents.relaxed'>#</a>
+<strong><code>LyapunovExponents.relaxed</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>relaxed(prob::AbstractLEProblem; &lt;keyword arguments&gt;) :: AbstractRelaxer
+</code></pre>
+
+<p>Throwaway the transient part of the phase space dynamics of the LE problem <code>prob</code>.</p>
+<p>That is to say, convert a LE problem (<a href="./#LyapunovExponents.AbstractLEProblem"><code>AbstractLEProblem</code></a>) to a relaxer (<a href="./#LyapunovExponents.AbstractRelaxer"><code>AbstractRelaxer</code></a>) and then call <a href="./#LyapunovExponents.relax!"><code>relax!</code></a>.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L36-L44' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.relax!' href='#LyapunovExponents.relax!'>#</a>
+<strong><code>LyapunovExponents.relax!</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>relax!(relaxer::AbstractRelaxer; &lt;keyword arguments&gt;)
+</code></pre>
+
+<p>Throwaway the transient part of the phase space dynamics of the LE problem <code>prob</code>.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L17-L22' class='documenter-source'>source</a><br></p>
+<p><a id='DiffEqBase.init' href='#DiffEqBase.init'>#</a>
+<strong><code>DiffEqBase.init</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>init(prob::AbstractLEProblem; &lt;keyword arguments&gt;) :: AbstractLESolver
+init(relaxer::AbstractRelaxer; &lt;keyword arguments&gt;) :: AbstractLESolver
+</code></pre>
+
+<p>Run phase space simulation to throw away the transient and then construct a LE solver.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L112-L118' class='documenter-source'>source</a><br></p>
+<p><a id='DiffEqBase.step!' href='#DiffEqBase.step!'>#</a>
+<strong><code>DiffEqBase.step!</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>step!(solver::AbstractLESolver)
+</code></pre>
+
+<p>Evolve the dynamics and then do an orthonormalization.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L183-L187' class='documenter-source'>source</a><br></p>
+<p><a id='DiffEqBase.solve!' href='#DiffEqBase.solve!'>#</a>
+<strong><code>DiffEqBase.solve!</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>solve!(solver::AbstractLESolver; &lt;keyword arguments&gt;)
+</code></pre>
+
+<p>Do <code>solver.num_attr</code> times of orthonormalization <code>step!(solver)</code>.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L228-L232' class='documenter-source'>source</a><br></p>
+<pre><code>solve!(demo::LEDemo; progress=-1, &lt;keyword arguments&gt;)
+</code></pre>
+
+<p>Initialize <code>demo.solver</code> from <code>demo.prob</code> and run <code>solve!(demo.solver)</code> to calculate the Lyapunov exponents.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/examples/example_base.jl#L73-L78' class='documenter-source'>source</a><br></p>
+<p><a id='DiffEqBase.solve' href='#DiffEqBase.solve'>#</a>
+<strong><code>DiffEqBase.solve</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>solve(prob::AbstractLEProblem; &lt;keyword arguments&gt;)
+    :: AbstractLESolver
+</code></pre>
+
+<p>Initialize the solver (<a href="./#DiffEqBase.init"><code>init</code></a>) and then go through the LE calculation (<a href="./#DiffEqBase.solve!"><code>solve!</code></a>).</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L245-L251' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.PhaseTangentDynamics' href='#LyapunovExponents.PhaseTangentDynamics'>#</a>
+<strong><code>LyapunovExponents.PhaseTangentDynamics</code></strong> &mdash; <em>Type</em>.</p>
+<p>Auto-generated dynamics for solving phase and tangent dynamics together.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/coevolve.jl#L1-L3' class='documenter-source'>source</a><br></p>
+<p><a id='API-for-CLV-solver-1'></a></p>
+<h2 id="api-for-clv-solver">API for CLV solver</h2>
+<p><a id='LyapunovExponents.CovariantVectors.CLVProblem' href='#LyapunovExponents.CovariantVectors.CLVProblem'>#</a>
+<strong><code>LyapunovExponents.CovariantVectors.CLVProblem</code></strong> &mdash; <em>Type</em>.</p>
+<pre><code>CLVProblem(phase_prob, num_clv; &lt;keyword arguments&gt;)
+CLVProblem(le_prob::LEProblem; &lt;keyword arguments&gt;)
+</code></pre>
+
+<p>Covariant Lyapunov vector (CLV) problem.  This is a struc that holds the dynamical system definition (<code>phase_prob</code> and <code>tangent_dynamics!</code>) and the configuration parameters for the algorithm (<code>num_clv</code>, etc.).</p>
+<p>The CLVs are calculated using the 'dynamical' algorithm proposed by Ginelli et al. (2007, 2013).</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><code>num_clv::Int</code>: Number of points at which CLV are sampled. It is <code>0.8 * le_prob.num_attr</code> when constructed from <a href="./#LyapunovExponents.LEProblem"><code>LEProblem</code></a>.</li>
+<li><code>num_forward_tran::Int</code>, <code>num_backward_tran::Int</code>: Forward and backward transient dynamics.  They are <code>0.1 * le_prob.num_attr</code> when constructed from <a href="./#LyapunovExponents.LEProblem"><code>LEProblem</code></a>.</li>
+<li>See <a href="./#LyapunovExponents.LEProblem"><code>LEProblem</code></a> for <code>phase_prob</code>, <code>tangent_dynamics!</code> and <code>Q0</code>.</li>
+</ul>
+<p><strong>Examples (in the online documentation)</strong></p>
+<ul>
+<li><a href="../gallery/Ginelli_2007_Figure_1a/#Ginelli-et-al.-(2007),-Figure-1a-1">Ginelli et al. (2007), Figure 1a</a></li>
+<li><a href="../gallery/Lorenz_CLV/#Covariant-Lyapunov-vectors-on-the-Lorenz-attractor-1">Covariant Lyapunov vectors on the Lorenz attractor</a></li>
+</ul>
+<p>See: <a href="https://tkf.github.io/LyapunovExponents.jl/latest/gallery/">https://tkf.github.io/LyapunovExponents.jl/latest/gallery/</a></p>
+<p><strong>Reference</strong></p>
+<ul>
+<li>Ginelli, F., Poggi, P., Turchi, A., Chaté, H., Livi, R., &amp; Politi, A. (2007). <em>Characterizing Dynamics with Covariant Lyapunov Vectors.</em> Physical Review Letters, 99(13), 1–4. <a href="http://doi.org/10.1103/PhysRevLett.99.130601">http://doi.org/10.1103/PhysRevLett.99.130601</a></li>
+<li>Ginelli, F., Chaté, H., Livi, R., &amp; Politi, A. (2013). <em>Covariant Lyapunov vectors.</em> Journal of Physics A: Mathematical and Theoretical, 46(25), 254005. <a href="http://doi.org/10.1088/1751-8113/46/25/254005">http://doi.org/10.1088/1751-8113/46/25/254005</a></li>
+</ul>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/clv_problem.jl#L3-L38' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.CovariantVectors.CLV' href='#LyapunovExponents.CovariantVectors.CLV'>#</a>
+<strong><code>LyapunovExponents.CovariantVectors.CLV</code></strong> &mdash; <em>Module</em>.</p>
+<p>Convenience methods for accessing CLV matrices.</p>
+<p>Methods <code>CLV.C</code>, <code>CLV.R</code> and <code>CLV.G</code> are the accessor to the matrices $C$, $R$ and $G$ in</p>
+<p>
+<script type="math/tex; mode=display">
+G_{n+k} C_{n+k} D_{k,n} = M_{k,n} G_n C_n = G_{n+k} R_{k,n} C_n
+</script>
+</p>
+<p>(Eq. 32, Ginelli et al., 2013).</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/accessors.jl#L1' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.CovariantVectors.CLV.M' href='#LyapunovExponents.CovariantVectors.CLV.M'>#</a>
+<strong><code>LyapunovExponents.CovariantVectors.CLV.M</code></strong> &mdash; <em>Function</em>.</p>
+<p>$M_n$ (the cocycle)</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/accessors.jl#L15' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.CovariantVectors.CLV.G' href='#LyapunovExponents.CovariantVectors.CLV.G'>#</a>
+<strong><code>LyapunovExponents.CovariantVectors.CLV.G</code></strong> &mdash; <em>Function</em>.</p>
+<p>$G_n$ (<code>Q</code> from the QR decomposition of $M_{k,n-k} G_{n-k}$)</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/accessors.jl#L18' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.CovariantVectors.CLV.R' href='#LyapunovExponents.CovariantVectors.CLV.R'>#</a>
+<strong><code>LyapunovExponents.CovariantVectors.CLV.R</code></strong> &mdash; <em>Function</em>.</p>
+<p>$R_n$ (<code>R</code> from the QR decomposition of $M_{k,n-k} G_{n-k}$)</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/accessors.jl#L21' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.CovariantVectors.CLV.R_prev' href='#LyapunovExponents.CovariantVectors.CLV.R_prev'>#</a>
+<strong><code>LyapunovExponents.CovariantVectors.CLV.R_prev</code></strong> &mdash; <em>Function</em>.</p>
+<p>$R_{n-k}$</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/accessors.jl#L24' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.CovariantVectors.CLV.C' href='#LyapunovExponents.CovariantVectors.CLV.C'>#</a>
+<strong><code>LyapunovExponents.CovariantVectors.CLV.C</code></strong> &mdash; <em>Function</em>.</p>
+<p>$C_n$</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/accessors.jl#L27' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.CovariantVectors.CLV.D' href='#LyapunovExponents.CovariantVectors.CLV.D'>#</a>
+<strong><code>LyapunovExponents.CovariantVectors.CLV.D</code></strong> &mdash; <em>Function</em>.</p>
+<p>$D_n$</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/accessors.jl#L30' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.phase_state' href='#LyapunovExponents.phase_state'>#</a>
+<strong><code>LyapunovExponents.phase_state</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>phase_state(solverish) :: Vector
+</code></pre>
+
+<p>Get current phase-space state stored in <code>solverish</code>.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/types.jl#L219-L223' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.CovariantVectors.forward_dynamics!' href='#LyapunovExponents.CovariantVectors.forward_dynamics!'>#</a>
+<strong><code>LyapunovExponents.CovariantVectors.forward_dynamics!</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>forward_dynamics!(solver::CLVSolver) :: ForwardDynamics
+</code></pre>
+
+<p>Solve the CLV problem up to the forward dynamics stage and return an iterator to step through the forward dynamics. See also: <a href="./#LyapunovExponents.CovariantVectors.backward_dynamics!"><code>backward_dynamics!</code></a>, <a href="./#LyapunovExponents.CovariantVectors.goto!"><code>goto!</code></a>.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/clv_solver.jl#L115-L121' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.CovariantVectors.backward_dynamics!' href='#LyapunovExponents.CovariantVectors.backward_dynamics!'>#</a>
+<strong><code>LyapunovExponents.CovariantVectors.backward_dynamics!</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>backward_dynamics!(solver::CLVSolver) :: BackwardDynamics
+</code></pre>
+
+<p>Solve the CLV problem up to the (final) backward dynamics stage and return an iterator to step through the backward dynamics. See also <a href="./#LyapunovExponents.CovariantVectors.forward_dynamics!"><code>forward_dynamics!</code></a>, <a href="./#LyapunovExponents.CovariantVectors.goto!"><code>goto!</code></a>.</p>
+<p>Note that finishing iteration of the returned iterator does not finalize all the solver stages (namely, recording to <code>solver.sol</code>, if non-default <code>backward_dynamics</code> is used).  In this case, <code>solve!(solver)</code> has to be called after the iteration.</p>
+<p><strong>Example</strong></p>
+<pre><code class="julia">angles = [acos(abs(dot(C[:, 1], C[:, 2]))) * 2 / π for C
+          in backward_dynamics!(solver)]
+</code></pre>
+
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/clv_solver.jl#L135-L152' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.CovariantVectors.indexed_forward_dynamics!' href='#LyapunovExponents.CovariantVectors.indexed_forward_dynamics!'>#</a>
+<strong><code>LyapunovExponents.CovariantVectors.indexed_forward_dynamics!</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>indexed_forward_dynamics!(solver::CLVSolver)
+indexed_forward_dynamics!(stage::ForwardDynamics)
+</code></pre>
+
+<p>Just a short-hand for <code>enumerate(forward_dynamics!(solver))</code>. It's for symmetry with <a href="./#LyapunovExponents.CovariantVectors.indexed_backward_dynamics!"><code>indexed_backward_dynamics!</code></a>.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/clv_solver.jl#L124-L130' class='documenter-source'>source</a><br></p>
+<p><a id='LyapunovExponents.CovariantVectors.indexed_backward_dynamics!' href='#LyapunovExponents.CovariantVectors.indexed_backward_dynamics!'>#</a>
+<strong><code>LyapunovExponents.CovariantVectors.indexed_backward_dynamics!</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>indexed_backward_dynamics!(solver::CLVSolver)
+indexed_backward_dynamics!(stage::BackwardDynamics)
+</code></pre>
+
+<p>It is equivalent to <code>zip(some_counter, backward_dynamics!(solver))</code> where <code>some_counter</code> is an iterator over integers such that the same indices returned by <a href="./#LyapunovExponents.CovariantVectors.indexed_forward_dynamics!"><code>indexed_forward_dynamics!</code></a> indicate that those events are at the same time point of the backward and forward passes.  This is useful when combining matrices <a href="./#LyapunovExponents.CovariantVectors.CLV.G"><code>CLV.G</code></a> and <a href="./#LyapunovExponents.CovariantVectors.CLV.C"><code>CLV.C</code></a> to obtain the CLV in the (original) tangent space.</p>
+<p>For such example, see: <a href="../gallery/Lorenz_CLV/#Covariant-Lyapunov-vectors-on-the-Lorenz-attractor-1">Covariant Lyapunov vectors on the Lorenz attractor</a> in the online manual.</p>
+<p>Note that <code>indexed_backward_dynamics!(solver::CLVSolver)</code> is equivalent to</p>
+<pre><code class="julia">backward = backward_dynamics!(solver)
+indexed_backward_dynamics!(backward)
+</code></pre>
+
+<p>Separately calling <a href="./#LyapunovExponents.CovariantVectors.backward_dynamics!"><code>backward_dynamics!</code></a> is useful when the quantities other than <a href="./#LyapunovExponents.CovariantVectors.CLV.G"><code>CLV.G</code></a> (e.g., <a href="./#LyapunovExponents.CovariantVectors.CLV.R"><code>CLV.R</code></a>) are required.</p>
+<p>See also <a href="./#LyapunovExponents.CovariantVectors.indexed_forward_dynamics!"><code>indexed_forward_dynamics!</code></a>.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/clv_solver.jl#L155-L181' class='documenter-source'>source</a><br></p>
+<p><a id='Low-level-API-for-CLV-solver-1'></a></p>
+<h3 id="low-level-api-for-clv-solver">Low-level API for CLV solver</h3>
+<p><a id='LyapunovExponents.CovariantVectors.goto!' href='#LyapunovExponents.CovariantVectors.goto!'>#</a>
+<strong><code>LyapunovExponents.CovariantVectors.goto!</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>goto!(solver::CLVSolver, stage_type::Type{T}) :: T
+</code></pre>
+
+<p>Solve the CLV problem up to the stage of type <code>stage_type</code> and return it.  Instead of directly calling <code>goto!(solver, ForwardDynamics)</code> and <code>goto!(solver, BackwardDynamics)</code>, use the convenience methods <a href="./#LyapunovExponents.CovariantVectors.forward_dynamics!"><code>forward_dynamics!</code></a> and <a href="./#LyapunovExponents.CovariantVectors.backward_dynamics!"><code>backward_dynamics!</code></a>.</p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/clv_solver.jl#L91-L98' class='documenter-source'>source</a><br></p></div>
+        
+    </div>
+
+    <footer class="col-md-12 text-center">
+        <hr>
+        <p>
+        <small>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p></small>
+    </footer>
+
+    <script src="../js/jquery-1.10.2.min.js"></script>
+    <script src="../js/bootstrap-3.0.3.min.js"></script>
+    <script src="../js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+    var base_url = '..';
+    </script>
+    <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
+    <script src="../js/base.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+    <script src="../assets/mathjaxhelper.js"></script>
+    <script src="../search/require.js"></script>
+    <script src="../search/search.js"></script>
+
+    <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        From here you can search these documents. Enter your search terms below.
+                    </p>
+                    <form role="form">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                        </div>
+                    </form>
+                    <div id="mkdocs-search-results"></div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </body>
+
+</html>
