@@ -58,9 +58,9 @@ null_CLV_tests = [
     end
 
     dims = size(prob.Q0)
-    x = [Vector{Float64}(3) for _ in 1:prob.num_clv]
-    G = [Matrix{Float64}(3, 3) for _ in 1:prob.num_clv]
-    C = [Matrix{Float64}(3, 3) for _ in 1:prob.num_clv]
+    x = [Vector{Float64}(dims[1]) for _ in 1:prob.num_clv]
+    G = [Matrix{Float64}(dims) for _ in 1:prob.num_clv]
+    C = [Matrix{Float64}(dims) for _ in 1:prob.num_clv]
 
     forward = forward_dynamics!(solver)
     for (n, Gₙ) in zip(1:prob.num_clv, forward)
