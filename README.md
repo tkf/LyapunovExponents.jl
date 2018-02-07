@@ -22,7 +22,6 @@ Implemented:
 * Lyapunov exponents calculation based on QR decomposition.
 * Maximum Lyapunov exponent calculation.
 * [Covariant Lyapunov vectors calculation][CLV example].
-  (Not well tested!)
 * Tangent space evolution based on the automatic differentiation tool
   [ForwardDiff.jl].
 * Testing utilities for tangent space evolution (Jacobian calculation)
