@@ -36,3 +36,6 @@ OnlineStatsBase._value(o::VecVariance) =
 Base.var(o::VecVariance) = value(o)
 Base.std(o::VecVariance) = sqrt.(var(o))
 Base.mean(o::VecVariance) = o.μs
+
+# This is required for OnlineStats 0.15.3:
+OnlineStats.nobs(o::VecVariance) = o.nobs
