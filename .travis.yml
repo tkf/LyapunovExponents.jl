@@ -6,8 +6,12 @@ julia:
   - 0.6
   - nightly
 env:
-  - REQUIRE_VERSIONS=minimal
-  - REQUIRE_VERSIONS=latest
+  global:
+    - GKSwstype=100  # "no output" for GR
+    # https://github.com/JuliaPlots/Plots.jl/issues/1076#issuecomment-327509819
+  matrix:
+    - REQUIRE_VERSIONS=minimal
+    - REQUIRE_VERSIONS=latest
 notifications:
   email: false
 git:
