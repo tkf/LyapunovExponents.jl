@@ -1,7 +1,7 @@
 julia 0.6
 DifferentialEquations 4.0 5.0
 ForwardDiff 0.7
-OnlineStats 0.15
+OnlineStats 0.15.1
 OnlineStatsBase 0.4
 OrdinaryDiffEq 3.0
 Parameters 0.8.1
