@@ -31,9 +31,9 @@ before_script:
   # Note that we cannot use `before_cache` to remove it before the
   # cache upload since it occurs before `after_success` in which
   # Documenter.jl needs it:
-  - julia -e 'Pkg.rm("LyapunovExponents")'
+  - julia --color=yes -e 'Pkg.rm("LyapunovExponents")'
   # Install Coverage.jl and Documenter.jl here so that they will be cached:
-  - julia -e 'map(Pkg.add, ["Coverage", "Documenter", "GR"])'
+  - julia --color=yes -e 'map(Pkg.add, ["Coverage", "Documenter", "GR"])'
   # This is one of the step in the "official" step.  But it has to be
   # done before misc/use-minimal-versions.jl:
   - julia --color=yes -e 'Pkg.clone(pwd())'
@@ -51,11 +51,11 @@ script:
 
 after_success:
   # push coverage results to Coveralls
-  - julia -e 'cd(Pkg.dir("LyapunovExponents")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
+  - julia --color=yes -e 'cd(Pkg.dir("LyapunovExponents")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
   # push coverage results to Codecov
-  - julia -e 'cd(Pkg.dir("LyapunovExponents")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
-  - julia -e 'Pkg.add("Documenter")'
-  - julia -e 'cd(Pkg.dir("LyapunovExponents")); include(joinpath("docs", "make.jl"))'
+  - julia --color=yes -e 'cd(Pkg.dir("LyapunovExponents")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+  - julia --color=yes -e 'Pkg.add("Documenter")'
+  - julia --color=yes -e 'cd(Pkg.dir("LyapunovExponents")); include(joinpath("docs", "make.jl"))'
 
 after_script:
   - julia --color=yes misc/show-versions.jl
