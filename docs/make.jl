@@ -14,8 +14,10 @@ end
 
 makedocs()
 
-deploydocs(
-    deps   = Deps.pip("mkdocs", "python-markdown-math", "mkdocs-cinder"),
-    repo   = "github.com/tkf/LyapunovExponents.jl.git",
-    julia  = "0.6",
-)
+if get(ENV, "REQUIRE_VERSIONS", "") == "latest"
+    deploydocs(
+        deps   = Deps.pip("mkdocs", "python-markdown-math", "mkdocs-cinder"),
+        repo   = "github.com/tkf/LyapunovExponents.jl.git",
+        julia  = "0.6",
+    )
+end
