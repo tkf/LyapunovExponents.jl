@@ -4,7 +4,7 @@ ForwardDiff 0.7
 OnlineStats 0.15
 OnlineStatsBase 0.4
 OrdinaryDiffEq 3.0
-Parameters 0.8
+Parameters 0.8.1
 Plots 0.15
 ProgressMeter 0.5
 RecipesBase 0.2.3
