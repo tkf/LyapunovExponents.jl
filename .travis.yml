@@ -45,6 +45,8 @@ before_script:
   - julia --color=yes -e 'Pkg.build("LyapunovExponents")'
   # Show package version numbers:
   - julia --color=yes misc/show-versions.jl
+  # Precompile Plots.jl
+  - julia --color=yes -e 'using Plots'
 
 script:
   - julia --color=yes --check-bounds=yes -e 'Pkg.test("LyapunovExponents"; coverage=true)'
