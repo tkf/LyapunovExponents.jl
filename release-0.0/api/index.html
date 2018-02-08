@@ -225,7 +225,7 @@
 
 <p>If <code>tspan</code> is a <code>Real</code> instead of a <code>Tuple</code>, then <code>(0, tspan)</code> is passed as the <code>tspan</code> argument of <code>ODEProblem</code>.</p>
 <p>For the list of usable keyword arguments, see <a href="./#LyapunovExponents.LEProblem"><code>LEProblem</code></a>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/continuous_exponents.jl#L16-L30' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/continuous_exponents.jl#L16-L30' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.DiscreteLEProblem' href='#LyapunovExponents.DiscreteLEProblem'>#</a>
 <strong><code>LyapunovExponents.DiscreteLEProblem</code></strong> &mdash; <em>Type</em>.</p>
 <pre><code>DiscreteLEProblem(phase_dynamics!, u0, tspan [, p [, num_attr]];
@@ -238,29 +238,29 @@
 
 <p>If <code>tspan</code> is a <code>Integer</code> instead of a <code>Tuple</code>, then <code>(0, tspan)</code> is passed as the <code>tspan</code> argument of <code>DiscreteProblem</code>.</p>
 <p>For the list of usable keyword arguments, see <a href="./#LyapunovExponents.LEProblem"><code>LEProblem</code></a>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/discrete_exponents.jl#L34-L48' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/discrete_exponents.jl#L34-L48' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.lyapunov_exponents' href='#LyapunovExponents.lyapunov_exponents'>#</a>
 <strong><code>LyapunovExponents.lyapunov_exponents</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>lyapunov_exponents(solver)
 </code></pre>
 
 <p>Get the result of Lyapunov exponents calculation stored in <code>solver</code>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L260-L264' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/core.jl#L260-L264' class='documenter-source'>source</a><br></p>
 <pre><code>lyapunov_exponents(phase_dynamics!, u0, tspan; &lt;keyword arguments&gt;)
 </code></pre>
 
 <p>Calculate Lyapunov exponents of a dynamical system.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/interface.jl#L1-L5' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/interface.jl#L1-L5' class='documenter-source'>source</a><br></p>
 <p><a id='Low-level-API-1'></a></p>
 <h2 id="low-level-api">Low-level API</h2>
 <p><a id='LyapunovExponents.AbstractLEProblem' href='#LyapunovExponents.AbstractLEProblem'>#</a>
 <strong><code>LyapunovExponents.AbstractLEProblem</code></strong> &mdash; <em>Type</em>.</p>
 <p>The Problem type represents the setup of the Lyapunov exponents calculation.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/types.jl#L3-L5' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/types.jl#L3-L5' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.AbstractRelaxer' href='#LyapunovExponents.AbstractRelaxer'>#</a>
 <strong><code>LyapunovExponents.AbstractRelaxer</code></strong> &mdash; <em>Type</em>.</p>
 <p>The Relaxer type represents the calculation required for throwing away the transient part of the dynamics.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/types.jl#L8-L11' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/types.jl#L8-L11' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.AbstractLESolver' href='#LyapunovExponents.AbstractLESolver'>#</a>
 <strong><code>LyapunovExponents.AbstractLESolver</code></strong> &mdash; <em>Type</em>.</p>
 <p>The Solver type represents the core Lyapunov Exponents (LE) calculation.  The LE calculation is done by calling the in-place mutating function <a href="./#DiffEqBase.solve!"><code>solve!</code></a>.</p>
@@ -279,7 +279,7 @@
  │     ▼                                                              <br />
  └▶ Solver (<a href="./#LyapunovExponents.AbstractLESolver"><code>AbstractLESolver</code></a>) ┄┄ ⟲ <a href="./#DiffEqBase.solve!"><code>solve!</code></a>,                                                  <a href="./#DiffEqBase.step!"><code>step!</code></a>       <br />
  </code></p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/types.jl#L14-L51' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/types.jl#L14-L51' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.LEProblem' href='#LyapunovExponents.LEProblem'>#</a>
 <strong><code>LyapunovExponents.LEProblem</code></strong> &mdash; <em>Type</em>.</p>
 <pre><code>LEProblem(phase_prob, num_attr; &lt;keyword arguments&gt;)
@@ -295,21 +295,21 @@ LEProblem(phase_prob; num_attr, &lt;keyword arguments&gt;)
 <li><code>Q0::Array</code>: The initial guess of the Gram-Schmidt "Lyapunov vectors".</li>
 <li><code>tangent_dynamics::Function</code>: A vector field for solving phase space  evolution <em>and</em> tangent space evolution together.  If this is not  provided, <code>tangent_dynamics</code> is derived from <code>phase_prob.f</code>.  See  also <a href="./#LyapunovExponents.PhaseTangentDynamics"><code>PhaseTangentDynamics</code></a>.</li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/types.jl#L41-L65' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/types.jl#L41-L65' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.LESolver' href='#LyapunovExponents.LESolver'>#</a>
 <strong><code>LyapunovExponents.LESolver</code></strong> &mdash; <em>Type</em>.</p>
 <pre><code>LESolver(integrator; &lt;keyword arguments&gt;)
 </code></pre>
 
 <p>A type representing the main calculation of Lyapunov Exponents (LE). This struct holds all temporary state required for LE calculation.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/types.jl#L107-L112' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/types.jl#L107-L112' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.get_relaxer' href='#LyapunovExponents.get_relaxer'>#</a>
 <strong><code>LyapunovExponents.get_relaxer</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>get_relaxer(prob::AbstractLEProblem; &lt;keyword arguments&gt;) :: AbstractRelaxer
 </code></pre>
 
 <p>Get a relaxer for a LE problem.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L9-L13' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/core.jl#L9-L13' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.relaxed' href='#LyapunovExponents.relaxed'>#</a>
 <strong><code>LyapunovExponents.relaxed</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>relaxed(prob::AbstractLEProblem; &lt;keyword arguments&gt;) :: AbstractRelaxer
@@ -317,14 +317,14 @@ LEProblem(phase_prob; num_attr, &lt;keyword arguments&gt;)
 
 <p>Throwaway the transient part of the phase space dynamics of the LE problem <code>prob</code>.</p>
 <p>That is to say, convert a LE problem (<a href="./#LyapunovExponents.AbstractLEProblem"><code>AbstractLEProblem</code></a>) to a relaxer (<a href="./#LyapunovExponents.AbstractRelaxer"><code>AbstractRelaxer</code></a>) and then call <a href="./#LyapunovExponents.relax!"><code>relax!</code></a>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L36-L44' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/core.jl#L36-L44' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.relax!' href='#LyapunovExponents.relax!'>#</a>
 <strong><code>LyapunovExponents.relax!</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>relax!(relaxer::AbstractRelaxer; &lt;keyword arguments&gt;)
 </code></pre>
 
 <p>Throwaway the transient part of the phase space dynamics of the LE problem <code>prob</code>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L17-L22' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/core.jl#L17-L22' class='documenter-source'>source</a><br></p>
 <p><a id='DiffEqBase.init' href='#DiffEqBase.init'>#</a>
 <strong><code>DiffEqBase.init</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>init(prob::AbstractLEProblem; &lt;keyword arguments&gt;) :: AbstractLESolver
@@ -332,26 +332,26 @@ init(relaxer::AbstractRelaxer; &lt;keyword arguments&gt;) :: AbstractLESolver
 </code></pre>
 
 <p>Run phase space simulation to throw away the transient and then construct a LE solver.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L112-L118' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/core.jl#L112-L118' class='documenter-source'>source</a><br></p>
 <p><a id='DiffEqBase.step!' href='#DiffEqBase.step!'>#</a>
 <strong><code>DiffEqBase.step!</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>step!(solver::AbstractLESolver)
 </code></pre>
 
 <p>Evolve the dynamics and then do an orthonormalization.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L183-L187' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/core.jl#L183-L187' class='documenter-source'>source</a><br></p>
 <p><a id='DiffEqBase.solve!' href='#DiffEqBase.solve!'>#</a>
 <strong><code>DiffEqBase.solve!</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>solve!(solver::AbstractLESolver; &lt;keyword arguments&gt;)
 </code></pre>
 
 <p>Do <code>solver.num_attr</code> times of orthonormalization <code>step!(solver)</code>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L228-L232' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/core.jl#L228-L232' class='documenter-source'>source</a><br></p>
 <pre><code>solve!(demo::LEDemo; progress=-1, &lt;keyword arguments&gt;)
 </code></pre>
 
 <p>Initialize <code>demo.solver</code> from <code>demo.prob</code> and run <code>solve!(demo.solver)</code> to calculate the Lyapunov exponents.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/examples/example_base.jl#L73-L78' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/examples/example_base.jl#L73-L78' class='documenter-source'>source</a><br></p>
 <p><a id='DiffEqBase.solve' href='#DiffEqBase.solve'>#</a>
 <strong><code>DiffEqBase.solve</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>solve(prob::AbstractLEProblem; &lt;keyword arguments&gt;)
@@ -359,11 +359,11 @@ init(relaxer::AbstractRelaxer; &lt;keyword arguments&gt;) :: AbstractLESolver
 </code></pre>
 
 <p>Initialize the solver (<a href="./#DiffEqBase.init"><code>init</code></a>) and then go through the LE calculation (<a href="./#DiffEqBase.solve!"><code>solve!</code></a>).</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/core.jl#L245-L251' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/core.jl#L245-L251' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.PhaseTangentDynamics' href='#LyapunovExponents.PhaseTangentDynamics'>#</a>
 <strong><code>LyapunovExponents.PhaseTangentDynamics</code></strong> &mdash; <em>Type</em>.</p>
 <p>Auto-generated dynamics for solving phase and tangent dynamics together.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/coevolve.jl#L1-L3' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/coevolve.jl#L1-L3' class='documenter-source'>source</a><br></p>
 <p><a id='API-for-CLV-solver-1'></a></p>
 <h2 id="api-for-clv-solver">API for CLV solver</h2>
 <p><a id='LyapunovExponents.CovariantVectors.CLVProblem' href='#LyapunovExponents.CovariantVectors.CLVProblem'>#</a>
@@ -391,7 +391,7 @@ CLVProblem(le_prob::LEProblem; &lt;keyword arguments&gt;)
 <li>Ginelli, F., Poggi, P., Turchi, A., Chaté, H., Livi, R., &amp; Politi, A. (2007). <em>Characterizing Dynamics with Covariant Lyapunov Vectors.</em> Physical Review Letters, 99(13), 1–4. <a href="http://doi.org/10.1103/PhysRevLett.99.130601">http://doi.org/10.1103/PhysRevLett.99.130601</a></li>
 <li>Ginelli, F., Chaté, H., Livi, R., &amp; Politi, A. (2013). <em>Covariant Lyapunov vectors.</em> Journal of Physics A: Mathematical and Theoretical, 46(25), 254005. <a href="http://doi.org/10.1088/1751-8113/46/25/254005">http://doi.org/10.1088/1751-8113/46/25/254005</a></li>
 </ul>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/clv_problem.jl#L3-L38' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/clv/clv_problem.jl#L3-L38' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.CovariantVectors.CLV' href='#LyapunovExponents.CovariantVectors.CLV'>#</a>
 <strong><code>LyapunovExponents.CovariantVectors.CLV</code></strong> &mdash; <em>Module</em>.</p>
 <p>Convenience methods for accessing CLV matrices.</p>
@@ -402,45 +402,45 @@ G_{n+k} C_{n+k} D_{k,n} = M_{k,n} G_n C_n = G_{n+k} R_{k,n} C_n
 </script>
 </p>
 <p>(Eq. 32, Ginelli et al., 2013).</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/accessors.jl#L1' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/clv/accessors.jl#L1' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.CovariantVectors.CLV.M' href='#LyapunovExponents.CovariantVectors.CLV.M'>#</a>
 <strong><code>LyapunovExponents.CovariantVectors.CLV.M</code></strong> &mdash; <em>Function</em>.</p>
 <p>$M_n$ (the cocycle)</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/accessors.jl#L15' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/clv/accessors.jl#L15' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.CovariantVectors.CLV.G' href='#LyapunovExponents.CovariantVectors.CLV.G'>#</a>
 <strong><code>LyapunovExponents.CovariantVectors.CLV.G</code></strong> &mdash; <em>Function</em>.</p>
 <p>$G_n$ (<code>Q</code> from the QR decomposition of $M_{k,n-k} G_{n-k}$)</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/accessors.jl#L18' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/clv/accessors.jl#L18' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.CovariantVectors.CLV.R' href='#LyapunovExponents.CovariantVectors.CLV.R'>#</a>
 <strong><code>LyapunovExponents.CovariantVectors.CLV.R</code></strong> &mdash; <em>Function</em>.</p>
 <p>$R_n$ (<code>R</code> from the QR decomposition of $M_{k,n-k} G_{n-k}$)</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/accessors.jl#L21' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/clv/accessors.jl#L21' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.CovariantVectors.CLV.R_prev' href='#LyapunovExponents.CovariantVectors.CLV.R_prev'>#</a>
 <strong><code>LyapunovExponents.CovariantVectors.CLV.R_prev</code></strong> &mdash; <em>Function</em>.</p>
 <p>$R_{n-k}$</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/accessors.jl#L24' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/clv/accessors.jl#L24' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.CovariantVectors.CLV.C' href='#LyapunovExponents.CovariantVectors.CLV.C'>#</a>
 <strong><code>LyapunovExponents.CovariantVectors.CLV.C</code></strong> &mdash; <em>Function</em>.</p>
 <p>$C_n$</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/accessors.jl#L27' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/clv/accessors.jl#L27' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.CovariantVectors.CLV.D' href='#LyapunovExponents.CovariantVectors.CLV.D'>#</a>
 <strong><code>LyapunovExponents.CovariantVectors.CLV.D</code></strong> &mdash; <em>Function</em>.</p>
 <p>$D_n$</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/accessors.jl#L30' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/clv/accessors.jl#L30' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.phase_state' href='#LyapunovExponents.phase_state'>#</a>
 <strong><code>LyapunovExponents.phase_state</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>phase_state(solverish) :: Vector
 </code></pre>
 
 <p>Get current phase-space state stored in <code>solverish</code>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/types.jl#L219-L223' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/types.jl#L219-L223' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.CovariantVectors.forward_dynamics!' href='#LyapunovExponents.CovariantVectors.forward_dynamics!'>#</a>
 <strong><code>LyapunovExponents.CovariantVectors.forward_dynamics!</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>forward_dynamics!(solver::CLVSolver) :: ForwardDynamics
 </code></pre>
 
 <p>Solve the CLV problem up to the forward dynamics stage and return an iterator to step through the forward dynamics. See also: <a href="./#LyapunovExponents.CovariantVectors.backward_dynamics!"><code>backward_dynamics!</code></a>, <a href="./#LyapunovExponents.CovariantVectors.goto!"><code>goto!</code></a>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/clv_solver.jl#L115-L121' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/clv/clv_solver.jl#L115-L121' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.CovariantVectors.backward_dynamics!' href='#LyapunovExponents.CovariantVectors.backward_dynamics!'>#</a>
 <strong><code>LyapunovExponents.CovariantVectors.backward_dynamics!</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>backward_dynamics!(solver::CLVSolver) :: BackwardDynamics
@@ -453,7 +453,7 @@ G_{n+k} C_{n+k} D_{k,n} = M_{k,n} G_n C_n = G_{n+k} R_{k,n} C_n
           in backward_dynamics!(solver)]
 </code></pre>
 
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/clv_solver.jl#L135-L152' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/clv/clv_solver.jl#L135-L152' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.CovariantVectors.indexed_forward_dynamics!' href='#LyapunovExponents.CovariantVectors.indexed_forward_dynamics!'>#</a>
 <strong><code>LyapunovExponents.CovariantVectors.indexed_forward_dynamics!</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>indexed_forward_dynamics!(solver::CLVSolver)
@@ -461,7 +461,7 @@ indexed_forward_dynamics!(stage::ForwardDynamics)
 </code></pre>
 
 <p>Just a short-hand for <code>enumerate(forward_dynamics!(solver))</code>. It's for symmetry with <a href="./#LyapunovExponents.CovariantVectors.indexed_backward_dynamics!"><code>indexed_backward_dynamics!</code></a>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/clv_solver.jl#L124-L130' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/clv/clv_solver.jl#L124-L130' class='documenter-source'>source</a><br></p>
 <p><a id='LyapunovExponents.CovariantVectors.indexed_backward_dynamics!' href='#LyapunovExponents.CovariantVectors.indexed_backward_dynamics!'>#</a>
 <strong><code>LyapunovExponents.CovariantVectors.indexed_backward_dynamics!</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>indexed_backward_dynamics!(solver::CLVSolver)
@@ -477,7 +477,7 @@ indexed_backward_dynamics!(backward)
 
 <p>Separately calling <a href="./#LyapunovExponents.CovariantVectors.backward_dynamics!"><code>backward_dynamics!</code></a> is useful when the quantities other than <a href="./#LyapunovExponents.CovariantVectors.CLV.G"><code>CLV.G</code></a> (e.g., <a href="./#LyapunovExponents.CovariantVectors.CLV.R"><code>CLV.R</code></a>) are required.</p>
 <p>See also <a href="./#LyapunovExponents.CovariantVectors.indexed_forward_dynamics!"><code>indexed_forward_dynamics!</code></a>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/clv_solver.jl#L155-L181' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/clv/clv_solver.jl#L155-L181' class='documenter-source'>source</a><br></p>
 <p><a id='Low-level-API-for-CLV-solver-1'></a></p>
 <h3 id="low-level-api-for-clv-solver">Low-level API for CLV solver</h3>
 <p><a id='LyapunovExponents.CovariantVectors.goto!' href='#LyapunovExponents.CovariantVectors.goto!'>#</a>
@@ -486,7 +486,7 @@ indexed_backward_dynamics!(backward)
 </code></pre>
 
 <p>Solve the CLV problem up to the stage of type <code>stage_type</code> and return it.  Instead of directly calling <code>goto!(solver, ForwardDynamics)</code> and <code>goto!(solver, BackwardDynamics)</code>, use the convenience methods <a href="./#LyapunovExponents.CovariantVectors.forward_dynamics!"><code>forward_dynamics!</code></a> and <a href="./#LyapunovExponents.CovariantVectors.backward_dynamics!"><code>backward_dynamics!</code></a>.</p>
-<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/d55d5cea7531fc1de37c557789e11760429ba5c9/src/clv/clv_solver.jl#L91-L98' class='documenter-source'>source</a><br></p></div>
+<p><a target='_blank' href='https://github.com/tkf/LyapunovExponents.jl/blob/30c2e4679a78c3b21a0dbd10dcb29f63b53f82fa/src/clv/clv_solver.jl#L91-L98' class='documenter-source'>source</a><br></p></div>
         
     </div>
 
