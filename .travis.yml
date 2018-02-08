@@ -34,13 +34,18 @@ before_script:
   - julia -e 'Pkg.rm("LyapunovExponents")'
   # Install Coverage.jl and Documenter.jl here so that they will be cached:
   - julia -e 'map(Pkg.add, ["Coverage", "Documenter", "GR"])'
+  # This is one of the step in the "official" step.  But it has to be
+  # done before misc/use-minimal-versions.jl:
+  - julia --color=yes -e 'Pkg.clone(pwd())'
   # Run misc/use-minimal-versions.jl or misc/use-latest-versions.jl to
   # install appropriate packages:
-  - julia misc/use-"$REQUIRE_VERSIONS"-versions.jl
+  - julia --color=yes misc/use-"$REQUIRE_VERSIONS"-versions.jl
+  # This is one of the step in the "official" step.  It makes sense to
+  # do it in before_script:
+  - julia --color=yes -e 'Pkg.build("LyapunovExponents")'
 
-## uncomment the following lines to override the default test script
-#script:
-#  - julia -e 'Pkg.clone(pwd()); Pkg.build("LyapunovExponents"); Pkg.test("LyapunovExponents"; coverage=true)'
+script:
+  - julia --color=yes --check-bounds=yes -e 'Pkg.test("LyapunovExponents"; coverage=true)'
 after_success:
   - julia misc/show-versions.jl
   # push coverage results to Coveralls
