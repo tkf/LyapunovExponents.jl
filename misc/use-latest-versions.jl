@@ -1,0 +1,6 @@
+println("Pkg.free(keys(Pkg.installed()))")
+Pkg.free(collect(keys(Pkg.installed())))
+println("Pkg.resolve()")
+Pkg.resolve()
+println("Pkg.update()")
+Pkg.update()
