@@ -138,8 +138,10 @@ mutable struct LESolver{Intr,
                      M <: AbstractMatrix}
 
         dim_lyap = get_dim_lyap(integrator)
-        @assert dim_lyap <= length(phase_state)
-        @assert size(tangent_state)[1] == length(phase_state)
+        dim_phase = length(init_phase_state(integrator))
+        @assert dim_lyap <= dim_phase
+        @assert size(phase_state) == (dim_phase,)
+        @assert size(tangent_state) == (dim_phase, dim_lyap)
 
         num_orth = 0
         if ! isa(main_stat, OnlineStats.OnlineStat)
