@@ -28,7 +28,7 @@ function default_stages(::CLVProblem;
                         backward_dynamics::Union{Callable, Void} = nothing,
                         )
 
-    unsupported = setdiff(record, (:G, :C))
+    unsupported = setdiff(record, (:G, :C, :x))
     if ! isempty(unsupported)
         error("Unsupported record key(s): $unsupported")
     end
@@ -40,11 +40,7 @@ function default_stages(::CLVProblem;
         forward_relaxer,
 
         if forward_dynamics === nothing
-            if :G in record
-                ForwardDynamicsWithGHistory
-            else
-                ForwardDynamics
-            end
+            ForwardDynamics_from_record(record)
         else
             forward_dynamics
         end,
@@ -52,11 +48,7 @@ function default_stages(::CLVProblem;
         backward_relaxer,
 
         if backward_dynamics === nothing
-            if :C in record
-                BackwardDynamicsWithCHistory
-            else
-                BackwardDynamics
-            end
+            BackwardDynamics_from_record(record)
         else
             backward_dynamics
         end,

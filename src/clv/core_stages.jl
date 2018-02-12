@@ -4,7 +4,10 @@ stage_index(stage::AbstractComputationStage) = stage.i
 is_finished(stage::AbstractComputationStage) =
     stage_index(stage) >= stage_length(stage)
 
-record!(::AbstractComputationStage) = nothing
+record!(::AbstractComputationStage, ::Any) = nothing
+# TODO: Separate recording code into "aggregator" types and move
+# flag-based dispatching there.  This way, stages have to depend on
+# single type parameter and code noise here would be reduced.
 
 
 mutable struct ForwardRelaxer{T <: LESolver} <: AbstractComputationStage
@@ -22,6 +25,7 @@ stage_length(frx::ForwardRelaxer) = frx.num_forward_tran
 step!(frx::ForwardRelaxer) = step!(frx.le_solver)
 
 mutable struct ForwardDynamics{record_G,
+                               record_x,
                                T <: LESolver,
                                } <: AbstractComputationStage
     le_solver::T
@@ -29,25 +33,32 @@ mutable struct ForwardDynamics{record_G,
     sol::CLVSolution
     R_history::Vector{UTM}
 
-    ForwardDynamics{record_G}(le_solver::T, i, sol) where {record_G, T} =
-        new{record_G, T}(le_solver, i, sol)
+    ForwardDynamics{record_G,
+                    record_x,
+                    }(le_solver::T, i, sol) where {record_G, record_x, T} =
+        new{record_G, record_x, T}(le_solver, i, sol)
 end
 
-ForwardDynamics(a, b, c) = ForwardDynamics{false}(a, b, c)
+ForwardDynamics_from_record(record) = ForwardDynamics{(:G in record),
+                                                      (:x in record)}
+ForwardDynamics(a, b, c) = ForwardDynamics{false, false}(a, b, c)
 ForwardDynamicsWithGHistory(a, b, c) = ForwardDynamics{true}(a, b, c)
 
-ForwardDynamics{record_G}(frx::ForwardRelaxer, prob::CLVProblem, sol,
-                          ) where {record_G} =
-    ForwardDynamics{record_G}(frx.le_solver, prob::CLVProblem, sol)
-function ForwardDynamics{record_G}(le_solver::LESolver, prob::CLVProblem, sol,
-                                   ) where {record_G}
-    fitr = ForwardDynamics{record_G}(le_solver, 0, sol)
+ForwardDynamics{record_G, record_x}(frx::ForwardRelaxer,
+                                    prob::CLVProblem, sol,
+                                    ) where {record_G, record_x} =
+    ForwardDynamics{record_G, record_x}(frx.le_solver, prob::CLVProblem, sol)
+function ForwardDynamics{record_G,
+                         record_x}(le_solver::LESolver, prob::CLVProblem, sol,
+                                   ) where {record_G, record_x}
+    fitr = ForwardDynamics{record_G, record_x}(le_solver, 0, sol)
     allocate_solution!(fitr, prob)
     return fitr
 end
 
-function allocate_solution!(fitr::ForwardDynamics{record_G},
-                            prob) where {record_G}
+function allocate_solution!(fitr::ForwardDynamics{record_G,
+                                                  record_x},
+                            prob) where {record_G, record_x}
     fitr.sol.R_history = allocate_forward_history(fitr.le_solver, prob,
                                                   UTM, make_UTM)
     fitr.R_history = fitr.sol.R_history
@@ -58,6 +69,12 @@ function allocate_solution!(fitr::ForwardDynamics{record_G},
         fitr.sol.G_history = allocate_forward_history(fitr.le_solver,
                                                       prob, GT;
                                                       num = prob.num_clv)
+    end
+    if record_x
+        XT = Vector{Float64}
+        fitr.sol.x_history = allocate_array_of_arrays(
+            prob.num_clv, size(fitr.le_solver.phase_state),
+            XT)
     end
 end
 
@@ -77,12 +94,17 @@ stage_length(fitr::ForwardDynamics) = length(fitr.R_history)
     i = (fitr.i += 1)
     # TODO: this assignment check if lower half triangle is zero; skip that
     fitr.R_history[i] .= CLV.R_prev(fitr)
-    record!(fitr)
+    record!(fitr, Val{:G})
+    record!(fitr, Val{:x})
     return fitr
 end
 
-record!(fitr::ForwardDynamics{true}) =
+record!(fitr::ForwardDynamics{true}, ::Type{Val{:G}}) =
     fitr.sol.G_history[fitr.i] .= CLV.G(fitr)
+
+record!(fitr::ForwardDynamics{record_G, true},
+        ::Type{Val{:x}}) where {record_G} =
+    fitr.sol.x_history[fitr.i] .= phase_state(fitr)
 
 const ForwardPass = Union{ForwardRelaxer, ForwardDynamics}
 
@@ -127,6 +149,8 @@ mutable struct BackwardDynamics{with_D,
         return bitr
     end
 end
+
+BackwardDynamics_from_record(record) = BackwardDynamics{false, (:C in record)}
 
 const BackwardDynamicsWithD = BackwardDynamics{true, false}
 const BackwardDynamicsWithCHistory = BackwardDynamics{false, true}
@@ -179,10 +203,11 @@ stage_index(stage::BackwardPass) = stage.i + 1  # TODO: don't
     end
     # now:  C = C₀ = R⁻¹ C₁ D
 
-    record!(bitr)
+    record!(bitr, Val{:C})
 end
 
-record!(bitr::BackwardDynamics{with_D, true}) where {with_D} =
+record!(bitr::BackwardDynamics{with_D, true},
+        ::Type{Val{:C}}) where {with_D} =
     bitr.sol.C_history[end-bitr.i] .= CLV.C(bitr)
     # TODO: this assignment check if lower half triangle is zero; skip that
 

@@ -128,6 +128,7 @@ mutable struct CLVSolution
     G_history::Vector{Matrix{Float64}}
     R_history::Vector{UTM}
     C_history::Vector{UTM}
+    x_history::Vector{Vector{Float64}}
 
     CLVSolution() = new()
 end

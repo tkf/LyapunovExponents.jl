@@ -15,13 +15,15 @@ using LyapunovExponents.Test: @test_nothrow
         prob = LyapunovExponents.lorenz_63(num_attr=3).prob :: LEProblem
         solver = CLVSolver(
             prob;
-            record=(:G, :C))
+            record=(:G, :C, :x))
         solve!(solver)
         @test isdefined(solver.sol, :G_history)
         @test isdefined(solver.sol, :C_history)
+        @test isdefined(solver.sol, :x_history)
         num_fwd = solver.prob.num_clv + solver.prob.num_backward_tran
         @test length(solver.sol.G_history) == num_fwd
         @test length(solver.sol.C_history) == solver.prob.num_clv
+        @test length(solver.sol.x_history) == solver.prob.num_clv
     end
 end
 
