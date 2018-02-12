@@ -4,13 +4,16 @@ stage_index(stage::AbstractComputationStage) = stage.i
 is_finished(stage::AbstractComputationStage) =
     stage_index(stage) >= stage_length(stage)
 
+record!(::AbstractComputationStage) = nothing
+
 
 mutable struct ForwardRelaxer{T <: LESolver} <: AbstractComputationStage
     le_solver::T
     num_forward_tran::Int
 end
 
-ForwardRelaxer(prob::CLVProblem, _) = ForwardRelaxer(prob)
+ForwardRelaxer(prob::CLVProblem, ::CLVProblem, ::CLVSolution) =
+    ForwardRelaxer(prob)
 ForwardRelaxer(prob::CLVProblem) = ForwardRelaxer(get_le_solver(prob),
                                                   prob.num_forward_tran)
 
@@ -18,22 +21,49 @@ stage_index(frx::ForwardRelaxer) = frx.le_solver.num_orth
 stage_length(frx::ForwardRelaxer) = frx.num_forward_tran
 step!(frx::ForwardRelaxer) = step!(frx.le_solver)
 
-mutable struct ForwardDynamics{T <: LESolver} <: AbstractComputationStage
+mutable struct ForwardDynamics{record_G,
+                               T <: LESolver,
+                               } <: AbstractComputationStage
     le_solver::T
-    R_history::Vector{UTM}
     i::Int
+    sol::CLVSolution
+    R_history::Vector{UTM}
+
+    ForwardDynamics{record_G}(le_solver::T, i, sol) where {record_G, T} =
+        new{record_G, T}(le_solver, i, sol)
 end
 
-ForwardDynamics(frx::ForwardRelaxer, prob::CLVProblem) =
-    ForwardDynamics(frx.le_solver, prob::CLVProblem)
-ForwardDynamics(le_solver::LESolver, prob::CLVProblem) =
-    ForwardDynamics(le_solver,
-                    allocate_forward_history(le_solver, prob, UTM, make_UTM),
-                    0)
+ForwardDynamics(a, b, c) = ForwardDynamics{false}(a, b, c)
+ForwardDynamicsWithGHistory(a, b, c) = ForwardDynamics{true}(a, b, c)
+
+ForwardDynamics{record_G}(frx::ForwardRelaxer, prob::CLVProblem, sol,
+                          ) where {record_G} =
+    ForwardDynamics{record_G}(frx.le_solver, prob::CLVProblem, sol)
+function ForwardDynamics{record_G}(le_solver::LESolver, prob::CLVProblem, sol,
+                                   ) where {record_G}
+    fitr = ForwardDynamics{record_G}(le_solver, 0, sol)
+    allocate_solution!(fitr, prob)
+    return fitr
+end
+
+function allocate_solution!(fitr::ForwardDynamics{record_G},
+                            prob) where {record_G}
+    fitr.sol.R_history = allocate_forward_history(fitr.le_solver, prob,
+                                                  UTM, make_UTM)
+    fitr.R_history = fitr.sol.R_history
+    if record_G
+        # When CLVSolution is parameterized, GT has to be extracted
+        # from there:
+        GT = Matrix{Float64}
+        fitr.sol.G_history = allocate_forward_history(fitr.le_solver,
+                                                      prob, GT;
+                                                      num = prob.num_clv)
+    end
+end
 
 function allocate_forward_history(le_solver::LESolver, prob::CLVProblem,
-                                  inner_type, args...)
-    num = prob.num_clv + prob.num_backward_tran
+                                  inner_type, args...;
+                                  num = prob.num_clv + prob.num_backward_tran)
     dim_phase, dim_lyap = size(le_solver.tangent_state)
     @assert dim_phase == dim_lyap
     dims = (dim_phase, dim_phase)
@@ -47,8 +77,12 @@ stage_length(fitr::ForwardDynamics) = length(fitr.R_history)
     i = (fitr.i += 1)
     # TODO: this assignment check if lower half triangle is zero; skip that
     fitr.R_history[i] .= CLV.R_prev(fitr)
+    record!(fitr)
     return fitr
 end
+
+record!(fitr::ForwardDynamics{true}) =
+    fitr.sol.G_history[fitr.i] .= CLV.G(fitr)
 
 const ForwardPass = Union{ForwardRelaxer, ForwardDynamics}
 
@@ -63,6 +97,8 @@ mutable struct BackwardRelaxer <: AbstractComputationStage
     i::Int
 end
 
+BackwardRelaxer(fitr::ForwardDynamics, prob::CLVProblem, ::CLVSolution) =
+    BackwardRelaxer(fitr, prob)
 BackwardRelaxer(fitr::ForwardDynamics, prob::CLVProblem) =
     BackwardRelaxer(prob.num_backward_tran,
                     fitr.R_history,
@@ -72,14 +108,19 @@ BackwardRelaxer(fitr::ForwardDynamics, prob::CLVProblem) =
 stage_length(brx::BackwardRelaxer) = brx.num_backward_tran
 
 
-mutable struct BackwardDynamics{with_D} <: AbstractComputationStage
+mutable struct BackwardDynamics{with_D,
+                                record_C,
+                                } <: AbstractComputationStage
+    sol::CLVSolution
     R_history::Vector{UTM}
     C::UTM
     i::Int
     D_diag::Vector{Float64}
 
-    function BackwardDynamics{with_D}(R_history, C, i = -1) where {with_D}
-        bitr = new{with_D}(R_history, C, i)
+    function BackwardDynamics{with_D, record_C,
+                              }(sol, R_history, C, i = -1,
+                                ) where {with_D, record_C}
+        bitr = new{with_D, record_C}(sol, R_history, C, i)
         if with_D
             bitr.D_diag = similar(C, size(C, 1))
         end
@@ -87,14 +128,36 @@ mutable struct BackwardDynamics{with_D} <: AbstractComputationStage
     end
 end
 
-const BackwardDynamicsWithD = BackwardDynamics{true}
+const BackwardDynamicsWithD = BackwardDynamics{true, false}
+const BackwardDynamicsWithCHistory = BackwardDynamics{false, true}
 
 BackwardDynamics(brx::BackwardRelaxer, args...) =
-    BackwardDynamics{false}(brx, args...)
-BackwardDynamics{with_D}(brx::BackwardRelaxer, _) where {with_D} =
-    BackwardDynamics{with_D}(brx)
-BackwardDynamics{with_D}(brx::BackwardRelaxer) where {with_D} =
-    BackwardDynamics{with_D}(brx.R_history[1:end - brx.i - 1], brx.C)
+    BackwardDynamics{false, false}(brx, args...)
+BackwardDynamics{with_D, record_C}(brx::BackwardRelaxer,
+                                   ::CLVProblem,
+                                   sol,
+                                   ) where {with_D, record_C} =
+    BackwardDynamics{with_D, record_C}(brx, sol)
+
+function BackwardDynamics{with_D, record_C}(brx::BackwardRelaxer,
+                                            sol,
+                                            ) where {with_D, record_C}
+    bitr = BackwardDynamics{with_D, record_C}(
+        sol,
+        brx.R_history[1:end - brx.i - 1],
+        brx.C)
+    allocate_solution!(bitr)
+    return bitr
+end
+
+function allocate_solution!(bitr::BackwardDynamics{with_D, record_C},
+                            ) where {with_D, record_C}
+    if record_C
+        bitr.sol.C_history = allocate_array_of_arrays(length(bitr),
+                                                      size(bitr.C),
+                                                      UTM, make_UTM)
+    end
+end
 
 stage_length(bitr::BackwardDynamics) = length(bitr.R_history)
 
@@ -115,11 +178,17 @@ stage_index(stage::BackwardPass) = stage.i + 1  # TODO: don't
         C[:, i] /= Dᵢᵢ⁻¹(bitr, i)
     end
     # now:  C = C₀ = R⁻¹ C₁ D
+
+    record!(bitr)
 end
+
+record!(bitr::BackwardDynamics{with_D, true}) where {with_D} =
+    bitr.sol.C_history[end-bitr.i] .= CLV.C(bitr)
+    # TODO: this assignment check if lower half triangle is zero; skip that
 
 @inline Dᵢᵢ⁻¹(C::AbstractArray, i) = norm(@view C[:, i])
 @inline Dᵢᵢ⁻¹(bitr::BackwardPass, i) = Dᵢᵢ⁻¹(bitr.C, i)
-@inline function Dᵢᵢ⁻¹(bitr::BackwardDynamicsWithD, i)
+@inline function Dᵢᵢ⁻¹(bitr::BackwardDynamics{true}, i)
     di = Dᵢᵢ⁻¹(bitr.C, i)
     bitr.D_diag[i] = 1 / di
     return di

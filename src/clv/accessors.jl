@@ -44,9 +44,7 @@ const R₋ = R_prev
 const R₊ = R_next
 
 G(fitr::ForwardDynamics) = fitr.le_solver.tangent_state
-G(fitr::ForwardDynamicsWithGHistory) = G(fitr.stage)
 C(bitr::Union{BackwardRelaxer, BackwardDynamics}) = bitr.C
-C(bitr::BackwardDynamicsWithCHistory) = C(bitr.stage)
 
 D(bitr::BackwardDynamicsWithD) = Diagonal(bitr.D_diag)
 M(fitr::ForwardDynamics) = tangent_propagate(fitr.le_solver, I)

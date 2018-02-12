@@ -1,3 +1,5 @@
+using Base: Callable
+
 abstract type AbstractStage end
 abstract type AbstractComputationStage <: AbstractStage end
 

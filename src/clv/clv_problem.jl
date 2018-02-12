@@ -121,3 +121,13 @@ function get_le_solver(prob, u0 = phase_tangent_state(prob);
     num_attr = prob.num_forward_tran + prob.num_clv + prob.num_backward_tran
     return get_le_solver(tangent_prob, num_attr; kwargs...)
 end
+
+
+mutable struct CLVSolution
+    # TODO: make those types more general
+    G_history::Vector{Matrix{Float64}}
+    R_history::Vector{UTM}
+    C_history::Vector{UTM}
+
+    CLVSolution() = new()
+end

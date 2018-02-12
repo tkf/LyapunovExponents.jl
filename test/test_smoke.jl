@@ -3,8 +3,6 @@ using Plots
 using OnlineStats: CovMatrix
 using LyapunovExponents
 using LyapunovExponents: VecVariance
-using LyapunovExponents.CovariantVectors: ForwardDynamicsWithGHistory,
-    BackwardDynamicsWithCHistory
 using LyapunovExponents.Test: @test_nothrow
 
 @time @testset "Smoke test CLV" begin
@@ -17,9 +15,7 @@ using LyapunovExponents.Test: @test_nothrow
         prob = LyapunovExponents.lorenz_63(num_attr=3).prob :: LEProblem
         solver = CLVSolver(
             prob;
-            forward_dynamics = ForwardDynamicsWithGHistory,
-            backward_dynamics = BackwardDynamicsWithCHistory,
-        )
+            record=(:G, :C))
         solve!(solver)
         @test isdefined(solver.sol, :G_history)
         @test isdefined(solver.sol, :C_history)

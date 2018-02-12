@@ -1,18 +1,4 @@
-mutable struct CLVSolution
-    # TODO: make those types more general
-    G_history::Vector{Matrix{Float64}}
-    R_history::Vector{UTM}
-    C_history::Vector{UTM}
-
-    CLVSolution() = new()
-end
-
-"""
-    record!(sol::CLVSolution, stage::AbstractStage)
-
-Record solution of the computation `stage` to solution object `sol`.
-"""
-function record!(::CLVSolution, ::AbstractStage) end
+using Base: Callable
 
 mutable struct CLVSolver
     prob::CLVProblem
@@ -29,20 +15,53 @@ The preferred and equivalent method to get a solver for a `CLVProblem`
 is `init(prob::CLVProblem)`.  Note that `CLVSolver(prob::LEProblem)`
 is equivalent to `init(CLVProblem(prob))`.
 """
-function CLVSolver(prob::CLVProblem;
-                   forward_relaxer::Type = ForwardRelaxer,
-                   forward_dynamics::Type = ForwardDynamics,
-                   backward_relaxer::Type = BackwardRelaxer,
-                   backward_dynamics::Type = BackwardDynamics,
-                   )
-    stage_types = [
-        # PhaseRelaxer,
-        forward_relaxer,
-        forward_dynamics,
-        backward_relaxer,
-        backward_dynamics,
-    ]
+function CLVSolver(prob::CLVProblem; kwargs...)
+    stage_types = default_stages(prob; kwargs...)
     return CLVSolver(prob, stage_types)
+end
+
+function default_stages(::CLVProblem;
+                        record::Tuple = (),
+                        forward_relaxer::Callable = ForwardRelaxer,
+                        forward_dynamics::Union{Callable, Void} = nothing,
+                        backward_relaxer::Callable = BackwardRelaxer,
+                        backward_dynamics::Union{Callable, Void} = nothing,
+                        )
+
+    unsupported = setdiff(record, (:G, :C))
+    if ! isempty(unsupported)
+        error("Unsupported record key(s): $unsupported")
+    end
+
+    stage_types = [
+
+        # PhaseRelaxer???
+
+        forward_relaxer,
+
+        if forward_dynamics === nothing
+            if :G in record
+                ForwardDynamicsWithGHistory
+            else
+                ForwardDynamics
+            end
+        else
+            forward_dynamics
+        end,
+
+        backward_relaxer,
+
+        if backward_dynamics === nothing
+            if :C in record
+                BackwardDynamicsWithCHistory
+            else
+                BackwardDynamics
+            end
+        else
+            backward_dynamics
+        end,
+    ]
+    return stage_types
 end
 
 function CLVSolver(prob::CLVProblem, stage_types::AbstractVector)
@@ -50,7 +69,7 @@ function CLVSolver(prob::CLVProblem, stage_types::AbstractVector)
     iter = StageIterator(
         prob,
         stage_types,
-        (prob,),  # second argument to each `stage_types`
+        (prob, sol),  # additional arguments to each `stage_types`
     )
     state = start(iter)
     return CLVSolver(prob, iter, state, sol)
@@ -60,7 +79,6 @@ CLVSolver(prob::LEProblem; kwargs...) = CLVSolver(CLVProblem(prob); kwargs...)
 
 function record_finished!(solver::CLVSolver)
     finish_if_not!(solver.state.stage)
-    record!(solver.sol, solver.state.stage)
 end
 
 function advance!(solver::CLVSolver)
