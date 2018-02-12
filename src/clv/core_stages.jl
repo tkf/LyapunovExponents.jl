@@ -181,6 +181,7 @@ function allocate_solution!(bitr::BackwardDynamics{with_D, record_C},
         bitr.sol.C_history = allocate_array_of_arrays(length(bitr),
                                                       size(bitr.C),
                                                       UTM, make_UTM)
+        bitr.sol.C_history[end] = CLV.C(bitr)
     end
 end
 

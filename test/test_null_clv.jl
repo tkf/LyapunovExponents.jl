@@ -3,7 +3,7 @@ module TestNullCLV
 using Base.Test
 using Parameters: @with_kw, @unpack
 using LyapunovExponents
-using LyapunovExponents.CovariantVectors: is_finished
+using LyapunovExponents.CovariantVectors: is_finished, is_semi_unitary
 using LyapunovExponents: DEMOS, LEDemo, dimension
 
 @with_kw struct NullCLVTest
@@ -59,6 +59,8 @@ null_CLV_tests = [
     @test_broken length(x) == prob.num_clv
     @test_broken length(G) == prob.num_clv
     @test length(C) == prob.num_clv
+    @test all(all(norm(Cₙ[:, i]) ≈ 1 for i in 1:size(Cₙ, 2)) for Cₙ in C)
+    @test all(map(is_semi_unitary, G))
 
     function ∂ₜ(u, prob = prob.phase_prob, t = 0.0)
         du = similar(u)
