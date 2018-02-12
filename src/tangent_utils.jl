@@ -1,3 +1,8 @@
+# Like set_u0, but more limited and usable for DiscreteProblem
+with_u0(prob::ODEProblem, u0) = ODEProblem(prob.f, u0, prob.tspan, prob.p)
+with_u0(prob::DiscreteProblem, u0) =
+    DiscreteProblem(prob.f, u0, prob.tspan, prob.p)
+
 function augmented_vector(x0::AbstractVector, Q0::AbstractArray)
     u0 = similar(x0, (size(x0, 1), size(Q0, 2) + 1))
     u0[:, 1] = x0
@@ -40,8 +45,9 @@ function tangent_propagate(::Type{Val{:integrator}},
                            phase_state = (@view tangent_prob.u0[:, 1]),
                            kwargs...)
     u0 = augmented_vector(phase_state, tangent_state)
-    integrator = get_integrator(tangent_prob, kwargs...)
-    keepgoing!(integrator, u0)
+    new_prob = with_u0(tangent_prob, u0)
+    integrator = get_integrator(new_prob; kwargs...)
+    keepgoing!(integrator)
     return integrator
 end
 

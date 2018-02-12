@@ -49,7 +49,8 @@ struct CLVProblem{DEP} <: AbstractStage
             phase_prob::DEP, num_clv::Int;
             num_forward_tran::Int = 0,
             num_backward_tran::Int = 0,
-            Q0 = default_Q0(phase_prob, dimension(phase_prob)),
+            dim_lyap::Int = dimension(phase_prob),
+            Q0 = default_Q0(phase_prob, dimension(phase_prob), dim_lyap),
             tangent_dynamics! = nothing,
             ) where {DEP}
 
@@ -58,9 +59,9 @@ struct CLVProblem{DEP} <: AbstractStage
         end
 
         dim_phase = dimension(phase_prob)
-        Q0_size = (dim_phase, dim_phase)
-        if size(Q0) != Q0_size
-            error("Q0 must be a square matrix of size $Q0_size")
+        Q0_size_1 = size(Q0, 1)
+        if Q0_size_1 != dim_phase
+            error("size(Q0, 1) = $Q0_size_1 != dim_phase = $dim_phase")
         end
 
         if ! is_semi_unitary(Q0)
@@ -97,7 +98,8 @@ CLVProblem(prob::LEProblem;
 function phase_tangent_state(prob::CLVProblem, x0 = prob.phase_prob.u0)
     dim_phase = dimension(prob.phase_prob)
     Q0 = prob.Q0
-    u0 = similar(x0, (length(x0), dim_phase + 1))
+    dim_phase, dim_lyap = size(Q0)
+    u0 = similar(x0, (dim_phase, dim_lyap + 1))
     u0[:, 1] = x0
     u0[:, 2:end] = Q0
     u0

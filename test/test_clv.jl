@@ -1,30 +1,32 @@
 using Base.Test
 using IterTools: product
 using LyapunovExponents
-using LyapunovExponents: DEMOS, objname
+using LyapunovExponents: DEMOS, objname, dimension
 using LyapunovExponents.CovariantVectors: goto!
 
 @time @testset "CLV: $(objname(f))" for f in DEMOS
-    @testset "num_backward_tran=$nbt brx=$test_brx" for (
-                nbt, test_brx,
+    @testset "num_backward_tran=$nbt brx=$test_brx dim_lyap=$dim_lyap" for (
+                nbt, test_brx, dim_lyap,
             ) in product(
                 0:2,            # num_backward_tran
                 [true, false],  # test_brx
+                2:dimension(f().example),  # dim_lyap
             )
-        prob = CLVProblem(f().prob;
+        prob = CLVProblem(f(dim_lyap=dim_lyap).prob::LEProblem;
                           num_clv = 5,
                           num_forward_tran = nbt * 11,  # for extra variation
                           num_backward_tran = nbt)
 
-        dims = size(prob.Q0)
+        dims = (dp, dl) = size(prob.Q0)
+        @assert dims == (dimension(prob.phase_prob), dim_lyap)
         solver = init(prob;
                       backward_dynamics = CLV.BackwardDynamicsWithD)
 
         forward = forward_dynamics!(solver)
         @test length(forward) == prob.num_clv + prob.num_backward_tran
-        R_prev = [Matrix{Float64}(dims) for _ in 1:length(forward)]
-        G = [Matrix{Float64}(dims) for _ in 1:length(forward)]
-        M = [Matrix{Float64}(dims) for _ in 1:length(forward)]
+        R_prev = [Matrix{Float64}(dl, dl) for _ in 1:length(forward)]
+        G = [Matrix{Float64}(dp, dl) for _ in 1:length(forward)]
+        M = [Matrix{Float64}(dp, dp) for _ in 1:length(forward)]
 
         # Recall: 𝑮ₙ₊ₖ 𝑪ₙ₊ₖ 𝑫ₖ,ₙ = 𝑴ₖ,ₙ 𝑮ₙ 𝑪ₙ = 𝑮ₙ₊ₖ 𝑹ₖ,ₙ 𝑪ₙ
         # (Eq. 32, Ginelli et al., 2013)
@@ -50,8 +52,8 @@ using LyapunovExponents.CovariantVectors: goto!
         backward = backward_dynamics!(solver)
         num_clv = length(backward)
         @assert backward.R_history == R_prev[1:num_clv]
-        C = [Matrix{Float64}(dims) for _ in 1:num_clv]
-        D = [Matrix{Float64}(dims) for _ in 1:num_clv]
+        C = [Matrix{Float64}(dl, dl) for _ in 1:num_clv]
+        D = [Matrix{Float64}(dl, dl) for _ in 1:num_clv]
         C[end] .= CLV.C(backward)
         for (n, Cn) in indexed_backward_dynamics!(backward)
             @test CLV.R(backward) == R_prev[n+1]  # 𝑹ₖ,ₙ

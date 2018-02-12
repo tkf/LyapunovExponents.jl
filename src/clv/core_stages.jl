@@ -59,16 +59,24 @@ end
 function allocate_solution!(fitr::ForwardDynamics{record_G,
                                                   record_x},
                             prob) where {record_G, record_x}
-    fitr.sol.R_history = allocate_forward_history(fitr.le_solver, prob,
-                                                  UTM, make_UTM)
+
+    dim_phase, dim_lyap = size(fitr.le_solver.tangent_state)
+    fitr.sol.R_history = allocate_array_of_arrays(
+        prob.num_clv + prob.num_backward_tran,
+        (dim_lyap, dim_lyap),
+        UTM, make_UTM)
     fitr.R_history = fitr.sol.R_history
+
     if record_G
         # When CLVSolution is parameterized, GT has to be extracted
         # from there:
         GT = Matrix{Float64}
-        fitr.sol.G_history = allocate_forward_history(fitr.le_solver,
-                                                      prob, GT)
+        fitr.sol.G_history = allocate_array_of_arrays(
+            prob.num_clv + prob.num_backward_tran,
+            size(fitr.le_solver.tangent_state),
+            GT)
     end
+
     if record_x
         XT = Vector{Float64}
         fitr.sol.x_history = allocate_array_of_arrays(
@@ -78,15 +86,6 @@ function allocate_solution!(fitr::ForwardDynamics{record_G,
     end
     # TODO: Do not save G and x for prob.num_backward_tran; Separate
     # ForwardDynamics into two parts.
-end
-
-function allocate_forward_history(le_solver::LESolver, prob::CLVProblem,
-                                  inner_type, args...;
-                                  num = prob.num_clv + prob.num_backward_tran)
-    dim_phase, dim_lyap = size(le_solver.tangent_state)
-    @assert dim_phase == dim_lyap
-    dims = (dim_phase, dim_phase)
-    return allocate_array_of_arrays(num, dims, inner_type, args...)
 end
 
 stage_length(fitr::ForwardDynamics) = length(fitr.R_history)
