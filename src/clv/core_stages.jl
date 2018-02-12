@@ -67,15 +67,17 @@ function allocate_solution!(fitr::ForwardDynamics{record_G,
         # from there:
         GT = Matrix{Float64}
         fitr.sol.G_history = allocate_forward_history(fitr.le_solver,
-                                                      prob, GT;
-                                                      num = prob.num_clv)
+                                                      prob, GT)
     end
     if record_x
         XT = Vector{Float64}
         fitr.sol.x_history = allocate_array_of_arrays(
-            prob.num_clv, size(fitr.le_solver.phase_state),
+            prob.num_clv + prob.num_backward_tran,
+            size(fitr.le_solver.phase_state),
             XT)
     end
+    # TODO: Do not save G and x for prob.num_backward_tran; Separate
+    # ForwardDynamics into two parts.
 end
 
 function allocate_forward_history(le_solver::LESolver, prob::CLVProblem,
@@ -206,10 +208,15 @@ stage_index(stage::BackwardPass) = stage.i + 1  # TODO: don't
     record!(bitr, Val{:C})
 end
 
-record!(bitr::BackwardDynamics{with_D, true},
-        ::Type{Val{:C}}) where {with_D} =
-    bitr.sol.C_history[end-bitr.i] .= CLV.C(bitr)
+function record!(bitr::BackwardDynamics{with_D, true},
+                 ::Type{Val{:C}}) where {with_D}
+    n = length(bitr.sol.C_history) - bitr.i - 1
+    if n > 0
+        bitr.sol.C_history[n] .= CLV.C(bitr)
+    end
+    # TODO: maybe save n=0 too
     # TODO: this assignment check if lower half triangle is zero; skip that
+end
 
 @inline Dᵢᵢ⁻¹(C::AbstractArray, i) = norm(@view C[:, i])
 @inline Dᵢᵢ⁻¹(bitr::BackwardPass, i) = Dᵢᵢ⁻¹(bitr.C, i)

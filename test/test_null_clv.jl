@@ -49,31 +49,21 @@ null_CLV_tests = [
 @time @testset "Null CLV: $(test.name)" for test in null_CLV_tests
     @unpack prob, tolerance, err_rate = test
 
-    solver = init(prob)
+    solver = init(prob; record=(:G, :C, :x))
+    solve!(solver)
+
+    dims = size(prob.Q0)
+    x = solver.sol.x_history
+    G = solver.sol.G_history
+    C = solver.sol.C_history
+    @test_broken length(x) == prob.num_clv
+    @test_broken length(G) == prob.num_clv
+    @test length(C) == prob.num_clv
 
     function ∂ₜ(u, prob = prob.phase_prob, t = 0.0)
         du = similar(u)
         prob.f(du, u, prob.p, t)
         return du
-    end
-
-    dims = size(prob.Q0)
-    x = [Vector{Float64}(dims[1]) for _ in 1:prob.num_clv]
-    G = [Matrix{Float64}(dims) for _ in 1:prob.num_clv]
-    C = [Matrix{Float64}(dims) for _ in 1:prob.num_clv]
-
-    forward = forward_dynamics!(solver)
-    for (n, Gₙ) in zip(1:prob.num_clv, forward)
-        x[n] .= phase_state(forward)
-        G[n] .= Gₙ
-    end
-    @assert ! is_finished(forward)
-
-    backward = backward_dynamics!(solver)
-    @assert is_finished(forward)
-    C[end] = CLV.C(backward)  # TODO: do this in the loop
-    for (n, Cₙ) in indexed_backward_dynamics!(backward)
-        C[n] .= Cₙ
     end
 
     angles = collect(
