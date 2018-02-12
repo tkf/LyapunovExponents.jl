@@ -32,7 +32,7 @@ function linz_sprott_99(;
         kwargs...)
     A = 0.6
     LEDemo(ContinuousExample(
-        "Linz & Sprott (1999) Piecewise linear flow",
+        "Linz & Sprott (1999)",
         phase_dynamics!, u0, tspan, A,
         tangent_dynamics!,
         num_attr,
