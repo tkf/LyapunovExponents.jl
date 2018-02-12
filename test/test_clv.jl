@@ -76,7 +76,7 @@ using LyapunovExponents.CovariantVectors: goto!
         # @testset "𝑮ₙ₊ₖ 𝑪ₙ₊ₖ 𝑫ₖ,ₙ = 𝑴ₖ,ₙ 𝑮ₙ 𝑪ₙ (n=$n)" for n in 1:num_clv-1
         @testset "Gₙ₊ₖ Cₙ₊ₖ Dₖ,ₙ = Mₖ,ₙ Gₙ Cₙ (n=$n)" for n in 1:num_clv-1
             # TODO: improve rtol
-            @test G[n+1] * C[n+1] * D[n] ≈ M[n] * G[n] * C[n]  rtol=5e-2
+            @test G[n+1] * C[n+1] * D[n] ≈ M[n] * G[n] * C[n]  rtol=1e-1
         end
 
         #  ─── M[n] ──▶
