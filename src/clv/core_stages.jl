@@ -95,7 +95,7 @@ mutable struct BackwardDynamics{with_D,
         end
         bitr = new{with_D, S}(sol, R_history, C, i)
         if sol isa CLVSolC
-            bitr.sol.C_history[end] = CLV.C(bitr)
+            bitr.sol.C_history[end] .= CLV.C(bitr)
         end
         if sol isa CLVSolD
             bitr.sol.D_history[end] .= NaN
