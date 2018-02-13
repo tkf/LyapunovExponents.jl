@@ -125,18 +125,20 @@ function get_le_solver(prob, u0 = phase_tangent_state(prob);
 end
 
 
-mutable struct CLVSolution{RecG, RecC, RecX}
+mutable struct CLVSolution{RecG, RecC, RecD, RecX}
     # TODO: make those types more general
     R_history::Vector{UTM}
     G_history::Vector{Matrix{Float64}}
     C_history::Vector{UTM}
+    D_history::Vector{Vector{Float64}}
     x_history::Vector{Vector{Float64}}
 
-    function CLVSolution{RecG, RecC, RecX}(
+    function CLVSolution{RecG, RecC, RecD, RecX}(
             dim_phase::Int, dim_lyap::Int,
-            num_clv::Int, num_backward_tran::Int) where {RecG, RecC, RecX}
+            num_clv::Int, num_backward_tran::Int,
+            ) where {RecG, RecC, RecD, RecX}
 
-        sol = new{RecG, RecC, RecX}()
+        sol = new{RecG, RecC, RecD, RecX}()
 
         sol.R_history = allocate_array_of_arrays(
             num_clv + num_backward_tran,
@@ -160,6 +162,14 @@ mutable struct CLVSolution{RecG, RecC, RecX}
                 UTM, make_UTM)
         end
 
+        if RecD
+            DT = Vector{Float64}
+            sol.D_history = allocate_array_of_arrays(
+                num_clv,
+                (dim_lyap,),
+                DT)
+        end
+
         if RecX
             XT = Vector{Float64}
             sol.x_history = allocate_array_of_arrays(
@@ -176,7 +186,7 @@ mutable struct CLVSolution{RecG, RecC, RecX}
 end
 
 function CLVSolution(prob::CLVProblem, record::Vector{Symbol})
-    unsupported = setdiff(record, (:G, :C, :x))
+    unsupported = setdiff(record, [:G, :C, :D, :x])
     if ! isempty(unsupported)
         error("Unsupported record key(s): $unsupported")
     end
@@ -185,6 +195,7 @@ function CLVSolution(prob::CLVProblem, record::Vector{Symbol})
     return CLVSolution{
         (:G in record),
         (:C in record),
+        (:D in record),
         (:x in record),
     }(dim_phase,
       dim_lyap,
@@ -195,4 +206,5 @@ end
 # const CLVSolR = CLVSolution
 const CLVSolG = CLVSolution{true}
 const CLVSolC = CLVSolution{RecG, true} where {RecG}
-const CLVSolX = CLVSolution{RecG, RecC, true} where {RecG, RecC}
+const CLVSolD = CLVSolution{RecG, RecC, true} where {RecG, RecC}
+const CLVSolX = CLVSolution{RecG, RecC, RecD, true} where {RecG, RecC, RecD}

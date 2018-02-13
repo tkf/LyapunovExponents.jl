@@ -89,9 +89,16 @@ mutable struct BackwardDynamics{with_D,
 
     function BackwardDynamics{with_D}(sol::S, R_history, C, i = -1,
                                       ) where {with_D, S}
+        if sol isa CLVSolD && ! with_D
+            error("with_D (= $with_D) has to be true when :D is",
+                  " in record flag.")
+        end
         bitr = new{with_D, S}(sol, R_history, C, i)
         if sol isa CLVSolC
             bitr.sol.C_history[end] = CLV.C(bitr)
+        end
+        if sol isa CLVSolD
+            bitr.sol.D_history[end] .= NaN
         end
         if with_D
             bitr.D_diag = similar(C, size(C, 1))
@@ -101,6 +108,7 @@ mutable struct BackwardDynamics{with_D,
 end
 
 const BackwardDynamicsRecC = BackwardDynamics{with_D, <:CLVSolC} where {with_D}
+const BackwardDynamicsRecD = BackwardDynamics{true, <:CLVSolD}
 const BackwardDynamicsWithD = BackwardDynamics{true}
 
 BackwardDynamics(brx::BackwardRelaxer, args...) =
@@ -135,6 +143,7 @@ stage_index(stage::BackwardPass) = stage.i + 1  # TODO: don't
     # now:  C = C₀ = R⁻¹ C₁ D
 
     record!(bitr, Val{:C})
+    record!(bitr, Val{:D})
 end
 
 function record!(bitr::BackwardDynamicsRecC, ::Type{Val{:C}})
@@ -152,6 +161,14 @@ end
     di = Dᵢᵢ⁻¹(bitr.C, i)
     bitr.D_diag[i] = 1 / di
     return di
+end
+
+function record!(bitr::BackwardDynamicsRecD, ::Type{Val{:D}})
+    n = length(bitr.sol.D_history) - bitr.i - 1
+    if n > 0
+        bitr.sol.D_history[n] .= bitr.D_diag
+    end
+    # TODO: maybe save n=0 too
 end
 
 current_result(bitr::BackwardPass) = bitr.C

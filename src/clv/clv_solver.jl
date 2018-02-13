@@ -16,11 +16,16 @@ is `init(prob::CLVProblem)`.  Note that `CLVSolver(prob::LEProblem)`
 is equivalent to `init(CLVProblem(prob))`.
 """
 function CLVSolver(prob::CLVProblem;
+                   record::Vector{Symbol} = Symbol[],
                    forward_relaxer::Type = ForwardRelaxer,
                    forward_dynamics::Type = ForwardDynamics,
                    backward_relaxer::Type = BackwardRelaxer,
-                   backward_dynamics::Type = BackwardDynamics,
-                   record::Vector{Symbol} = Symbol[])
+                   backward_dynamics::Type = if :D in record
+                       BackwardDynamicsWithD
+                   else
+                       BackwardDynamics
+                   end,
+                   )
     stage_types = [
         # PhaseRelaxer???
         forward_relaxer,
