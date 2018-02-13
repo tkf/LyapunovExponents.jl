@@ -9,6 +9,8 @@ println()
 flush(STDOUT)
 import Plots
 import ForwardDiff
+import DifferentialEquations
+import OnlineStats
 flush(STDOUT)
 flush(STDERR)
 print_with_color(:blue, "=" ^ displaysize(STDOUT)[2])
