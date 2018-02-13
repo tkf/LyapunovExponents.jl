@@ -146,6 +146,14 @@ stage_index(stage::BackwardPass) = stage.i + 1  # TODO: don't
     record!(bitr, Val{:D})
 end
 
+@inline Dᵢᵢ⁻¹(C::AbstractArray, i) = norm(@view C[:, i])
+@inline Dᵢᵢ⁻¹(bitr::BackwardPass, i) = Dᵢᵢ⁻¹(bitr.C, i)
+@inline function Dᵢᵢ⁻¹(bitr::BackwardDynamicsWithD, i)
+    di = Dᵢᵢ⁻¹(bitr.C, i)
+    bitr.D_diag[i] = 1 / di
+    return di
+end
+
 function record!(bitr::BackwardDynamicsRecC, ::Type{Val{:C}})
     n = length(bitr.sol.C_history) - bitr.i - 1
     if n > 0
@@ -153,14 +161,6 @@ function record!(bitr::BackwardDynamicsRecC, ::Type{Val{:C}})
     end
     # TODO: maybe save n=0 too
     # TODO: this assignment check if lower half triangle is zero; skip that
-end
-
-@inline Dᵢᵢ⁻¹(C::AbstractArray, i) = norm(@view C[:, i])
-@inline Dᵢᵢ⁻¹(bitr::BackwardPass, i) = Dᵢᵢ⁻¹(bitr.C, i)
-@inline function Dᵢᵢ⁻¹(bitr::BackwardDynamicsWithD, i)
-    di = Dᵢᵢ⁻¹(bitr.C, i)
-    bitr.D_diag[i] = 1 / di
-    return di
 end
 
 function record!(bitr::BackwardDynamicsRecD, ::Type{Val{:D}})
