@@ -15,49 +15,25 @@ The preferred and equivalent method to get a solver for a `CLVProblem`
 is `init(prob::CLVProblem)`.  Note that `CLVSolver(prob::LEProblem)`
 is equivalent to `init(CLVProblem(prob))`.
 """
-function CLVSolver(prob::CLVProblem; kwargs...)
-    stage_types = default_stages(prob; kwargs...)
-    return CLVSolver(prob, stage_types)
-end
-
-function default_stages(::CLVProblem;
-                        record::Tuple = (),
-                        forward_relaxer::Callable = ForwardRelaxer,
-                        forward_dynamics::Union{Callable, Void} = nothing,
-                        backward_relaxer::Callable = BackwardRelaxer,
-                        backward_dynamics::Union{Callable, Void} = nothing,
-                        )
-
-    unsupported = setdiff(record, (:G, :C, :x))
-    if ! isempty(unsupported)
-        error("Unsupported record key(s): $unsupported")
-    end
-
+function CLVSolver(prob::CLVProblem;
+                   forward_relaxer::Type = ForwardRelaxer,
+                   forward_dynamics::Type = ForwardDynamics,
+                   backward_relaxer::Type = BackwardRelaxer,
+                   backward_dynamics::Type = BackwardDynamics,
+                   record::Vector{Symbol} = Symbol[])
     stage_types = [
-
         # PhaseRelaxer???
-
         forward_relaxer,
-
-        if forward_dynamics === nothing
-            ForwardDynamics_from_record(record)
-        else
-            forward_dynamics
-        end,
-
+        forward_dynamics,
         backward_relaxer,
-
-        if backward_dynamics === nothing
-            BackwardDynamics_from_record(record)
-        else
-            backward_dynamics
-        end,
+        backward_dynamics,
     ]
-    return stage_types
+    return CLVSolver(prob, stage_types, record)
 end
 
-function CLVSolver(prob::CLVProblem, stage_types::AbstractVector)
-    sol = CLVSolution()
+function CLVSolver(prob::CLVProblem, stage_types::AbstractVector,
+                   record::Vector{Symbol})
+    sol = CLVSolution(prob, record)
     iter = StageIterator(
         prob,
         stage_types,

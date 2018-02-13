@@ -31,8 +31,7 @@ function C end
 function D end
 
 using ..CovariantVectors: ForwardDynamics, BackwardRelaxer, BackwardDynamics,
-    BackwardDynamicsWithD, BackwardPass,
-    ForwardDynamicsWithGHistory, BackwardDynamicsWithCHistory
+    BackwardDynamicsWithD, BackwardPass
 import ...LyapunovExponents: tangent_propagate
 
 R_prev(fitr::ForwardDynamics) = fitr.le_solver.R

@@ -49,7 +49,7 @@ null_CLV_tests = [
 @time @testset "Null CLV: $(test.name)" for test in null_CLV_tests
     @unpack prob, tolerance, err_rate = test
 
-    solver = init(prob; record=(:G, :C, :x))
+    solver = init(prob; record=[:G, :C, :x])
     solve!(solver)
 
     dims = size(prob.Q0)
@@ -59,7 +59,7 @@ null_CLV_tests = [
     @test_broken length(x) == prob.num_clv
     @test_broken length(G) == prob.num_clv
     @test length(C) == prob.num_clv
-    @test all(all(norm(Cₙ[:, i]) ≈ 1 for i in 1:size(Cₙ, 2)) for Cₙ in C)
+    @test all(norm(Cₙ[:, i]) ≈ 1 for Cₙ in C for i in 1:size(Cₙ, 2))
     @test all(map(is_semi_unitary, G))
 
     function ∂ₜ(u, prob = prob.phase_prob, t = 0.0)

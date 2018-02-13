@@ -15,7 +15,7 @@ using LyapunovExponents.Test: @test_nothrow
         prob = LyapunovExponents.lorenz_63(num_attr=3).prob :: LEProblem
         solver = CLVSolver(
             prob;
-            record=(:G, :C, :x))
+            record = [:G, :C, :x])
         solve!(solver)
         @test isdefined(solver.sol, :G_history)
         @test isdefined(solver.sol, :C_history)

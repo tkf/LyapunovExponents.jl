@@ -125,12 +125,74 @@ function get_le_solver(prob, u0 = phase_tangent_state(prob);
 end
 
 
-mutable struct CLVSolution
+mutable struct CLVSolution{RecG, RecC, RecX}
     # TODO: make those types more general
-    G_history::Vector{Matrix{Float64}}
     R_history::Vector{UTM}
+    G_history::Vector{Matrix{Float64}}
     C_history::Vector{UTM}
     x_history::Vector{Vector{Float64}}
 
-    CLVSolution() = new()
+    function CLVSolution{RecG, RecC, RecX}(
+            dim_phase::Int, dim_lyap::Int,
+            num_clv::Int, num_backward_tran::Int) where {RecG, RecC, RecX}
+
+        sol = new{RecG, RecC, RecX}()
+
+        sol.R_history = allocate_array_of_arrays(
+            num_clv + num_backward_tran,
+            (dim_lyap, dim_lyap),
+            UTM, make_UTM)
+        # Maybe it makes sense to have an option to progressively
+        # delete R during the backward iteration to save some memory.
+
+        if RecG
+            GT = Matrix{Float64}
+            sol.G_history = allocate_array_of_arrays(
+                num_clv + num_backward_tran,  # TOOD: remove num_backward_tran
+                (dim_phase, dim_lyap),
+                GT)
+        end
+
+        if RecC
+            sol.C_history = allocate_array_of_arrays(
+                num_clv,
+                (dim_lyap, dim_lyap),
+                UTM, make_UTM)
+        end
+
+        if RecX
+            XT = Vector{Float64}
+            sol.x_history = allocate_array_of_arrays(
+                num_clv + num_backward_tran,  # TOOD: remove num_backward_tran
+                (dim_phase,),
+                XT)
+        end
+
+        # TODO: Do not save G and x for num_backward_tran.
+        # Separate ForwardDynamics into two parts.
+
+        return sol
+    end
 end
+
+function CLVSolution(prob::CLVProblem, record::Vector{Symbol})
+    unsupported = setdiff(record, (:G, :C, :x))
+    if ! isempty(unsupported)
+        error("Unsupported record key(s): $unsupported")
+    end
+
+    dim_phase, dim_lyap = size(prob.Q0)
+    return CLVSolution{
+        (:G in record),
+        (:C in record),
+        (:x in record),
+    }(dim_phase,
+      dim_lyap,
+      prob.num_clv,
+      prob.num_backward_tran)
+end
+
+# const CLVSolR = CLVSolution
+const CLVSolG = CLVSolution{true}
+const CLVSolC = CLVSolution{RecG, true} where {RecG}
+const CLVSolX = CLVSolution{RecG, RecC, true} where {RecG, RecC}
