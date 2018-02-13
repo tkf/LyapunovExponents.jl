@@ -1,5 +1,19 @@
 module LyapunovExponentsTests
 
+print_with_color(:blue, let
+    message = " Warnings below (if any) are fine. "
+    margin = (displaysize(STDOUT)[2] - length(message)) ÷ 2
+    ("=" ^ margin) * message * ("=" ^ margin)
+end)
+println()
+flush(STDOUT)
+import Plots
+import ForwardDiff
+flush(STDOUT)
+flush(STDERR)
+print_with_color(:blue, "=" ^ displaysize(STDOUT)[2])
+println()
+
 using LyapunovExponents
 using Base.Test
 
