@@ -8,25 +8,23 @@ abstract type AbstractSource <: Stageable end
 abstract type AbstractStage <: Stageable end
 
 """
+    is_finished(stage::Stageable) :: Bool
+
+Ask if `stage`'s computation is done.
+"""
+function is_finished end
+
+"""
     finish!(stage::Stageable) :: Stageable
 
 Finish whatever the computation `stage` has to do.
 """
-function finish! end
-
 function finish!(stage::AbstractStage)
     while ! is_finished(stage)
         step!(stage)
     end
     return stage
 end
-
-"""
-    is_finished(stage::Stageable) :: Bool
-
-Ask if `stage`'s computation is done.
-"""
-function is_finished end
 
 function finish_if_not!(stage::Stageable)
     is_finished(stage) || finish!(stage)
