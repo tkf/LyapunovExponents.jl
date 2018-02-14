@@ -2,12 +2,12 @@ module Stages
 
 using DiffEqBase: step!
 
-abstract type AbstractStage end
-abstract type AbstractSource <: AbstractStage end
-abstract type AbstractComputationStage <: AbstractStage end
+abstract type Stageable end
+abstract type AbstractSource <: Stageable end
+abstract type AbstractComputationStage <: Stageable end
 
 """
-    finish!(stage::AbstractStage) :: AbstractStage
+    finish!(stage::Stageable) :: Stageable
 
 Finish whatever the computation `stage` has to do.
 """
@@ -21,13 +21,13 @@ function finish!(stage::AbstractComputationStage)
 end
 
 """
-    is_finished(stage::AbstractStage) :: Bool
+    is_finished(stage::Stageable) :: Bool
 
 Ask if `stage`'s computation is done.
 """
 function is_finished end
 
-function finish_if_not!(stage::AbstractStage)
+function finish_if_not!(stage::Stageable)
     is_finished(stage) || finish!(stage)
     return stage
 end
@@ -48,14 +48,14 @@ end
 
 
 struct StageIterator
-    source::AbstractStage
+    source::Stageable
     stage_types::Vector{Type{<: AbstractComputationStage}}
     args::Tuple
 end
 
 struct StageState
     i::Int
-    stage::AbstractStage
+    stage::Stageable
 end
 
 
