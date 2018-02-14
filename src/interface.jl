@@ -20,6 +20,7 @@ function lyapunov_exponents(phase_dynamics!,
     lyapunov_exponents(solver)
 end
 
-de_prob(solver::AbstractLESolver) = de_prob(solver.integrator)
+de_prob(stage::Union{PhaseRelaxer, AbstractRenormalizer}) =
+    de_prob(stage.integrator)
 de_prob(integrator::DiscreteIterator) = integrator.prob
 de_prob(integrator::ODEIntegrator) = integrator.sol.prob

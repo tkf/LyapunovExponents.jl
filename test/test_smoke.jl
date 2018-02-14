@@ -43,7 +43,7 @@ end
     @testset "main_stat = $ST" for ST in [VecVariance, CovMatrix]
         demo = LyapunovExponents.lorenz_63(num_attr=3)
         @test_nothrow solve!(demo; main_stat = ST)
-        @test isa(demo.solver.solver.main_stat, ST)
+        @test isa(demo.solver.main_stat, ST)
         @test_nothrow plot(demo, show = false)
     end
 end

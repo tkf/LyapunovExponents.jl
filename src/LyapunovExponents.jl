@@ -3,6 +3,10 @@ module LyapunovExponents
 export LEProblem, ContinuousLEProblem, DiscreteLEProblem, lyapunov_exponents,
     phase_state
 
+# Re-export methods from DifferentialEquations extended here:
+export init, solve, solve!, step!
+import DifferentialEquations: init, solve, solve!, step!
+
 using Requires
 
 include("stages.jl")
@@ -13,7 +17,6 @@ include("core.jl")
 include("coevolve.jl")
 include("continuous_exponents.jl")
 include("discrete_exponents.jl")
-include("recording.jl")
 include("tangent_utils.jl")
 include("clv/covariant_vectors.jl")
 include("interface.jl")

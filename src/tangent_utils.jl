@@ -29,7 +29,8 @@ not efficient) way to obtain the cocycle ``M_{k,n}`` (tangent space
   ODE ``dM/dt = (df/dx(t)) M`` with the initial condition
   ``M(t_{n}) = I``.
 """
-tangent_propagate(prob_or_solver::Union{DEProblem,LESolver},
+tangent_propagate(prob_or_solver::Union{DEProblem, PhaseRelaxer,
+                                        AbstractRenormalizer},
                   args...; kwargs...) =
     tangent_propagate(Val{:tangent}, prob_or_solver, args...; kwargs...)
 
@@ -51,7 +52,8 @@ function tangent_propagate(::Type{Val{:integrator}},
     return integrator
 end
 
-tangent_propagate(::Type{Val{:integrator}}, le_solver::LESolver,
+tangent_propagate(::Type{Val{:integrator}},
+                  le_solver::Union{PhaseRelaxer, AbstractRenormalizer},
                   tangent_state = le_solver.tangent_state;
                   phase_state = le_solver.phase_state,
                   kwargs...) =

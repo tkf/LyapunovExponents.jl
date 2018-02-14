@@ -1,7 +1,9 @@
 using RecipesBase
 
 """ Plot `LERecordingSolver` via `RecipesBase`."""
-@recipe function f(solver::LERecordingSolver;
+@recipe function f(solver::Union{LESolverRecFTLE,
+                                 AbstractRenormalizer{<: LESolRecFTLE},
+                                 LESolRecFTLE};
                    known_exponents=nothing)
     le_hist = exponents_history(solver)
     dim_lyap = size(le_hist)[1]

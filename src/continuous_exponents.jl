@@ -37,13 +37,8 @@ ContinuousLEProblem(phase_dynamics!, u0, tchunk::Real, args...; kwargs...) =
     ContinuousLEProblem(phase_dynamics!, u0, (zero(tchunk), tchunk), args...;
                         kwargs...)
 
-const ContinuousRelaxer = Relaxer{<: ContinuousLEProblem}
-
-last_state(relaxer::ContinuousRelaxer) = relaxer.integrator.sol[end]
-
 init_phase_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 1]
 init_tangent_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 2:end]
-const ContinuousLESolver = AbstractLESolver{<: ODEIntegrator}
 
 """
 Continue solving the ODE problem from the last state.
@@ -55,12 +50,4 @@ end
 # TODO: Find out if this is a valid way for general algorithm
 
 current_state(integrator::ODEIntegrator) = integrator.sol[end]
-
-@inline function current_state(solver::ContinuousLESolver)
-    solver.integrator.sol[end]
-end
-
-function t_chunk(solver::ContinuousLESolver)
-    tspan = solver.integrator.sol.prob.tspan
-    tspan[2] - tspan[1]
-end
+get_tspan(integrator::ODEIntegrator) = integrator.sol.prob.tspan

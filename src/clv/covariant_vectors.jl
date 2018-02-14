@@ -1,5 +1,3 @@
-const get_le_solver = get_solver
-
 module CovariantVectors
 
 # Re-export methods from DifferentialEquations extended here:
@@ -13,7 +11,7 @@ import ..Stages: is_finished, finish!, current_result, stage_index, record!
 using ..LyapunovExponents: LEProblem, LESolver, dimension, is_semi_unitary,
     default_Q0, get_tangent_dynamics
 import ..LyapunovExponents: phase_tangent_state, get_tangent_prob,
-    get_le_solver, phase_state
+    phase_state, TangentRenormalizer, get_integrator
 
 include("utils.jl")
 include("clv_problem.jl")

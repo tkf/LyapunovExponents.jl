@@ -118,7 +118,8 @@ function get_le_solver(prob, u0 = phase_tangent_state(prob);
                        kwargs...)
     tangent_prob = get_tangent_prob(prob, u0)
     num_attr = prob.num_forward_tran + prob.num_clv + prob.num_backward_tran
-    return get_le_solver(tangent_prob, num_attr; kwargs...)
+    return TangentRenormalizer(get_integrator(tangent_prob),
+                               num_attr; kwargs...)
 end
 
 

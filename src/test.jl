@@ -4,7 +4,7 @@ using Base: rtoldefault
 using Base.Test: @test
 using DiffEqBase: DEProblem
 using LyapunovExponents: LEProblem, dimension, phase_tangent_state,
-    get_solver, get_integrator, de_prob, keepgoing!, current_state
+    get_tangent_prob, get_integrator, de_prob, keepgoing!, current_state
 
 
 macro test_nothrow(ex)
@@ -131,8 +131,8 @@ function test_tangent_dynamics_against_autodiff(
     @assert prob.tangent_dynamics! != nothing
     prob_ad = LEProblem(prob.phase_prob, prob.num_attr)
     u0 = phase_tangent_state(prob)
-    test_same_dynamics(de_prob(get_solver(prob, u0)),
-                       de_prob(get_solver(prob_ad, u0)),
+    test_same_dynamics(get_tangent_prob(prob, u0),
+                       get_tangent_prob(prob_ad, u0),
                        args...; kwargs...)
 end
 

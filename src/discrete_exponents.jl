@@ -55,21 +55,8 @@ DiscreteLEProblem(phase_dynamics!, u0, tchunk::Integer, args...; kwargs...) =
     DiscreteLEProblem(phase_dynamics!, u0, (zero(tchunk), tchunk), args...;
                       kwargs...)
 
-const DiscreteRelaxer = Relaxer{<: DiscreteLEProblem}
-
-last_state(relaxer::DiscreteRelaxer) = relaxer.integrator.u0
-
 init_phase_state(integrator::DiscreteIterator) = integrator.u0[:, 1]
 init_tangent_state(integrator::DiscreteIterator) = integrator.u0[:, 2:end]
-const DiscreteLESolver = AbstractLESolver{<: DiscreteIterator}
 
 current_state(integrator::DiscreteIterator) = integrator.u0
-
-@inline function current_state(solver::DiscreteLESolver)
-    solver.integrator.u0
-end
-
-function t_chunk(solver::DiscreteLESolver)
-    tspan = solver.integrator.prob.tspan
-    return tspan[2] - tspan[1]
-end
+get_tspan(integrator::DiscreteIterator) = integrator.prob.tspan

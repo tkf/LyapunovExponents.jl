@@ -1,54 +1,15 @@
-# Re-export methods from DifferentialEquations extended here:
-export init, solve, solve!, step!
-import DifferentialEquations: init, solve, solve!, step!
-
 using DifferentialEquations: DEProblem
 
 dimension(prob::DEProblem) = length(prob.u0)
 
-"""
-    get_relaxer(prob::AbstractLEProblem; <keyword arguments>) :: AbstractRelaxer
+PhaseRelaxer(prob::LEProblem,
+             ::LEProblem,
+             ::LESolution) =
+    PhaseRelaxer(get_integrator(prob.phase_prob),
+                 prob.num_tran)
 
-Get a relaxer for a LE problem.
-"""
-get_relaxer(prob::LEP; kwargs...) where {LEP <: AbstractLEProblem} =
-    Relaxer{LEP}(prob, get_integrator(prob.phase_prob; kwargs...))
-
-"""
-    relax!(relaxer::AbstractRelaxer; <keyword arguments>)
-
-Throwaway the transient part of the phase space dynamics of the LE
-problem `prob`.
-"""
-function relax!(relaxer; progress=-1)
-    integrator = relaxer.integrator
-    num_tran = relaxer.prob.num_tran
-
-    @showprogress_if(
-        (progress >= 0), progress, "Transient dynamics...",
-        for _ in 1:num_tran
-            keepgoing!(integrator)
-        end)
-
-    relaxer
-end
-
-"""
-    relaxed(prob::AbstractLEProblem; <keyword arguments>) :: AbstractRelaxer
-
-Throwaway the transient part of the phase space dynamics of the LE
-problem `prob`.
-
-That is to say, convert a LE problem ([`AbstractLEProblem`](@ref)) to
-a relaxer ([`AbstractRelaxer`](@ref)) and then call [`relax!`](@ref).
-"""
-relaxed(prob; progress=-1, kwargs...) =
-    relax!(get_relaxer(prob; kwargs...); progress=progress)
-
-function phase_tangent_state(relaxer::Relaxer)
-    x0 = last_state(relaxer)
-    return phase_tangent_state(relaxer.prob, x0)
-end
+step!(relaxer::PhaseRelaxer) = keepgoing!(relaxer.integrator)
+Base.length(relaxer::PhaseRelaxer) = relaxer.num_tran
 
 function phase_tangent_state(prob::LEProblem, x0 = prob.phase_prob.u0)
     dim_lyap = prob.dim_lyap
@@ -58,9 +19,6 @@ function phase_tangent_state(prob::LEProblem, x0 = prob.phase_prob.u0)
     u0[:, 2:end] = Q0
     u0
 end
-
-get_solver(relaxer::Relaxer; kwargs...) =
-    get_solver(relaxer.prob, phase_tangent_state(relaxer); kwargs...)
 
 function get_tangent_dynamics(prob, u0 = phase_tangent_state(prob))
     phase_prob = prob.phase_prob
@@ -83,44 +41,25 @@ function get_tangent_prob(prob::LEProblem{DEP},
     )
 end
 
-function get_solver(prob::LEProblem, u0 = phase_tangent_state(prob);
-                    kwargs...)
+current_state(relaxer::Union{PhaseRelaxer, AbstractRenormalizer}) =
+    current_state(relaxer.integrator)
+
+function get_tangent_integrator(prob::LEProblem, relaxer)
+    u0 = phase_tangent_state(prob, current_state(relaxer))
     tangent_prob = get_tangent_prob(prob, u0)
-    get_solver(tangent_prob, prob.num_attr; kwargs...)
+    return get_integrator(tangent_prob)
 end
 
-function get_solver(tangent_prob::DEProblem, num_attr::Int;
-                    record::Bool = false,
-                    solver_type=nothing, kwargs...)
-    if solver_type === nothing
-        @assert ndims(tangent_prob.u0) == 2
-        dim_lyap = size(tangent_prob.u0)[2] - 1
-        if dim_lyap == 1
-            solver_type = MLESolver
-        else
-            solver_type = LESolver
-        end
-    end
+TangentRenormalizer(relaxer::PhaseRelaxer, prob::LEProblem, sol::LESolution) =
+    TangentRenormalizer(get_tangent_integrator(prob, relaxer),
+                        prob.num_attr, sol)
 
-    solver = solver_type(get_integrator(tangent_prob), num_attr; kwargs...)
-    if record
-        solver = LERecordingSolver(solver)
-    end
-    return solver
-end
+MLERenormalizer(relaxer::PhaseRelaxer, prob::LEProblem, sol::LESolution) =
+    MLERenormalizer(get_tangent_integrator(prob, relaxer), sol, prob.num_attr)
 
-"""
-    init(prob::AbstractLEProblem; <keyword arguments>) :: AbstractLESolver
-    init(relaxer::AbstractRelaxer; <keyword arguments>) :: AbstractLESolver
+Base.length(stage::AbstractRenormalizer) = stage.num_attr
 
-Run phase space simulation to throw away the transient and then
-construct a LE solver.
-"""
-init(prob::AbstractLEProblem; progress = -1, kwargs...) =
-    get_solver(relaxed(prob; progress = progress); kwargs...)
-init(relaxer::AbstractRelaxer; kwargs...) = get_solver(relaxer; kwargs...)
-
-@inline function keepgoing!(solver::AbstractLESolver)
+@inline function keepgoing!(solver::AbstractRenormalizer)
     u0 = current_state(solver)
     u0[:, 1] = solver.phase_state
     u0[:, 2:end] = solver.tangent_state
@@ -181,16 +120,19 @@ end
 end
 
 """
-    step!(solver::AbstractLESolver)
+    step!(solver::AbstractRenormalizer)
 
 Evolve the dynamics and then do an orthonormalization.
 """
-function step!(solver::AbstractLESolver)
+function step!(solver::AbstractRenormalizer)
     keepgoing!(solver)
     post_evolve!(solver)
+    stage = solver
+    record!(stage, Val{:OS})
+    record!(stage, Val{:FTLE})
 end
 
-function post_evolve!(solver::LESolver)
+function post_evolve!(solver::TangentRenormalizer)
     dim_lyap = length(solver.inst_exponents)
     P = solver.tangent_state
     F = qrfact!(P)
@@ -203,76 +145,83 @@ function post_evolve!(solver::LESolver)
     A_mul_sign!(Q, sign_R)       # Q = Q * sign_R
     sign_mul_A!(sign_R, R)       # R = signR * R
 
-    @assert size(R) == (dim_lyap, dim_lyap)
-    for i in 1:dim_lyap
-        @inbounds solver.inst_exponents[i] = log(R[i, i])
-    end
-    OnlineStats.fit!(solver.series, solver.inst_exponents)
-
-    solver.num_orth += 1
+    solver.i += 1
     solver.tangent_state, solver.Q = Q, solver.tangent_state
     # At this point:
     # solver.tangent_state === Q == 𝑮ₙ₊ₖ
     # solver.Q is a mess, as qrfact! use it as a "buffer"
 end
 
-function post_evolve!(solver::MLESolver)
+function post_evolve!(solver::MLERenormalizer)
     v = solver.tangent_state[:, 1]
     r = norm(v)
-    n = (solver.num_orth += 1)
+    n = (solver.i += 1)
     solver.exponent = lyap_add_r(n, solver.exponent, r)
-    solver.inst_exponent = log(r)  # TODO: don't re-calculate log(r)
+    stage = solver
+    stage.inst_exponent = log(r) / t_chunk(stage)
+    # TODO: don't re-calculate log(r)
     solver.tangent_state[:, 1] .= v ./ r
 end
 
-"""
-    solve!(solver::AbstractLESolver; <keyword arguments>)
-
-Do `solver.num_attr` times of orthonormalization `step!(solver)`.
-"""
-solve!(solver::AbstractLESolver; kwargs...) =
-    forward!(solver, solver.num_attr; kwargs...)
-
-function forward!(solver::AbstractLESolver, num_attr; progress=-1)
-    @showprogress_if(
-        (progress >= 0), progress, "Computing Lyapunov exponents...",
-        for _ in 1:num_attr
-            step!(solver)
-        end)
-    solver
+function t_chunk(stage)
+    tspan = get_tspan(stage.integrator)
+    return tspan[2] - tspan[1]
 end
 
-"""
-    solve(prob::AbstractLEProblem; <keyword arguments>)
-        :: AbstractLESolver
-
-Initialize the solver ([`init`](@ref)) and then go through the LE
-calculation ([`solve!`](@ref)).
-"""
-function solve(prob::AbstractLEProblem;
-               progress = -1,
-               kwargs...)
-    solver = init(prob; progress=progress, kwargs...)
-    solve!(solver; progress=progress)
-    return solver
+function record!(stage::TangentRenormalizer{<: LESolRecOS}, ::Type{Val{:OS}})
+    dim_lyap = length(stage.inst_exponents)
+    R = stage.R
+    dt = t_chunk(stage)
+    @assert size(R) == (dim_lyap, dim_lyap)
+    for i in 1:dim_lyap
+        @inbounds stage.inst_exponents[i] = log(R[i, i]) / dt
+    end
+    OnlineStats.fit!(stage.sol.series, stage.inst_exponents)
 end
+
+function record!(stage::MLERenormalizer{<: LESolRecOS}, ::Type{Val{:OS}})
+    # FIXME: Assuming stage.sol.main is VecMean and alike
+    OnlineStats.fit!(stage.sol.series, [stage.inst_exponent])
+end
+
+record!(stage::AbstractRenormalizer{<: LESolRecFTLE}, ::Type{Val{:FTLE}}) =
+    stage.sol.ftle_history[stage.i] .= ftle(stage)
 
 """
     lyapunov_exponents(solver)
 
 Get the result of Lyapunov exponents calculation stored in `solver`.
 """
-@inline function lyapunov_exponents(solver::LESolver)
-    mean(solver.main_stat) ./ t_chunk(solver)
-end
+lyapunov_exponents(solver::Union{LESolverRecOS,
+                                 AbstractRenormalizer{<: LESolRecOS}}) =
+    lyapunov_exponents(solver.sol)
 
-@inline function lyapunov_exponents(solver::MLESolver)
+lyapunov_exponents(sol::LESolRecOS) = mean(sol.main_stat)
+
+@inline function lyapunov_exponents(solver::MLERenormalizer)
     [solver.exponent / t_chunk(solver)]
 end
 
 """Get finite-time Lyapunov exponents (FTLE)"""
-@inline ftle(solver::LESolver) = solver.inst_exponents ./ t_chunk(solver)
-# TODO: check if the dot here is meaningful (maybe define ftle!)
-# But probably this is not the performance-critical point.
+ftle(stage::TangentRenormalizer) = stage.inst_exponents
+ftle(stage::MLERenormalizer) = [stage.inst_exponent]
 
-@inline ftle(solver::MLESolver) = [solver.inst_exponent / t_chunk(solver)]
+
+exponents_history(solver::Union{LESolverRecFTLE,
+                                AbstractRenormalizer{<: LESolRecFTLE}}) =
+    exponents_history(solver.sol)
+
+function exponents_history(sol::LESolRecFTLE)
+    ftle_history = sol.ftle_history
+    num_attr = length(ftle_history)
+    dim_lyap = length(ftle_history[1])
+
+    m = VecMean(dim_lyap)
+    s = OnlineStats.Series(m)
+    le_hist = similar(ftle_history[1], (dim_lyap, num_attr))
+    for i in 1:num_attr
+        OnlineStats.fit!(s, ftle_history[i])
+        le_hist[:, i] .= mean(m)
+    end
+    return le_hist
+end

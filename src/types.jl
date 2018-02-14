@@ -1,42 +1,7 @@
 using DiffEqBase: ODEProblem, DiscreteProblem
-
-"""
-The Problem type represents the setup of the Lyapunov exponents calculation.
-"""
-abstract type AbstractLEProblem end
-
-"""
-The Relaxer type represents the calculation required for throwing away
-the transient part of the dynamics.
-"""
-abstract type AbstractRelaxer end
-
-"""
-The Solver type represents the core Lyapunov Exponents (LE)
-calculation.  The LE calculation is done by calling the in-place
-mutating function [`solve!`](@ref).
-
-The methods connecting the three principal types (Problem, Relaxer and
-Solver) for the LE calculation are shown in the following diagram:
-
-<code class=LE-diagram>  \\\n
-┌─ Problem ([`AbstractLEProblem`](@ref))                               \\\n
-│     │                                                                \\\n
-│     │ [`get_relaxer`](@ref), [`relaxed`](@ref)                       \\\n
-│     ▼                                                                \\\n
-│   Relaxer ([`AbstractRelaxer`](@ref)) ┄┄ ⟲ [`relax!`](@ref)        \\\n
-│     │                                                                \\\n
-│     │ [`init`](@ref)                                                 \\\n
-│     │                                                                \\\n
-│┄┄┄┄┄┄┄ [`init`](@ref), [`solve`](@ref)                         \\\n
-│     │                                                                \\\n
-│     ▼                                                                \\\n
-└▶ Solver ([`AbstractLESolver`](@ref)) ┄┄ ⟲ [`solve!`](@ref),
-                                                 [`step!`](@ref)         \\\n
-</code>
-
-"""
-abstract type AbstractLESolver{Intr} end
+using .Stages: AbstractSource, AbstractStage,
+    StageIterator, StageState, StagedSolver, goto!
+import .Stages: record!
 
 """
     LEProblem(phase_prob, num_attr; <keyword arguments>)
@@ -63,7 +28,7 @@ abstract type AbstractLESolver{Intr} end
    provided, `tangent_dynamics` is derived from `phase_prob.f`.  See
    also [`PhaseTangentDynamics`](@ref).
 """
-struct LEProblem{DEP} <: AbstractLEProblem
+struct LEProblem{DEP} <: AbstractSource
     phase_prob::DEP
     num_tran
     num_attr
@@ -97,29 +62,64 @@ LEProblem{DEP}(phase_prob::DEP;
                kwargs...) where {DEP} =
     LEProblem{DEP}(phase_prob, num_attr; kwargs...)
 
-struct Relaxer{LEP} <: AbstractRelaxer
-    prob::LEP
-    integrator
+mutable struct PhaseRelaxer{Intr} <: AbstractStage
+    integrator::Intr
+    num_tran::Int
+    i::Int
+
+    PhaseRelaxer(integrator::Intr, num_tran::Int, i::Int = 1) where {Intr} =
+        new{Intr}(integrator, num_tran, i)
 end
+
+struct LESolution{RecOS, RecFTLE, SS, MS, VV}
+    series::SS
+    main_stat::MS
+    ftle_history::VV
+end
+
+const LESolRecOS = LESolution{true}
+const LESolRecFTLE = LESolution{RecOS, true} where {RecOS}
+
+function LESolution(dim_lyap::Int;
+                    main_stat = VecMean,
+                    add_stats = [],
+                    history_type = Vector{Float64},
+                    num_attr = nothing)
+    RecOS = main_stat !== nothing || ! isempty(add_stats)
+    RecFTLE = num_attr !== nothing
+    if ! isa(main_stat, Union{OnlineStats.OnlineStat, Void})
+        main_stat = main_stat(dim_lyap)
+    end
+    series = if RecOS
+        OnlineStats.Series(main_stat, add_stats...)
+    end
+    ftle_history = if RecFTLE
+        [history_type(dim_lyap) for _ in 1:num_attr]
+        # TODO: generalize outer array type?
+    end
+    args = (series, main_stat, ftle_history)
+    return LESolution{RecOS, RecFTLE, map(typeof, args)...}(args...)
+end
+
+NullLESolution() = LESolution(0; main_stat = nothing)
 
 get_dim_lyap(integrator) = size(init_tangent_state(integrator))[2]
 
+abstract type AbstractRenormalizer{S} <: AbstractStage end
+
 """
-    LESolver(integrator; <keyword arguments>)
+    TangentRenormalizer(integrator; <keyword arguments>)
 
 A type representing the main calculation of Lyapunov Exponents (LE).
 This struct holds all temporary state required for LE calculation.
 """
-mutable struct LESolver{Intr,
-                        V <: AbstractVector,
-                        M <: AbstractMatrix,
-                        } <: AbstractLESolver{Intr}
+mutable struct TangentRenormalizer{S <: LESolution,
+                                   Intr, V, M,
+                                   } <: AbstractRenormalizer{S}
     integrator::Intr
     num_attr::Int
-    series::OnlineStats.Series
-    main_stat::OnlineStatsBase.OnlineStat
     inst_exponents::V
-    num_orth::Int
+    i::Int
     phase_state::V
     tangent_state::M
     Q::M
@@ -127,13 +127,14 @@ mutable struct LESolver{Intr,
     sign_R::Vector{Bool}
     # TODO: Make sure that they result in concrete types
 
-    function LESolver(
-            integrator::Intr, num_attr::Int;
+    sol::S
+
+    function TangentRenormalizer(
+            integrator::Intr, num_attr::Int,
+            sol::S = NullLESolution();
             phase_state::V = init_phase_state(integrator),
             tangent_state::M = init_tangent_state(integrator),
-            main_stat = VecMean,
-            add_stats = [],
-            ) where {Intr,
+            ) where {S, Intr,
                      V <: AbstractVector,
                      M <: AbstractMatrix}
 
@@ -143,56 +144,48 @@ mutable struct LESolver{Intr,
         @assert size(phase_state) == (dim_phase,)
         @assert size(tangent_state) == (dim_phase, dim_lyap)
 
-        num_orth = 0
-        if ! isa(main_stat, OnlineStats.OnlineStat)
-            main_stat = main_stat(dim_lyap)
-        end
-        series = OnlineStats.Series(main_stat, add_stats...)
         inst_exponents = zeros(eltype(phase_state), dim_lyap)
         Q = similar(tangent_state)
         R = similar(tangent_state, (0, 0))  # dummy
         sign_R = Array{Bool}(dim_lyap)
-        new{Intr, V, M}(
+
+        return new{S, Intr, V, M}(
             integrator,
             num_attr,
-            series,
-            main_stat,
             inst_exponents,
-            num_orth,
+            0,  # i
             phase_state,
             tangent_state,
             Q,
             R,
             sign_R,
+            sol,
         )
     end
 end
 
-"""
-    MLESolver(integrator; <keyword arguments>)
-
-A type representing the main calculation of Maximum Lyapunov Exponents
-(MLE).  This struct holds all temporary state required for it.
-"""
-mutable struct MLESolver{Intr,
-                         T <: Real,
-                         V <: AbstractVector,
-                         M <: AbstractMatrix,
-                         } <: AbstractLESolver{Intr}
+mutable struct MLERenormalizer{S <: LESolution,
+                               Intr,
+                               T <: Real,
+                               V <: AbstractVector,
+                               M <: AbstractMatrix,
+                               } <: AbstractRenormalizer{S}
     integrator::Intr
     num_attr::Int
     exponent::T
     inst_exponent::T
-    num_orth::Int
+    i::Int
     phase_state::V
     tangent_state::M
     # TODO: Make sure that they result in concrete types
 
-    function MLESolver(
-            integrator::Intr, num_attr::Int;
+    sol::S
+
+    function MLERenormalizer(
+            integrator::Intr, sol::S, num_attr::Int;
             phase_state::V = init_phase_state(integrator),
             tangent_state::M = init_tangent_state(integrator),
-            ) where {Intr,
+            ) where {S, Intr,
                      V <: AbstractVector,
                      M <: AbstractMatrix}
 
@@ -202,31 +195,65 @@ mutable struct MLESolver{Intr,
                   " given: $(size(tangent_state))")
         end
 
-        num_orth = 0
         T = eltype(phase_state)
         exponent = T(0)
-        new{Intr, T, V, M}(
+        new{S, Intr, T, V, M}(
             integrator,
             num_attr,
             exponent,
             exponent,
-            num_orth,
+            0,  # i
             phase_state,
             tangent_state,
+            sol,
         )
     end
 end
 
 
 """
-    phase_state(solverish) :: Vector
+    phase_state(stage) :: Vector
 
-Get current phase-space state stored in `solverish`.
+Get current phase-space state stored in `stage`.
 """
-phase_state(solver::LESolver) = solver.phase_state
+phase_state(stage::TangentRenormalizer) = stage.phase_state
+phase_state(stage::MLERenormalizer) = stage.phase_state
+
+
+const LESolver = StagedSolver{<: LEProblem, <: LESolution}
+const LESolverRecOS = StagedSolver{<: LEProblem, <: LESolRecOS}
+const LESolverRecFTLE = StagedSolver{<: LEProblem, <: LESolRecFTLE}
+
+function LESolver(prob::LEProblem;
+                  phase_relaxer = PhaseRelaxer,
+                  renormalizer = if prob.dim_lyap == 1
+                      MLERenormalizer
+                  else
+                      TangentRenormalizer
+                  end,
+                  kwargs...)
+    stage_types = [
+        phase_relaxer,
+        renormalizer,
+    ]
+    return LESolver(prob, stage_types; kwargs...)
+end
+
+function LESolver(prob::LEProblem, stage_types::AbstractVector;
+                  record::Bool = false,
+                  kwargs...)
+    sol = LESolution(prob.dim_lyap;
+                     num_attr = record ? prob.num_attr : nothing,
+                     kwargs...)
+    args = (prob, sol)  # additional arguments to each `stage_types`
+    return StagedSolver(prob, sol, stage_types, args)
+end
+
+init(prob::LEProblem; kwargs...) = LESolver(prob; kwargs...)
+solve(prob::LEProblem; kwargs...) = solve!(init(prob; kwargs...)).sol
 
 
 Base.show(io::IO, solver::LESolver) =
     print(io,
-          "#Orth.: ", solver.num_orth, ", ",
+          "#Orth.: ", solver.i, ", ",
           "LEs: ", lyapunov_exponents(solver))

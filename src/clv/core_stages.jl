@@ -1,4 +1,4 @@
-mutable struct ForwardRelaxer{T <: LESolver} <: AbstractStage
+mutable struct ForwardRelaxer{T <: TangentRenormalizer} <: AbstractStage
     le_solver::T
     num_forward_tran::Int
 end
@@ -8,12 +8,12 @@ ForwardRelaxer(prob::CLVProblem, ::CLVProblem, ::CLVSolution) =
 ForwardRelaxer(prob::CLVProblem) = ForwardRelaxer(get_le_solver(prob),
                                                   prob.num_forward_tran)
 
-stage_index(frx::ForwardRelaxer) = frx.le_solver.num_orth
+stage_index(frx::ForwardRelaxer) = frx.le_solver.i
 Base.length(frx::ForwardRelaxer) = frx.num_forward_tran
 step!(frx::ForwardRelaxer) = step!(frx.le_solver)
 
 mutable struct ForwardDynamics{S <: CLVSolution,
-                               T <: LESolver,
+                               T <: TangentRenormalizer,
                                } <: AbstractStage
     le_solver::T
     i::Int
