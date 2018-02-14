@@ -7,7 +7,7 @@ export init, solve, solve!, step!
 import DifferentialEquations: init, solve, solve!, step!
 
 using ..Stages: AbstractSource, AbstractStage, finish_if_not!,
-    StageIterator, StageState, is_reachable
+    StageIterator, StageState, StagedSolver, goto!
 import ..Stages: is_finished, finish!, current_result
 
 using ..LyapunovExponents: LEProblem, LESolver, dimension, is_semi_unitary,

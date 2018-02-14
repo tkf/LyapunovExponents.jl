@@ -1,11 +1,4 @@
-using Base: Callable
-
-mutable struct CLVSolver
-    prob::CLVProblem
-    iter::StageIterator
-    state::StageState
-    sol::CLVSolution
-end
+const CLVSolver = StagedSolver{<: CLVProblem, <: CLVSolution}
 
 """
     CLVSolver(prob::CLVProblem; <keyword arguments>)
@@ -39,67 +32,11 @@ end
 function CLVSolver(prob::CLVProblem, stage_types::AbstractVector,
                    record::Vector{Symbol})
     sol = CLVSolution(prob, record)
-    iter = StageIterator(
-        prob,
-        stage_types,
-        (prob, sol),  # additional arguments to each `stage_types`
-    )
-    state = start(iter)
-    return CLVSolver(prob, iter, state, sol)
+    args = (prob, sol)  # additional arguments to each `stage_types`
+    return StagedSolver(prob, sol, stage_types, args)
 end
 
 CLVSolver(prob::LEProblem; kwargs...) = CLVSolver(CLVProblem(prob); kwargs...)
-
-function record_finished!(solver::CLVSolver)
-    finish_if_not!(solver.state.stage)
-end
-
-function advance!(solver::CLVSolver)
-    if done(solver.iter, solver.state)
-        return nothing
-    end
-    record_finished!(solver)
-    _, solver.state = next(solver.iter, solver.state)
-    return solver.state.stage
-end
-
-function get_last_stage!(solver::CLVSolver)
-    while advance!(solver) !== nothing end
-    return solver.state.stage
-end
-
-function solve!(solver::CLVSolver)
-    if done(solver.iter, solver.state) && is_finished(solver.state.stage)
-        error("No further computation is required.")
-        # Should it be just a no-op?
-    end
-    get_last_stage!(solver)
-    record_finished!(solver)
-    return solver
-end
-
-
-"""
-    goto!(solver::CLVSolver, stage_type::Type{T}) :: T
-
-Solve the CLV problem up to the stage of type `stage_type` and return
-it.  Instead of directly calling `goto!(solver, ForwardDynamics)` and
-`goto!(solver, BackwardDynamics)`, use the convenience methods
-[`forward_dynamics!`](@ref) and [`backward_dynamics!`](@ref).
-"""
-function goto!(solver::CLVSolver, stage_type::Type)
-    @assert is_reachable(solver.iter, stage_type, solver.state)
-    if solver.state.stage isa stage_type
-        return solver.state.stage
-    end
-    while true
-        stage = advance!(solver)
-        if stage isa stage_type
-            return stage
-        end
-    end
-    error("Unreachable!")
-end
 
 init(prob::CLVProblem; kwargs...) = CLVSolver(prob; kwargs...)
 
