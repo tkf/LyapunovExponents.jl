@@ -4,7 +4,7 @@ using DiffEqBase: step!
 
 abstract type Stageable end
 abstract type AbstractSource <: Stageable end
-abstract type AbstractComputationStage <: Stageable end
+abstract type AbstractStage <: Stageable end
 
 """
     finish!(stage::Stageable) :: Stageable
@@ -13,7 +13,7 @@ Finish whatever the computation `stage` has to do.
 """
 function finish! end
 
-function finish!(stage::AbstractComputationStage)
+function finish!(stage::AbstractStage)
     while ! is_finished(stage)
         step!(stage)
     end
@@ -37,11 +37,11 @@ is_finished(::AbstractSource) = true
 
 
 # Default iterator interface ("mix-in")
-current_result(stage::AbstractComputationStage) = nothing
+current_result(stage::AbstractStage) = nothing
 
-Base.start(stage::AbstractComputationStage) = nothing
-Base.done(stage::AbstractComputationStage, _state) = is_finished(stage)
-@inline function Base.next(stage::AbstractComputationStage, _state)
+Base.start(stage::AbstractStage) = nothing
+Base.done(stage::AbstractStage, _state) = is_finished(stage)
+@inline function Base.next(stage::AbstractStage, _state)
     step!(stage)
     return (current_result(stage), nothing)
 end
@@ -49,7 +49,7 @@ end
 
 struct StageIterator
     source::Stageable
-    stage_types::Vector{Type{<: AbstractComputationStage}}
+    stage_types::Vector{Type{<: AbstractStage}}
     args::Tuple
 end
 

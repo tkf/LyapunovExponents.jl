@@ -1,12 +1,12 @@
 # Some "mix-in" methods for generating default `is_finished`:
-stage_index(stage::AbstractComputationStage) = stage.i
-is_finished(stage::AbstractComputationStage) =
+stage_index(stage::AbstractStage) = stage.i
+is_finished(stage::AbstractStage) =
     stage_index(stage) >= length(stage)
 
-record!(::AbstractComputationStage, ::Any) = nothing
+record!(::AbstractStage, ::Any) = nothing
 
 
-mutable struct ForwardRelaxer{T <: LESolver} <: AbstractComputationStage
+mutable struct ForwardRelaxer{T <: LESolver} <: AbstractStage
     le_solver::T
     num_forward_tran::Int
 end
@@ -22,7 +22,7 @@ step!(frx::ForwardRelaxer) = step!(frx.le_solver)
 
 mutable struct ForwardDynamics{S <: CLVSolution,
                                T <: LESolver,
-                               } <: AbstractComputationStage
+                               } <: AbstractStage
     le_solver::T
     i::Int
     sol::S
@@ -59,7 +59,7 @@ current_result(fitr::ForwardPass) = CLV.G(fitr)
 phase_state(fitr::ForwardPass) = phase_state(fitr.le_solver)
 
 
-mutable struct BackwardRelaxer <: AbstractComputationStage
+mutable struct BackwardRelaxer <: AbstractStage
     num_backward_tran::Int
     R_history::Vector{UTM}
     C::UTM
@@ -79,7 +79,7 @@ Base.length(brx::BackwardRelaxer) = brx.num_backward_tran
 
 mutable struct BackwardDynamics{with_D,
                                 S <: CLVSolution,
-                                } <: AbstractComputationStage
+                                } <: AbstractStage
     sol::S
     R_history::Vector{UTM}
     C::UTM
