@@ -1,5 +1,4 @@
 module Stages
-using Base: Callable
 
 using DiffEqBase: step!
 
