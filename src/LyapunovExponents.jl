@@ -5,6 +5,7 @@ export LEProblem, ContinuousLEProblem, DiscreteLEProblem, lyapunov_exponents,
 
 using Requires
 
+include("stages.jl")
 include("utils.jl")
 include("online_stats.jl")
 include("types.jl")

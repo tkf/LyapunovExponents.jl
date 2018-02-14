@@ -1,5 +1,4 @@
 # Some "mix-in" methods for generating default `is_finished`:
-function stage_length end
 stage_index(stage::AbstractComputationStage) = stage.i
 is_finished(stage::AbstractComputationStage) =
     stage_index(stage) >= stage_length(stage)

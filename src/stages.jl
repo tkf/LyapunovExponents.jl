@@ -1,4 +1,7 @@
+module Stages
 using Base: Callable
+
+using DiffEqBase: step!
 
 abstract type AbstractStage end
 abstract type AbstractComputationStage <: AbstractStage end
@@ -41,6 +44,9 @@ Base.done(stage::AbstractComputationStage, _state) = is_finished(stage)
 end
 Base.length(stage::AbstractComputationStage) = stage_length(stage)
 
+# TODO: use Base.length directly
+function stage_length end
+
 
 struct StageIterator
     source::AbstractStage
@@ -74,3 +80,5 @@ is_reachable(iter::StageIterator, stage_type::Type, i::Int = 1) =
 
 is_reachable(iter::StageIterator, stage_type::Type, state::StageState) =
     is_reachable(iter, stage_type, state.i)
+
+end
