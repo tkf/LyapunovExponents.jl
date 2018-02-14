@@ -1,7 +1,7 @@
 # Some "mix-in" methods for generating default `is_finished`:
 stage_index(stage::AbstractComputationStage) = stage.i
 is_finished(stage::AbstractComputationStage) =
-    stage_index(stage) >= stage_length(stage)
+    stage_index(stage) >= length(stage)
 
 record!(::AbstractComputationStage, ::Any) = nothing
 
@@ -17,7 +17,7 @@ ForwardRelaxer(prob::CLVProblem) = ForwardRelaxer(get_le_solver(prob),
                                                   prob.num_forward_tran)
 
 stage_index(frx::ForwardRelaxer) = frx.le_solver.num_orth
-stage_length(frx::ForwardRelaxer) = frx.num_forward_tran
+Base.length(frx::ForwardRelaxer) = frx.num_forward_tran
 step!(frx::ForwardRelaxer) = step!(frx.le_solver)
 
 mutable struct ForwardDynamics{S <: CLVSolution,
@@ -35,7 +35,7 @@ end
 ForwardDynamics(frx::ForwardRelaxer, ::CLVProblem, sol::CLVSolution) =
     ForwardDynamics(frx.le_solver, sol)
 
-stage_length(fitr::ForwardDynamics) = length(fitr.R_history)
+Base.length(fitr::ForwardDynamics) = length(fitr.R_history)
 
 @inline function step!(fitr::ForwardDynamics)
     step!(fitr.le_solver)
@@ -74,7 +74,7 @@ BackwardRelaxer(fitr::ForwardDynamics, prob::CLVProblem) =
                     UTM(eye(fitr.R_history[end])),  # TODO: randomize
                     -1)
 
-stage_length(brx::BackwardRelaxer) = brx.num_backward_tran
+Base.length(brx::BackwardRelaxer) = brx.num_backward_tran
 
 
 mutable struct BackwardDynamics{with_D,
@@ -121,7 +121,7 @@ BackwardDynamics{with_D}(brx::BackwardRelaxer,
         brx.R_history[1:end - brx.i - 1],
         brx.C)
 
-stage_length(bitr::BackwardDynamics) = length(bitr.R_history)
+Base.length(bitr::BackwardDynamics) = length(bitr.R_history)
 
 const BackwardPass = Union{BackwardRelaxer, BackwardDynamics}
 

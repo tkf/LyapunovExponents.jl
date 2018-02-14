@@ -41,10 +41,6 @@ Base.done(stage::AbstractComputationStage, _state) = is_finished(stage)
     step!(stage)
     return (current_result(stage), nothing)
 end
-Base.length(stage::AbstractComputationStage) = stage_length(stage)
-
-# TODO: use Base.length directly
-function stage_length end
 
 
 struct StageIterator

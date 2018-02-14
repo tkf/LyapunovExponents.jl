@@ -8,7 +8,7 @@ import DifferentialEquations: init, solve, solve!, step!
 
 using ..Stages: AbstractStage, AbstractComputationStage, finish_if_not!,
     StageIterator, StageState, is_reachable
-import ..Stages: is_finished, finish!, current_result, stage_length
+import ..Stages: is_finished, finish!, current_result
 
 using ..LyapunovExponents: LEProblem, LESolver, dimension, is_semi_unitary,
     default_Q0, get_tangent_dynamics
