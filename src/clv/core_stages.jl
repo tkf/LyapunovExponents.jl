@@ -1,11 +1,3 @@
-# Some "mix-in" methods for generating default `is_finished`:
-stage_index(stage::AbstractStage) = stage.i
-is_finished(stage::AbstractStage) =
-    stage_index(stage) >= length(stage)
-
-record!(::AbstractStage, ::Any) = nothing
-
-
 mutable struct ForwardRelaxer{T <: LESolver} <: AbstractStage
     le_solver::T
     num_forward_tran::Int

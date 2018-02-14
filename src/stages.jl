@@ -36,6 +36,23 @@ end
 finish!(::AbstractSource) = nothing
 is_finished(::AbstractSource) = true
 
+# Some "mix-in" methods for generating default `is_finished`:
+stage_index(stage::AbstractStage) = stage.i
+is_finished(stage::AbstractStage) = stage_index(stage) >= length(stage)
+# TODO: maybe this shouldn't be defined for generic stage.  Maybe
+# define AbstractIndexedStage?
+
+
+# Utility method. Define it and call it from step! for type-based
+# recording injection.
+"""
+    record!(stage, Val{key})
+
+Record some info (labeled by `key`) into `stage`.
+"""
+record!(::AbstractStage, ::Any) = nothing
+# See: [[./clv/core_stages.jl::function record!]]
+
 
 # Default iterator interface ("mix-in")
 current_result(stage::AbstractStage) = nothing
