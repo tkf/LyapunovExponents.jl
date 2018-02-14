@@ -104,15 +104,11 @@ mutable struct StagedSolver{P, S}
     end
 end
 
-function record_finished!(solver::StagedSolver)
-    finish_if_not!(solver.state.stage)
-end
-
 function advance!(solver::StagedSolver)
     if done(solver.iter, solver.state)
         return nothing
     end
-    record_finished!(solver)
+    finish_if_not!(solver.state.stage)
     _, solver.state = next(solver.iter, solver.state)
     return solver.state.stage
 end
@@ -128,7 +124,7 @@ function solve!(solver::StagedSolver)
         # Should it be just a no-op?
     end
     get_last_stage!(solver)
-    record_finished!(solver)
+    finish_if_not!(solver.state.stage)
     return solver
 end
 

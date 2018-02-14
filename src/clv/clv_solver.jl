@@ -33,6 +33,7 @@ function CLVSolver(prob::CLVProblem, stage_types::AbstractVector,
                    record::Vector{Symbol})
     sol = CLVSolution(prob, record)
     args = (prob, sol)  # additional arguments to each `stage_types`
+    # FIXME: Currently sol is used as "cache" (args[2]) as well.
     return StagedSolver(prob, sol, stage_types, args)
 end
 
