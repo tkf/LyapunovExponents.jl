@@ -6,7 +6,7 @@ module CovariantVectors
 export init, solve, solve!, step!
 import DifferentialEquations: init, solve, solve!, step!
 
-using ..Stages: AbstractStage, AbstractComputationStage, finish_if_not!,
+using ..Stages: AbstractSource, AbstractComputationStage, finish_if_not!,
     StageIterator, StageState, is_reachable
 import ..Stages: is_finished, finish!, current_result
 

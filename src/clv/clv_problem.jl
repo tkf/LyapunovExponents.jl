@@ -36,7 +36,7 @@ See: <https://tkf.github.io/LyapunovExponents.jl/latest/gallery/>
   Journal of Physics A: Mathematical and Theoretical, 46(25), 254005.
   <http://doi.org/10.1088/1751-8113/46/25/254005>
 """
-struct CLVProblem{DEP} <: AbstractStage
+struct CLVProblem{DEP} <: AbstractSource
     phase_prob::DEP
     # num_phase_tran
     num_forward_tran::Int
@@ -78,9 +78,6 @@ CLVProblem(phase_prob::DEP, num_clv; kwargs...) where {DEP <: ODEProblem} =
     CLVProblem{ODEProblem}(phase_prob, num_clv; kwargs...)
 CLVProblem(phase_prob::DEP, num_clv; kwargs...) where {DEP <:DiscreteProblem} =
     CLVProblem{DiscreteProblem}(phase_prob, num_clv; kwargs...)
-
-finish!(::CLVProblem) = nothing
-is_finished(::CLVProblem) = true
 
 CLVProblem(prob::LEProblem;
            num_clv = max(1, floor(Int, prob.num_attr * 0.8)),

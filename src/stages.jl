@@ -3,6 +3,7 @@ module Stages
 using DiffEqBase: step!
 
 abstract type AbstractStage end
+abstract type AbstractSource <: AbstractStage end
 abstract type AbstractComputationStage <: AbstractStage end
 
 """
@@ -30,6 +31,9 @@ function finish_if_not!(stage::AbstractStage)
     is_finished(stage) || finish!(stage)
     return stage
 end
+
+finish!(::AbstractSource) = nothing
+is_finished(::AbstractSource) = true
 
 
 # Default iterator interface ("mix-in")
