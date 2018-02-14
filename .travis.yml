@@ -32,6 +32,7 @@ before_script:
   # cache upload since it occurs before `after_success` in which
   # Documenter.jl needs it:
   - julia --color=yes -e 'Pkg.rm("LyapunovExponents")'
+  - rm -rfv ~/.julia/v*/LyapunovExponents/
   # Install Coverage.jl and Documenter.jl here so that they will be cached:
   - julia --color=yes -e 'map(Pkg.add, ["Coverage", "Documenter", "GR"])'
   # This is one of the step in the "official" step.  But it has to be
