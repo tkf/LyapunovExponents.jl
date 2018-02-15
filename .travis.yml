@@ -49,7 +49,7 @@ before_script:
 
 script:
   - julia --color=yes --check-bounds=yes -e 'Pkg.test("LyapunovExponents"; coverage=true)'
-  - make plot
+  - julia --color=yes -e 'cd(Pkg.dir("LyapunovExponents")); include(joinpath("docs", "plot_gallery.jl"))'
 
 after_success:
   # push coverage results to Coveralls
