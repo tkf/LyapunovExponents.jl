@@ -13,7 +13,7 @@ x_history = [Vector{Float64}(3) for _ in 1:num_rec]
 G_history = [Matrix{Float64}(3, 3) for _ in 1:num_rec]
 C_history = [Matrix{Float64}(3, 3) for _ in 1:num_rec]
 
-forward = @time forward_dynamics!(solver)
+forward = @time forward_dynamics!(solver; progress=1)
 @time for (i, G) in indexed_forward_dynamics!(forward)
     k, r = divrem(i, sampling_interval)
     j = k + 1
@@ -23,7 +23,7 @@ forward = @time forward_dynamics!(solver)
     end
 end
 
-@time for (i, C) in @time indexed_backward_dynamics!(solver)
+@time for (i, C) in @time indexed_backward_dynamics!(solver; progress=1)
     k, r = divrem(i, sampling_interval)
     j = k + 1
     if r == 1

@@ -48,7 +48,8 @@ Solve the CLV problem up to the forward dynamics stage and return an
 iterator to step through the forward dynamics.
 See also: [`backward_dynamics!`](@ref), [`goto!`](@ref).
 """
-forward_dynamics!(solver::CLVSolver) = goto!(solver, ForwardDynamics)
+forward_dynamics!(solver::CLVSolver; kwargs...) =
+    goto!(solver, ForwardDynamics; kwargs...)
 
 """
     indexed_forward_dynamics!(solver::CLVSolver)
@@ -57,8 +58,8 @@ forward_dynamics!(solver::CLVSolver) = goto!(solver, ForwardDynamics)
 Just a short-hand for `enumerate(forward_dynamics!(solver))`.
 It's for symmetry with [`indexed_backward_dynamics!`](@ref).
 """
-indexed_forward_dynamics!(solver::CLVSolver) =
-    indexed_forward_dynamics!(forward_dynamics!(solver))
+indexed_forward_dynamics!(solver::CLVSolver; kwargs...) =
+    indexed_forward_dynamics!(forward_dynamics!(solver; kwargs...))
 indexed_forward_dynamics!(fitr::ForwardDynamics) = enumerate(fitr)
 
 """
@@ -79,7 +80,8 @@ angles = [acos(abs(dot(C[:, 1], C[:, 2]))) * 2 / π for C
           in backward_dynamics!(solver)]
 ```
 """
-backward_dynamics!(solver::CLVSolver) = goto!(solver, BackwardDynamics)
+backward_dynamics!(solver::CLVSolver; kwargs...) =
+    goto!(solver, BackwardDynamics; kwargs...)
 
 """
     indexed_backward_dynamics!(solver::CLVSolver)
@@ -108,8 +110,11 @@ required.
 
 See also [`indexed_forward_dynamics!`](@ref).
 """
-indexed_backward_dynamics!(solver::CLVSolver) =
-    indexed_backward_dynamics!(backward_dynamics!(solver))
+indexed_backward_dynamics!(solver::CLVSolver;
+                           until::Int = 1,
+                           kwargs...) =
+    indexed_backward_dynamics!(backward_dynamics!(solver; kwargs...);
+                               until = until)
 
 function indexed_backward_dynamics!(bitr::BackwardDynamics;
                                     until::Int = 1)
