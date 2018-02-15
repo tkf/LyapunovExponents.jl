@@ -14,17 +14,17 @@ plots_loaded = false
 for path in list_scripts(joinpath(dirname(@__FILE__), "src/gallery"))
     pngpath = path[1:end-length(".jl")] * ".png"
     if mtime(path) < mtime(pngpath)
-        println("Skip running: $path")
+        info("Skip running: $path")
         continue
     end
     if ! plots_loaded
         # Load Plots.jl only if necessary.
-        println("using Plots...")
+        info("using Plots...")
         @time using Plots
         gr()
         plots_loaded = true
     end
-    println("Plotting: $path")
+    info("Plotting: $path")
     plt = @time include(path)
     plt = plot(plt, dpi=30)  # plot!(plt, dpi=30) didn't work
     savefig(plt, pngpath)
