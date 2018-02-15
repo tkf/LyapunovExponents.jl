@@ -20,3 +20,13 @@ mkdocs.yml: src/gallery/index.md $(GALLERY_MD) $(EXAMPLE_MD)
 	sed '/- Gallery:/q' $@ > mkdocs.yml.tmp
 	bash -c "for name in $(patsubst src/%.md, %.md, $^); do echo \"      - \$$name\"; done" >> mkdocs.yml.tmp
 	mv mkdocs.yml.tmp mkdocs.yml
+
+
+JULIA = julia --color=yes
+
+plot:
+	$(JULIA) plot_gallery.jl
+
+replot:
+	find src/gallery -name *.png -print0 | xargs -0 --no-run-if-empty rm -v
+	$(MAKE) plot
