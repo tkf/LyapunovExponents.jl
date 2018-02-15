@@ -7,6 +7,10 @@ const CLVSolver = StagedSolver{<: CLVProblem, <: CLVSolution}
 The preferred and equivalent method to get a solver for a `CLVProblem`
 is `init(prob::CLVProblem)`.  Note that `CLVSolver(prob::LEProblem)`
 is equivalent to `init(CLVProblem(prob))`.
+
+# Arguments
+- `record::Vector{Symbol}`: Variables to be saved.  A subset of
+  `[:G, :C, :D, :x]`.
 """
 function CLVSolver(prob::CLVProblem;
                    record::Vector{Symbol} = Symbol[],

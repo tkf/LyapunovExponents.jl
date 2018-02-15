@@ -11,14 +11,8 @@ lyapunov_exponents
 ## Low-level API
 
 ```@docs
-LyapunovExponents.AbstractLEProblem
-LyapunovExponents.AbstractRelaxer
-LyapunovExponents.AbstractLESolver
 LyapunovExponents.LEProblem
 LyapunovExponents.LESolver
-LyapunovExponents.get_relaxer
-LyapunovExponents.relaxed
-LyapunovExponents.relax!
 LyapunovExponents.init
 LyapunovExponents.step!
 LyapunovExponents.solve!
@@ -30,6 +24,7 @@ LyapunovExponents.PhaseTangentDynamics
 
 ```@docs
 CLVProblem
+LyapunovExponents.CovariantVectors.CLVSolver
 CLV
 CLV.M
 CLV.G

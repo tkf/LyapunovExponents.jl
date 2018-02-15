@@ -224,6 +224,13 @@ const LESolver = StagedSolver{<: LEProblem, <: LESolution}
 const LESolverRecOS = StagedSolver{<: LEProblem, <: LESolRecOS}
 const LESolverRecFTLE = StagedSolver{<: LEProblem, <: LESolRecFTLE}
 
+"""
+    LESolver(prob::LEProblem; record::Bool = false)
+
+Create a solver object for a [`LEProblem`](@ref).  Record all
+finite-time (instantaneous) Lyapunov exponents when `record = true` is
+passed.
+"""
 function LESolver(prob::LEProblem;
                   phase_relaxer = PhaseRelaxer,
                   renormalizer = if prob.dim_lyap == 1
