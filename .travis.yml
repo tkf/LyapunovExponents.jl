@@ -49,6 +49,7 @@ before_script:
 
 script:
   - julia --color=yes --check-bounds=yes -e 'Pkg.test("LyapunovExponents"; coverage=true)'
+  - make plot
 
 after_success:
   # push coverage results to Coveralls

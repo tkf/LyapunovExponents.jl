@@ -1,4 +1,5 @@
 using Plots
+gr()
 
 function list_scripts(dir, ext=".jl")
     paths = []
