@@ -250,7 +250,6 @@ function LESolver(prob::LEProblem, stage_types::AbstractVector;
 end
 
 init(prob::LEProblem; kwargs...) = LESolver(prob; kwargs...)
-solve(prob::LEProblem; kwargs...) = solve!(init(prob; kwargs...)).sol
 
 
 Base.show(io::IO, solver::LESolver) =

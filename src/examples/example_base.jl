@@ -78,7 +78,7 @@ Initialize `demo.solver` from `demo.prob` and run
 """
 function solve!(demo::LEDemo; progress = -1, record = true, kwargs...)
     demo.solver = solve(demo.prob;
-                        # progress = progress,  # TODO: implement
+                        progress = progress,
                         record = record,
                         kwargs...)
     return demo
