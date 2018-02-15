@@ -5,7 +5,7 @@ using RecipesBase
                                  AbstractRenormalizer{<: LESolRecFTLE},
                                  LESolRecFTLE};
                    known_exponents=nothing)
-    le_hist = exponents_history(solver)
+    le_hist, ci_hist = exponents_stat_history(solver)
     dim_lyap = size(le_hist)[1]
     known_exponents = known_exponents == nothing ? [] : known_exponents
     layout --> (dim_lyap, 1)
@@ -31,7 +31,12 @@ using RecipesBase
             label --> ""
             ylabel := "LE$i"
             ylim --> ylims[i]
-            @view le_hist[i, :]
+            color --> 1
+            fillcolor --> 2
+            fillalpha --> 0.5
+            fillrange := hcat(le_hist[i, :] - ci_hist[i, :],
+                              le_hist[i, :] + ci_hist[i, :])
+            [le_hist[i, :] le_hist[i, :]]
         end
         if i <= length(known_exponents)
             @series begin

@@ -1,4 +1,5 @@
 using DifferentialEquations: DEProblem
+using Distributions: TDist, Normal, cquantile
 
 dimension(prob::DEProblem) = length(prob.u0)
 
@@ -206,13 +207,15 @@ end
 ftle(stage::TangentRenormalizer) = stage.inst_exponents
 ftle(stage::MLERenormalizer) = [stage.inst_exponent]
 
+const Vecs = AbstractVector{<: AbstractVector}
 
 exponents_history(solver::Union{LESolverRecFTLE,
                                 AbstractRenormalizer{<: LESolRecFTLE}}) =
     exponents_history(solver.sol)
 
-function exponents_history(sol::LESolRecFTLE)
-    ftle_history = sol.ftle_history
+exponents_history(sol::LESolRecFTLE) = exponents_history(sol.ftle_history)
+
+function exponents_history(ftle_history::Vecs)
     num_attr = length(ftle_history)
     dim_lyap = length(ftle_history[1])
 
@@ -225,3 +228,31 @@ function exponents_history(sol::LESolRecFTLE)
     end
     return le_hist
 end
+
+exponents_stat_history(sol::LESolRecFTLE) =
+    exponents_stat_history(sol.ftle_history)
+
+function exponents_stat_history(ftle_history::Vecs, coverageprob = 0.95)
+    num_attr = length(ftle_history)
+    dim_lyap = length(ftle_history[1])
+    c = cquantile(Normal(), (1 - coverageprob) / 2)
+    # Usually num_attr is big so using TDist does not change much here.
+
+    v = VecVariance(dim_lyap)
+    s = OnlineStats.Series(v)
+    le_hist = similar(ftle_history[1], (dim_lyap, num_attr))
+    ci_hist = similar(le_hist)
+
+    OnlineStats.fit!(s, ftle_history[1])
+    le_hist[:, 1] .= mean(v)
+    ci_hist[:, 1] .= NaN
+    for i in 2:num_attr
+        OnlineStats.fit!(s, ftle_history[i])
+        # c = cquantile(TDist(i - 1), (1 - coverageprob) / 2)
+        le_hist[:, i] .= mean(v)
+        ci_hist[:, i] .= std(v) / sqrt(i) * c
+    end
+    return le_hist, ci_hist
+end
+# MAYBE: use OnlineStats.Bootstrap
+# http://joshday.github.io/OnlineStats.jl/latest/api.html#OnlineStats.Bootstrap
