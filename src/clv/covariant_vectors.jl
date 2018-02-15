@@ -1,12 +1,12 @@
 module CovariantVectors
 
 # Re-export methods from DifferentialEquations extended here:
-export init, solve, solve!, step!
-import DifferentialEquations: init, solve, solve!, step!
+export init, solve, step!
+import DifferentialEquations: init, solve, step!
 
 using ..Stages: AbstractSource, AbstractStage, finish_if_not!,
     StageIterator, StageState, StagedSolver, goto!
-import ..Stages: is_finished, finish!, current_result, stage_index, record!
+import ..Stages: current_result, stage_index, record!
 
 using ..LyapunovExponents: LEProblem, LESolver, dimension, is_semi_unitary,
     default_Q0, get_tangent_dynamics

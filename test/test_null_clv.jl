@@ -3,8 +3,8 @@ module TestNullCLV
 using Base.Test
 using Parameters: @with_kw, @unpack
 using LyapunovExponents
-using LyapunovExponents.CovariantVectors: is_finished, is_semi_unitary
-using LyapunovExponents: DEMOS, LEDemo, dimension
+using LyapunovExponents.Stages: is_finished
+using LyapunovExponents: DEMOS, LEDemo, dimension, is_semi_unitary
 
 @with_kw struct NullCLVTest
     name::String
