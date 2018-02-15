@@ -213,7 +213,7 @@
 
 function get_angles(solver)
     return [acos(abs(dot(C[:, 1], C[:, 2]))) * 2 / π for C
-            in backward_dynamics!(solver)]
+            in backward_dynamics!(solver; progress=1)]
 end
 
 henon_demo = LyapunovExponents.henon_map(num_attr=100000)
