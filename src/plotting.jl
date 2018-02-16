@@ -31,12 +31,17 @@ using RecipesBase
             label --> ""
             ylabel := "LE$i"
             ylim --> ylims[i]
+            xlim --> (1, Inf)
             color --> 1
             fillcolor --> 2
             fillalpha --> 0.5
-            fillrange := hcat(le_hist[i, :] - ci_hist[i, :],
-                              le_hist[i, :] + ci_hist[i, :])
-            [le_hist[i, :] le_hist[i, :]]
+            fillrange := hcat(le_hist[i, 2:end] - ci_hist[i, 2:end],
+                              le_hist[i, 2:end] + ci_hist[i, 2:end])
+            (2:size(le_hist, 2),
+             [le_hist[i, 2:end] le_hist[i, 2:end]])
+            # Note: I think it should work w/o "2:end" in principle
+            # but it looks like that Plots.jl has some trouble
+            # rendering fillrange with NaN.
         end
         if i <= length(known_exponents)
             @series begin
@@ -47,6 +52,7 @@ using RecipesBase
                 # repeating ylabel/ylim; otherwise they are ignored
                 ylabel := "LE$i"
                 ylim --> ylims[i]
+                xlim --> (1, Inf)
 
                 [known_exponents[i]]
             end
