@@ -1,3 +1,4 @@
+__precompile__()
 module LyapunovExponents
 
 export LEProblem, ContinuousLEProblem, DiscreteLEProblem, lyapunov_exponents,
