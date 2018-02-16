@@ -1,5 +1,5 @@
 using DifferentialEquations: DEProblem
-using Distributions: TDist, Normal, cquantile
+using Distributions: Normal, cquantile
 
 dimension(prob::DEProblem) = length(prob.u0)
 
