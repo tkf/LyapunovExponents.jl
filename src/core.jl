@@ -188,6 +188,9 @@ end
 record!(stage::AbstractRenormalizer{<: LESolRecFTLE}, ::Type{Val{:FTLE}}) =
     stage.sol.ftle_history[stage.i] .= ftle(stage)
 
+current_result(stage::TangentRenormalizer) = stage.inst_exponents
+current_result(stage::MLERenormalizer) = stage.inst_exponent
+
 """
     lyapunov_exponents(solver)
 

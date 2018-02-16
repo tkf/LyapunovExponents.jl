@@ -1,7 +1,7 @@
 using DiffEqBase: ODEProblem, DiscreteProblem
 using .Stages: AbstractSource, AbstractStage,
     StageIterator, StageState, StagedSolver, goto!
-import .Stages: record!
+import .Stages: record!, current_result
 
 """
     LEProblem(phase_prob, num_attr; <keyword arguments>)
