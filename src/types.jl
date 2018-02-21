@@ -1,5 +1,5 @@
 using DiffEqBase: ODEProblem, DiscreteProblem
-using .Stages: AbstractSource, AbstractStage,
+using .Stages: Stageable, AbstractSource, AbstractStage,
     StageIterator, StageState, StagedSolver, goto!
 import .Stages: record!, current_result
 
@@ -258,8 +258,11 @@ end
 
 init(prob::LEProblem; kwargs...) = LESolver(prob; kwargs...)
 
+num_orth(stage::AbstractRenormalizer) = stage.i
+num_orth(stage::Stageable) = 0
+num_orth(solver::LESolver) = num_orth(solver.state.stage)
 
 Base.show(io::IO, solver::LESolver) =
     print(io,
-          "#Orth.: ", solver.i, ", ",
+          "#Orth.: ", num_orth(solver), ", ",
           "LEs: ", lyapunov_exponents(solver))
