@@ -14,13 +14,13 @@ augmented_vector(x0::AbstractVector, Q0::UniformScaling) =
     augmented_vector(x0, Q0 * eye(size(x0, 1)))
 
 doc"""
-    tangent_propagate(prob_or_solver::Union{DEProblem,LESolver}
+    tangent_propagate(stage::Stageable
                       [, tangent_state];
                       phase_state,
                       <keyword arguments>)
 
 Propagate `tangent_state` according to tangent dynamics defined by
-`prob_or_solver`.  Supplying `I` to `tangent_state` is a quick (but
+`stage`.  Supplying `I` to `tangent_state` is a quick (but
 not efficient) way to obtain the cocycle ``M_{k,n}`` (tangent space
 "evolution operator") which is:
 
@@ -29,10 +29,9 @@ not efficient) way to obtain the cocycle ``M_{k,n}`` (tangent space
   ODE ``dM/dt = (df/dx(t)) M`` with the initial condition
   ``M(t_{n}) = I``.
 """
-tangent_propagate(prob_or_solver::Union{DEProblem, PhaseRelaxer,
-                                        AbstractRenormalizer},
+tangent_propagate(stage::Union{DEProblem, PhaseRelaxer, AbstractRenormalizer},
                   args...; kwargs...) =
-    tangent_propagate(Val{:tangent}, prob_or_solver, args...; kwargs...)
+    tangent_propagate(Val{:tangent}, stage, args...; kwargs...)
 
 tangent_propagate(::Type{Val{:tangent}}, args...; kwargs...) =
     @view tangent_propagate(Val{:full}, args...; kwargs...)[:, 2:end]

@@ -60,14 +60,14 @@ MLERenormalizer(relaxer::PhaseRelaxer, prob::LEProblem, sol::LESolution) =
 
 Base.length(stage::AbstractRenormalizer) = stage.num_attr
 
-@inline function keepgoing!(solver::AbstractRenormalizer)
-    u0 = current_state(solver)
-    u0[:, 1] = solver.phase_state
-    u0[:, 2:end] = solver.tangent_state
-    keepgoing!(solver.integrator, u0)
-    u0 = current_state(solver)
-    solver.phase_state[:] = @view u0[:, 1]
-    solver.tangent_state[:] = @view u0[:, 2:end]
+@inline function keepgoing!(stage::AbstractRenormalizer)
+    u0 = current_state(stage)
+    u0[:, 1] = stage.phase_state
+    u0[:, 2:end] = stage.tangent_state
+    keepgoing!(stage.integrator, u0)
+    u0 = current_state(stage)
+    stage.phase_state[:] = @view u0[:, 1]
+    stage.tangent_state[:] = @view u0[:, 2:end]
 end
 
 """
@@ -121,47 +121,45 @@ end
 end
 
 """
-    step!(solver::AbstractRenormalizer)
+    step!(stage::AbstractRenormalizer)
 
 Evolve the dynamics and then do an orthonormalization.
 """
-function step!(solver::AbstractRenormalizer)
-    keepgoing!(solver)
-    post_evolve!(solver)
-    stage = solver
+function step!(stage::AbstractRenormalizer)
+    keepgoing!(stage)
+    post_evolve!(stage)
     record!(stage, Val{:OS})
     record!(stage, Val{:FTLE})
 end
 
-function post_evolve!(solver::TangentRenormalizer)
-    dim_lyap = length(solver.inst_exponents)
-    P = solver.tangent_state
+function post_evolve!(stage::TangentRenormalizer)
+    dim_lyap = length(stage.inst_exponents)
+    P = stage.tangent_state
     F = qrfact!(P)
-    Q = solver.Q
+    Q = stage.Q
     A_mul_B!(F[:Q], eye!(Q))  # Q = Matrix(F[:Q])[...]; but lesser allocation
-    R = solver.R = F[:R]
+    R = stage.R = F[:R]
 
-    sign_R = solver.sign_R
+    sign_R = stage.sign_R
     sign_diag!(sign_R, R)        # sign_R = diagm(sign(diag(R)))
     A_mul_sign!(Q, sign_R)       # Q = Q * sign_R
     sign_mul_A!(sign_R, R)       # R = signR * R
 
-    solver.i += 1
-    solver.tangent_state, solver.Q = Q, solver.tangent_state
+    stage.i += 1
+    stage.tangent_state, stage.Q = Q, stage.tangent_state
     # At this point:
-    # solver.tangent_state === Q == 𝑮ₙ₊ₖ
-    # solver.Q is a mess, as qrfact! use it as a "buffer"
+    # stage.tangent_state === Q == 𝑮ₙ₊ₖ
+    # stage.Q is a mess, as qrfact! use it as a "buffer"
 end
 
-function post_evolve!(solver::MLERenormalizer)
-    v = solver.tangent_state[:, 1]
+function post_evolve!(stage::MLERenormalizer)
+    v = stage.tangent_state[:, 1]
     r = norm(v)
-    n = (solver.i += 1)
-    solver.exponent = lyap_add_r(n, solver.exponent, r)
-    stage = solver
+    n = (stage.i += 1)
+    stage.exponent = lyap_add_r(n, stage.exponent, r)
     stage.inst_exponent = log(r) / t_chunk(stage)
     # TODO: don't re-calculate log(r)
-    solver.tangent_state[:, 1] .= v ./ r
+    stage.tangent_state[:, 1] .= v ./ r
 end
 
 function t_chunk(stage)
@@ -202,8 +200,8 @@ lyapunov_exponents(solver::Union{LESolverRecOS,
 
 lyapunov_exponents(sol::LESolRecOS) = mean(sol.main_stat)
 
-@inline function lyapunov_exponents(solver::MLERenormalizer)
-    [solver.exponent / t_chunk(solver)]
+@inline function lyapunov_exponents(stage::MLERenormalizer)
+    [stage.exponent / t_chunk(stage)]
 end
 
 """Get finite-time Lyapunov exponents (FTLE)"""
