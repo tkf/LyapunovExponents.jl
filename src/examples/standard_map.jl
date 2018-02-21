@@ -24,17 +24,17 @@ Return a [`LEDemo`](@ref) for the Chirikov standard map.
 function standard_map(;
         u0=[2.68156, 2.31167],
         tspan=10,
-        num_attr=100000,
+        t_attr=100000,
         atol=0, rtol=0.2,
         kwargs...)
     # TODO: Improve the accuracy. Check the paper.  It looks like
-    # `num_attr=1000000` is required to see some kind of convergence.
+    # `t_attr=1000000` is required to see some kind of convergence.
     k = 1
     LEDemo(DiscreteExample(
         "Chirikov standard map",
         phase_dynamics!, u0, tspan, k,
         tangent_dynamics!,
-        num_attr,
+        t_attr,
         [0.10497, -0.10497],   # known_exponents
         atol, rtol,
     ); kwargs...)

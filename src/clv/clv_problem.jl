@@ -13,10 +13,10 @@ Ginelli et al. (2007, 2013).
 
 ### Arguments
 - `num_clv::Int`: Number of points at which CLV are sampled.
-  It is `0.8 * le_prob.num_attr` when constructed from [`LEProblem`](@ref).
+  It is `0.8 * le_prob.t_attr` when constructed from [`LEProblem`](@ref).
 - `num_forward_tran::Int`, `num_backward_tran::Int`:
   Forward and backward transient dynamics.  They are
-  `0.1 * le_prob.num_attr` when constructed from [`LEProblem`](@ref).
+  `0.1 * le_prob.t_attr` when constructed from [`LEProblem`](@ref).
 - See [`LEProblem`](@ref) for `phase_prob`, `tangent_dynamics!` and `Q0`.
 
 ### Examples (in the online documentation)
@@ -80,13 +80,13 @@ CLVProblem(phase_prob::DEP, num_clv; kwargs...) where {DEP <:DiscreteProblem} =
     CLVProblem{DiscreteProblem}(phase_prob, num_clv; kwargs...)
 
 CLVProblem(prob::LEProblem;
-           num_clv = max(1, floor(Int, prob.num_attr * 0.8)),
+           num_clv = max(1, floor(Int, prob.t_attr * 0.8)),
            kwargs...) =
     CLVProblem(
         prob.phase_prob, num_clv;
-        # num_phase_tran = prob.num_tran,
-        num_forward_tran = floor(Int, prob.num_attr * 0.1),
-        num_backward_tran = floor(Int, prob.num_attr * 0.1),
+        # t_phase_tran = prob.t_tran,
+        num_forward_tran = floor(Int, prob.t_attr * 0.1),
+        num_backward_tran = floor(Int, prob.t_attr * 0.1),
         Q0 = prob.Q0,
         tangent_dynamics! = prob.tangent_dynamics!,
         kwargs...)
@@ -117,9 +117,9 @@ end
 function get_le_solver(prob, u0 = phase_tangent_state(prob);
                        kwargs...)
     tangent_prob = get_tangent_prob(prob, u0)
-    num_attr = prob.num_forward_tran + prob.num_clv + prob.num_backward_tran
+    t_attr = prob.num_forward_tran + prob.num_clv + prob.num_backward_tran
     return TangentRenormalizer(get_integrator(tangent_prob),
-                               num_attr; kwargs...)
+                               t_attr; kwargs...)
 end
 
 

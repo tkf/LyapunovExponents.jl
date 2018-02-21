@@ -10,7 +10,7 @@ Baker's map
 function bakers_map(;
         u0=[0.6, 0.4],
         tspan=10,
-        num_attr=10000,
+        t_attr=100000,
         atol=0, rtol=1e-5,
         kwargs...)
     @inline function phase_dynamics!(u_next, u, p, t)
@@ -36,7 +36,7 @@ function bakers_map(;
         "Baker's map",
         phase_dynamics!, u0, tspan, nothing,
         tangent_dynamics!,
-        num_attr,
+        t_attr,
         log.([2.0, 0.5]),       # known_exponents
         atol, rtol,
     ); kwargs...)

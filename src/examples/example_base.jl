@@ -16,7 +16,7 @@ struct LEExample{ProblemType}
     tspan
     param
     tangent_dynamics!
-    num_attr
+    t_attr
     known_exponents
     atol
     rtol
@@ -30,7 +30,7 @@ function LEProblem(example::LEExample{P}; kwargs...) where {P <: LEProblem}
       example.u0,
       example.tspan,
       example.param;
-      num_attr = example.num_attr,
+      t_attr = example.t_attr,
       tangent_dynamics! = example.tangent_dynamics!,
       kwargs...)
 end

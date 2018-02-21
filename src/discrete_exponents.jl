@@ -12,12 +12,14 @@ end
 
 get_integrator(prob::DiscreteProblem) = DiscreteIterator(prob)
 
-function keepgoing!(diter::DiscreteIterator, u0=diter.u0)
-    tmin, tmax = diter.prob.tspan
+DiffEqBase.set_u!(diter::DiscreteIterator, u0) = diter.u0 = u0
+
+function step!(diter::DiscreteIterator, dt::Int = 1, _ignored::Bool = false)
     f = diter.prob.f
     p = diter.prob.p
+    u0 = diter.u0
     u1 = diter.u1
-    for t in tmin:tmax-1
+    for t in 0:dt-1
         f(u1, u0, p, t)
         u0, u1 = u1, u0
     end
@@ -32,31 +34,31 @@ end
 const DiscreteLEProblem = LEProblem{DiscreteProblem}
 
 """
-    DiscreteLEProblem(phase_dynamics!, u0, tspan [, p [, num_attr]];
+    DiscreteLEProblem(phase_dynamics!, u0, t_renorm [, p [, t_attr]];
                       <keyword arguments>)
 
 This is a short-hand notation for:
 
 ```julia
-LEProblem(DiscreteProblem(...) [, num_attr]; ...)
+LEProblem(DiscreteProblem(...) [, t_attr]; t_renorm=t_renorm, ...)
 ```
-
-If `tspan` is a `Integer` instead of a `Tuple`, then `(0, tspan)` is
-passed as the `tspan` argument of `DiscreteProblem`.
 
 For the list of usable keyword arguments, see [`LEProblem`](@ref).
 """
-DiscreteLEProblem(phase_dynamics!, u0, tspan::Tuple, p=nothing,
-                  args...; kwargs...) =
+DiscreteLEProblem(phase_dynamics!, u0, t_renorm::Integer, p=nothing,
+                  args...; tspan=(0, 100), kwargs...) =
+    DiscreteLEProblem(DiscreteProblem(phase_dynamics!, u0, tspan, p),
+                      args...; t_renorm=t_renorm, kwargs...)
+# FIXME: remove this shortcut
+
+"""
+DiscreteLEProblem(phase_dynamics!, u0, p=nothing,
+                  args...; tspan=(0, 100), kwargs...) =
     DiscreteLEProblem(DiscreteProblem(phase_dynamics!, u0, tspan, p),
                       args...; kwargs...)
-
-DiscreteLEProblem(phase_dynamics!, u0, tchunk::Integer, args...; kwargs...) =
-    DiscreteLEProblem(phase_dynamics!, u0, (zero(tchunk), tchunk), args...;
-                      kwargs...)
+"""
 
 init_phase_state(integrator::DiscreteIterator) = integrator.u0[:, 1]
 init_tangent_state(integrator::DiscreteIterator) = integrator.u0[:, 2:end]
 
 current_state(integrator::DiscreteIterator) = integrator.u0
-get_tspan(integrator::DiscreteIterator) = integrator.prob.tspan

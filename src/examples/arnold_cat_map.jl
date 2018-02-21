@@ -23,7 +23,7 @@ function arnold_cat_map(;
         u0::AbstractVector = [0.1, 0.1],
         M::AbstractMatrix = [2 1; 1 1],
         tspan=10,
-        num_attr=10000,
+        t_attr=10000,
         atol=0, rtol=1e-4,
         kwargs...)
     @assert (length(u0), length(u0)) == size(M)
@@ -31,7 +31,7 @@ function arnold_cat_map(;
         "Arnold's cat map",
         phase_dynamics!, u0, tspan, M,
         tangent_dynamics!,
-        num_attr,
+        t_attr,
         log.(sort!(eigvals(M), rev=true)), # known_exponents
         atol, rtol,
     ); kwargs...)

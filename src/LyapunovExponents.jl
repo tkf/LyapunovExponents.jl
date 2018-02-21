@@ -7,7 +7,7 @@ export LEProblem, ContinuousLEProblem, DiscreteLEProblem, lyapunov_exponents,
 # Re-export methods from DifferentialEquations extended here:
 export init, solve, solve!, step!
 import DiffEqBase: init, step!
-using DiffEqBase: solve!
+using DiffEqBase: solve!, set_u!
 # solve and solve! are imported/extended in stages.jl
 
 using Requires

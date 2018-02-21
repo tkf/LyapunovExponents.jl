@@ -4,22 +4,21 @@ using .Stages: Stageable, AbstractSource, AbstractStage,
 import .Stages: record!, current_result
 
 """
-    LEProblem(phase_prob, num_attr; <keyword arguments>)
-    LEProblem(phase_prob; num_attr, <keyword arguments>)
+    LEProblem(phase_prob, t_attr; <keyword arguments>)
+    LEProblem(phase_prob; t_attr, <keyword arguments>)
 
 # Arguments
 - `phase_prob`: Phase space dynamics represented in the form of
   `ODEProblem` or `DiscreteProblem` from DifferentialEquations.jl.
-  `phase_prob.tspan` represents the inter-orthonormalization-interval.
-- `num_attr::Integer`: Number of orthonormalizations (or some kind of
-  "renormalisation") for calculating Lyapunov Exponents.  In general,
-  this is the number of points (considered to be) on the attractor
-  used for the solver.  The simulated time of the system for this
-  calculation is given by `num_attr * (tspan[1] - tspan[0])`.
-  This argument is always required and can be given as positional or
-  keyword argument.
-- `num_tran::Integer`: Number of iterations to through away to get rid
-  of the transient dynamics.
+  `phase_prob.tspan` is ignored.
+- `t_attr::Real`: Simulated time on the (presumed) attractor
+  used for the solver.  It is used for computation of Lyapunov
+  Exponents.  Roughly `t_attr / t_renorm` instantaneous exponents are
+  sampled.  This argument is always required and can be given as
+  positional or keyword argument.
+- `t_tran::Real`: Number of iterations to throw away to get rid of the
+  effect from the transient dynamics.
+- `t_renorm::Real`: Interval between orthonormalizations (renormalizations).
 - `dim_lyap::Integer`: Number of Lyapunov exponents to be calculated.
   Default to the full system dimension.
 - `Q0::Array`: The initial guess of the Gram-Schmidt "Lyapunov vectors".
@@ -30,45 +29,49 @@ import .Stages: record!, current_result
 """
 struct LEProblem{DEP} <: AbstractSource
     phase_prob::DEP
-    num_tran
-    num_attr
+    t_tran
+    t_attr
+    t_renorm
     dim_lyap
     Q0
     tangent_dynamics!
 
     function LEProblem{DEP}(
-        phase_prob::DEP, num_attr::Int;
-            num_tran=1,
+            phase_prob::DEP, t_attr::Real;
+            t_renorm::T = 1,
+            t_tran=1,
             dim_lyap=dimension(phase_prob),
             Q0 = default_Q0(phase_prob, dimension(phase_prob), dim_lyap),
             tangent_dynamics! = nothing,
-            ) where {DEP}
+    ) where {DEP,
+             T <: Real}
         if ! is_semi_unitary(Q0)
             error("Columns in Q0 are not orthonormal.")
         end
-        new{DEP}(phase_prob, num_tran, num_attr,
-                 dim_lyap, Q0, tangent_dynamics!)
+        new{DEP}(
+            phase_prob, t_tran, t_attr, t_renorm,
+            dim_lyap, Q0, tangent_dynamics!)
     end
 end
 
-LEProblem(phase_prob::DEP, num_attr; kwargs...) where {DEP <: ODEProblem} =
-    LEProblem{ODEProblem}(phase_prob, num_attr; kwargs...)
-LEProblem(phase_prob::DEP, num_attr; kwargs...) where {DEP <:DiscreteProblem} =
-    LEProblem{DiscreteProblem}(phase_prob, num_attr; kwargs...)
+LEProblem(phase_prob::DEP, t_attr; kwargs...) where {DEP <: ODEProblem} =
+    LEProblem{ODEProblem}(phase_prob, t_attr; kwargs...)
+LEProblem(phase_prob::DEP, t_attr; kwargs...) where {DEP <:DiscreteProblem} =
+    LEProblem{DiscreteProblem}(phase_prob, t_attr; kwargs...)
 
 LEProblem{DEP}(phase_prob::DEP;
-               num_attr::Int = error("Positional or keyword argument",
-                                     " `num_attr` is required."),
+               t_attr::Real = error("Positional or keyword argument",
+                                    " `t_attr` is required."),
                kwargs...) where {DEP} =
-    LEProblem{DEP}(phase_prob, num_attr; kwargs...)
+    LEProblem{DEP}(phase_prob, t_attr; kwargs...)
 
-mutable struct PhaseRelaxer{Intr} <: AbstractStage
+mutable struct PhaseRelaxer{Intr, T} <: AbstractStage
     integrator::Intr
-    num_tran::Int
+    t_tran::T
     i::Int
 
-    PhaseRelaxer(integrator::Intr, num_tran::Int, i::Int = 1) where {Intr} =
-        new{Intr}(integrator, num_tran, i)
+    PhaseRelaxer(integrator::Intr, t_tran::T) where {Intr, T} =
+        new{Intr, T}(integrator, t_tran, 0)
 end
 
 struct LESolution{RecOS, RecFTLE, SS, MS, VV}
@@ -103,6 +106,8 @@ end
 
 NullLESolution() = LESolution(0; main_stat = nothing)
 
+# TODO: define record!(sol::LESolution, ftle)
+
 get_dim_lyap(integrator) = size(init_tangent_state(integrator))[2]
 
 abstract type AbstractRenormalizer{S} <: AbstractStage end
@@ -114,10 +119,11 @@ A type representing the main calculation of Lyapunov Exponents (LE).
 This struct holds all temporary state required for LE calculation.
 """
 mutable struct TangentRenormalizer{S <: LESolution,
-                                   Intr, V, M,
+                                   Intr, T, V, M,
                                    } <: AbstractRenormalizer{S}
     integrator::Intr
-    num_attr::Int
+    t_attr::T
+    t_renorm::T
     inst_exponents::V
     i::Int
     phase_state::V
@@ -130,7 +136,7 @@ mutable struct TangentRenormalizer{S <: LESolution,
     sol::S
 
     function TangentRenormalizer(
-            integrator::Intr, num_attr::Int,
+            integrator::Intr, t_attr, t_renorm,
             sol::S = NullLESolution();
             phase_state::V = init_phase_state(integrator),
             tangent_state::M = init_tangent_state(integrator),
@@ -149,9 +155,11 @@ mutable struct TangentRenormalizer{S <: LESolution,
         R = similar(tangent_state, (0, 0))  # dummy
         sign_R = Array{Bool}(dim_lyap)
 
-        return new{S, Intr, V, M}(
+        T = promote_type(map(typeof, (t_attr, t_renorm))...)
+        return new{S, Intr, T, V, M}(
             integrator,
-            num_attr,
+            t_attr,
+            t_renorm,
             inst_exponents,
             0,  # i
             phase_state,
@@ -167,13 +175,15 @@ end
 mutable struct MLERenormalizer{S <: LESolution,
                                Intr,
                                T <: Real,
+                               E <: Real,
                                V <: AbstractVector,
                                M <: AbstractMatrix,
                                } <: AbstractRenormalizer{S}
     integrator::Intr
-    num_attr::Int
-    exponent::T
-    inst_exponent::T
+    t_attr::T
+    t_renorm::T
+    exponent::E
+    inst_exponent::E
     i::Int
     phase_state::V
     tangent_state::M
@@ -182,7 +192,7 @@ mutable struct MLERenormalizer{S <: LESolution,
     sol::S
 
     function MLERenormalizer(
-            integrator::Intr, sol::S, num_attr::Int;
+            integrator::Intr, t_attr, t_renorm, sol::S;
             phase_state::V = init_phase_state(integrator),
             tangent_state::M = init_tangent_state(integrator),
             ) where {S, Intr,
@@ -195,11 +205,13 @@ mutable struct MLERenormalizer{S <: LESolution,
                   " given: $(size(tangent_state))")
         end
 
-        T = eltype(phase_state)
-        exponent = T(0)
-        new{S, Intr, T, V, M}(
+        E = eltype(phase_state)
+        exponent = E(0)
+        T = promote_type(map(typeof, (t_attr, t_renorm))...)
+        new{S, Intr, T, E, V, M}(
             integrator,
-            num_attr,
+            t_attr,
+            t_renorm,
             exponent,
             exponent,
             0,  # i
@@ -250,7 +262,11 @@ function LESolver(prob::LEProblem, stage_types::AbstractVector;
                   record::Bool = false,
                   kwargs...)
     sol = LESolution(prob.dim_lyap;
-                     num_attr = record ? prob.num_attr : nothing,
+                     num_attr = if record
+                         ceil(Int, prob.t_attr / prob.t_renorm)
+                     else
+                         nothing
+                     end,
                      kwargs...)
     args = (prob, sol)  # additional arguments to each `stage_types`
     return StagedSolver(prob, sol, stage_types, args)

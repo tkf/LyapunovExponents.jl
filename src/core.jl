@@ -7,10 +7,13 @@ PhaseRelaxer(prob::LEProblem,
              ::LEProblem,
              ::LESolution) =
     PhaseRelaxer(get_integrator(prob.phase_prob),
-                 prob.num_tran)
+                 prob.t_tran)
 
-step!(relaxer::PhaseRelaxer) = keepgoing!(relaxer.integrator)
-Base.length(relaxer::PhaseRelaxer) = relaxer.num_tran
+function step!(relaxer::PhaseRelaxer)
+    step!(relaxer.integrator, relaxer.t_tran)
+    relaxer.i += 1
+end
+Base.length(relaxer::PhaseRelaxer) = 1  # FIXME
 
 function phase_tangent_state(prob::LEProblem, x0 = prob.phase_prob.u0)
     dim_lyap = prob.dim_lyap
@@ -53,18 +56,22 @@ end
 
 TangentRenormalizer(relaxer::PhaseRelaxer, prob::LEProblem, sol::LESolution) =
     TangentRenormalizer(get_tangent_integrator(prob, relaxer),
-                        prob.num_attr, sol)
+                        prob.t_attr, prob.t_renorm, sol)
 
 MLERenormalizer(relaxer::PhaseRelaxer, prob::LEProblem, sol::LESolution) =
-    MLERenormalizer(get_tangent_integrator(prob, relaxer), sol, prob.num_attr)
+    MLERenormalizer(get_tangent_integrator(prob, relaxer),
+                    prob.t_attr, prob.t_renorm, sol)
 
-Base.length(stage::AbstractRenormalizer) = stage.num_attr
+Base.length(stage::AbstractRenormalizer) =
+    ceil(Int, stage.t_attr / stage.t_renorm)
 
 @inline function keepgoing!(stage::AbstractRenormalizer)
     u0 = current_state(stage)
     u0[:, 1] = stage.phase_state
     u0[:, 2:end] = stage.tangent_state
-    keepgoing!(stage.integrator, u0)
+    set_u!(stage.integrator, u0)
+    step!(stage.integrator, stage.t_renorm, true)
+    # TODO: maybe use step!(solver.integrator, dt) aka "inexact step"
     u0 = current_state(stage)
     stage.phase_state[:] = @view u0[:, 1]
     stage.tangent_state[:] = @view u0[:, 2:end]
@@ -162,10 +169,7 @@ function post_evolve!(stage::MLERenormalizer)
     stage.tangent_state[:, 1] .= v ./ r
 end
 
-function t_chunk(stage)
-    tspan = get_tspan(stage.integrator)
-    return tspan[2] - tspan[1]
-end
+t_chunk(stage) = stage.t_renorm
 
 function record!(stage::TangentRenormalizer{<: LESolRecOS}, ::Type{Val{:OS}})
     dim_lyap = length(stage.inst_exponents)
@@ -217,13 +221,13 @@ exponents_history(solver::Union{LESolverRecFTLE,
 exponents_history(sol::LESolRecFTLE) = exponents_history(sol.ftle_history)
 
 function exponents_history(ftle_history::Vecs)
-    num_attr = length(ftle_history)
+    t_attr = length(ftle_history)
     dim_lyap = length(ftle_history[1])
 
     m = VecMean(dim_lyap)
     s = OnlineStats.Series(m)
-    le_hist = similar(ftle_history[1], (dim_lyap, num_attr))
-    for i in 1:num_attr
+    le_hist = similar(ftle_history[1], (dim_lyap, t_attr))
+    for i in 1:t_attr
         OnlineStats.fit!(s, ftle_history[i])
         le_hist[:, i] .= mean(m)
     end
@@ -234,20 +238,20 @@ exponents_stat_history(sol::LESolRecFTLE) =
     exponents_stat_history(sol.ftle_history)
 
 function exponents_stat_history(ftle_history::Vecs, coverageprob = 0.95)
-    num_attr = length(ftle_history)
+    t_attr = length(ftle_history)
     dim_lyap = length(ftle_history[1])
     c = cquantile(Normal(), (1 - coverageprob) / 2)
-    # Usually num_attr is big so using TDist does not change much here.
+    # Usually t_attr is big so using TDist does not change much here.
 
     v = VecVariance(dim_lyap)
     s = OnlineStats.Series(v)
-    le_hist = similar(ftle_history[1], (dim_lyap, num_attr))
+    le_hist = similar(ftle_history[1], (dim_lyap, t_attr))
     ci_hist = similar(le_hist)
 
     OnlineStats.fit!(s, ftle_history[1])
     le_hist[:, 1] .= mean(v)
     ci_hist[:, 1] .= NaN
-    for i in 2:num_attr
+    for i in 2:t_attr
         OnlineStats.fit!(s, ftle_history[i])
         # c = cquantile(TDist(i - 1), (1 - coverageprob) / 2)
         le_hist[:, i] .= mean(v)

@@ -28,14 +28,14 @@ Return a [`LEDemo`](@ref) for the Lozi map.
 function lozi_map(;
         u0=[0.1, 0.1],
         tspan=10,
-        num_attr=10000,
+        t_attr=10000,
         atol=0, rtol=0.2,
         kwargs...)
     LEDemo(DiscreteExample(
         "Lozi map",
         phase_dynamics!, u0, tspan, LoziMapParam(),
         tangent_dynamics!,
-        num_attr,
+        t_attr,
         Float64[],   # known_exponents
         atol, rtol,
     ); kwargs...)

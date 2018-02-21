@@ -50,20 +50,19 @@ Lauterborn (1990).
 """
 function van_der_pol(;
         u0=[0.1, 0.1],
-        t0=0.0, chunk_periods=1,
-        num_attr=200,
+        t_attr=200,
         atol=0, rtol=1e-1,
         kwargs...)
-    # Note that with larger num_attr (e.g., 10000), the last Lyapunov
+    # Note that with larger t_attr (e.g., 10000), the last Lyapunov
     # exponents negatively overshoots what Geist, Parlitz & Lauterborn
-    # (1990) reported.  num_attr=100 is required for test to pass.
+    # (1990) reported.  t_attr=100 is required for test to pass.
     param = VanDerPolParam()
-    tspan = (t0, t0 + chunk_periods * 2 * π / param.ω)
+    tspan = 2 * π / param.ω
     LEDemo(ContinuousExample(
         "van der Pol & van der Mark (1927)",
         phase_dynamics!, u0, tspan, param,
         tangent_dynamics!,
-        num_attr,
+        t_attr,
         [0.085, -6.7],   # known_exponents
         atol, rtol,
     ); kwargs...)

@@ -27,7 +27,7 @@ dissipative chaotic flow.
 function linz_sprott_99(;
         u0=[0.1, 0.1, 0.1],
         tspan=1.0,
-        num_attr=10000,
+        t_attr=10000,
         atol=1e-5, rtol=1e-2,
         kwargs...)
     A = 0.6
@@ -35,7 +35,7 @@ function linz_sprott_99(;
         "Linz & Sprott (1999)",
         phase_dynamics!, u0, tspan, A,
         tangent_dynamics!,
-        num_attr,
+        t_attr,
         [0.0362, 0, -0.6362],   # known_exponents
         atol, rtol,
     ); kwargs...)

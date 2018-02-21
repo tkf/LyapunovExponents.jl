@@ -2,9 +2,9 @@ module Test
 
 using Base: rtoldefault
 using Base.Test: @test
-using DiffEqBase: DEProblem
+using DiffEqBase: DEProblem, set_u!, step!, remake
 using LyapunovExponents: LEProblem, dimension, phase_tangent_state,
-    get_tangent_prob, get_integrator, de_prob, keepgoing!, current_state
+    get_tangent_prob, get_integrator, de_prob, current_state
 
 
 macro test_nothrow(ex)
@@ -95,11 +95,13 @@ function test_same_dynamics(p1::P1, p2::P2, u_list::AbstractArray;
                                               P2 <: DEProblem}
     @assert p1.tspan == p2.tspan
 
-    i1 = get_integrator(p1)
-    i2 = get_integrator(p2)
     for u in u_list
-        keepgoing!(i1, copy(u))
-        keepgoing!(i2, copy(u))
+        i1 = get_integrator(p1)
+        i2 = get_integrator(p2)
+        set_u!(i1, copy(u))
+        set_u!(i2, copy(u))
+        step!(i1, p1.tspan[2] - p1.tspan[1], true)
+        step!(i2, p2.tspan[2] - p2.tspan[1], true)
         u1 = current_state(i1)
         u2 = current_state(i2)
         compare_states(u1, u2; kwargs...)
@@ -129,10 +131,11 @@ function test_tangent_dynamics_against_autodiff(
         dim_lyap = dimension(prob.phase_prob),
         kwargs...)
     @assert prob.tangent_dynamics! != nothing
-    prob_ad = LEProblem(prob.phase_prob, prob.num_attr)
+    prob_ad = LEProblem(prob.phase_prob, prob.t_attr)
     u0 = phase_tangent_state(prob)
-    test_same_dynamics(get_tangent_prob(prob, u0),
-                       get_tangent_prob(prob_ad, u0),
+    tspan = (0, prob.t_renorm)
+    test_same_dynamics(remake(get_tangent_prob(prob, u0), tspan=tspan),
+                       remake(get_tangent_prob(prob_ad, u0), tspan=tspan),
                        args...; kwargs...)
 end
 

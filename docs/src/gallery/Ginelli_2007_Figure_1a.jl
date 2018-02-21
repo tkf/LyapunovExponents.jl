@@ -5,12 +5,12 @@ function get_angles(solver)
             in backward_dynamics!(solver; progress=1)]
 end
 
-henon_demo = LyapunovExponents.henon_map(num_attr=100000)
+henon_demo = LyapunovExponents.henon_map(t_attr=100000)
 henon_demo.prob :: LEProblem
 henon_prob = CLVProblem(henon_demo.prob)  # convert it to CLVProblem
 henon_angles = @time get_angles(init(henon_prob))
 
-lozi_prob = CLVProblem(LyapunovExponents.lozi_map(num_attr=100000).prob)
+lozi_prob = CLVProblem(LyapunovExponents.lozi_map(t_attr=100000).prob)
 lozi_angles = @time get_angles(init(lozi_prob))
 
 using Plots

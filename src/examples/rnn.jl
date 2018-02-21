@@ -37,7 +37,7 @@ continuous-time recurrent neural networks by Beer (1995).
 function beer_95(;
         u0=[0.1, 0.1, 0.1],
         tspan=10.0,
-        num_attr=400,
+        t_attr=4000.0,
         atol=0, rtol=5e-1,
         kwargs...)
     param = ContinuousRNN(
@@ -54,7 +54,7 @@ function beer_95(;
         "Beer (1995)",
         phase_dynamics!, u0, tspan, param,
         tangent_dynamics!,
-        num_attr,
+        t_attr,
         [0.010, 0],   # known_exponents
         atol, rtol,
     ); kwargs...)
