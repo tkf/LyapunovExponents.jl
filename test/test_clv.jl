@@ -5,17 +5,19 @@ using LyapunovExponents: DEMOS, objname, dimension
 using LyapunovExponents.CovariantVectors: goto!
 
 @time @testset "CLV: $(objname(f))" for f in DEMOS
-    @testset "num_backward_tran=$nbt brx=$test_brx dim_lyap=$dim_lyap" for (
+    @testset "t_backward_tran=$nbt brx=$test_brx dim_lyap=$dim_lyap" for (
                 nbt, test_brx, dim_lyap,
             ) in product(
-                0:2,            # num_backward_tran
+                0:2,            # t_backward_tran
                 [true, false],  # test_brx
                 2:dimension(f().example),  # dim_lyap
             )
-        prob = CLVProblem(f(dim_lyap=dim_lyap).prob::LEProblem;
-                          num_clv = 5,
-                          num_forward_tran = nbt * 11,  # for extra variation
-                          num_backward_tran = nbt)
+        le_prob = f(dim_lyap=dim_lyap).prob::LEProblem
+        prob = CLVProblem(le_prob;
+                          t_clv = 5 * le_prob.t_renorm,
+                          # use nbt in forward for extra variation:
+                          t_forward_tran = nbt * 11 * le_prob.t_renorm,
+                          t_backward_tran = nbt * le_prob.t_renorm)
 
         dims = (dp, dl) = size(prob.Q0)
         @assert dims == (dimension(prob.phase_prob), dim_lyap)
@@ -23,7 +25,6 @@ using LyapunovExponents.CovariantVectors: goto!
                       backward_dynamics = CLV.BackwardDynamicsWithD)
 
         forward = forward_dynamics!(solver)
-        @test length(forward) == prob.num_clv + prob.num_backward_tran
         R_prev = [Matrix{Float64}(dl, dl) for _ in 1:length(forward)]
         G = [Matrix{Float64}(dp, dl) for _ in 1:length(forward)]
         M = [Matrix{Float64}(dp, dp) for _ in 1:length(forward)]

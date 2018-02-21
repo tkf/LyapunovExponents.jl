@@ -41,9 +41,9 @@ tangent_propagate(::Type{Val{:full}}, args...; kwargs...) =
 
 function tangent_propagate(::Type{Val{:integrator}},
                            tangent_prob::DEProblem,
+                           dt::Real,
                            tangent_state = (@view tangent_prob.u0[:, 2:end]);
                            phase_state = (@view tangent_prob.u0[:, 1]),
-                           dt = error("Keyword argument dt is required."),
                            kwargs...)
     u0 = augmented_vector(phase_state, tangent_state)
     new_prob = with_u0(tangent_prob, u0)
@@ -54,9 +54,9 @@ end
 
 tangent_propagate(::Type{Val{:integrator}},
                   stage::PhaseRelaxer,
+                  dt::Real,
                   tangent_state = stage.tangent_state;
                   phase_state = stage.phase_state,
-                  dt = error("Keyword argument dt is required."),
                   kwargs...) =
     tangent_propagate(Val{:integrator}, de_prob(stage), dt, tangent_state;
                       phase_state = phase_state,

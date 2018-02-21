@@ -1,23 +1,24 @@
 using DiffEqBase: ODEProblem, DiscreteProblem
 
 """
-    CLVProblem(phase_prob, num_clv; <keyword arguments>)
+    CLVProblem(phase_prob, t_clv; <keyword arguments>)
     CLVProblem(le_prob::LEProblem; <keyword arguments>)
 
 Covariant Lyapunov vector (CLV) problem.  This is a struc that holds
 the dynamical system definition (`phase_prob` and `tangent_dynamics!`)
-and the configuration parameters for the algorithm (`num_clv`, etc.).
+and the configuration parameters for the algorithm (`t_clv`, etc.).
 
 The CLVs are calculated using the 'dynamical' algorithm proposed by
 Ginelli et al. (2007, 2013).
 
 ### Arguments
-- `num_clv::Int`: Number of points at which CLV are sampled.
+- `t_clv::Real`: Time spam for which CLV are sampled.
   It is `0.8 * le_prob.t_attr` when constructed from [`LEProblem`](@ref).
-- `num_forward_tran::Int`, `num_backward_tran::Int`:
+- `t_forward_tran::Real`, `t_backward_tran::Real`:
   Forward and backward transient dynamics.  They are
   `0.1 * le_prob.t_attr` when constructed from [`LEProblem`](@ref).
-- See [`LEProblem`](@ref) for `phase_prob`, `tangent_dynamics!` and `Q0`.
+- See [`LEProblem`](@ref) for `phase_prob`, `t_renorm`,
+  `tangent_dynamics!` and `Q0`.
 
 ### Examples (in the online documentation)
 - [Ginelli et al. (2007), Figure 1a](@ref)
@@ -36,26 +37,31 @@ See: <https://tkf.github.io/LyapunovExponents.jl/latest/gallery/>
   Journal of Physics A: Mathematical and Theoretical, 46(25), 254005.
   <http://doi.org/10.1088/1751-8113/46/25/254005>
 """
-struct CLVProblem{DEP} <: AbstractSource
+struct CLVProblem{DEP,
+                  T <: Real,
+                  } <: AbstractSource
     phase_prob::DEP
-    # num_phase_tran
-    num_forward_tran::Int
-    num_backward_tran::Int
-    num_clv::Int
+    # t_phase_tran
+    t_forward_tran::T
+    t_backward_tran::T
+    t_clv::T
+    t_renorm::T
     Q0
     tangent_dynamics!
 
     function CLVProblem{DEP}(
-            phase_prob::DEP, num_clv::Int;
-            num_forward_tran::Int = 0,
-            num_backward_tran::Int = 0,
+            phase_prob::DEP, t_clv, t_renorm;
+            t_forward_tran = 0,
+            t_backward_tran = 0,
             dim_lyap::Int = dimension(phase_prob),
             Q0 = default_Q0(phase_prob, dimension(phase_prob), dim_lyap),
             tangent_dynamics! = nothing,
             ) where {DEP}
 
-        if num_clv < 1
-            error("num_clv (given: $num_clv) must be larger than 1.")
+        if t_clv / t_renorm < 1
+            error("t_clv / t_renorm = $(t_clv / t_renorm)",
+                  " (given: t_clv=$t_clv, t_renorm=$t_renorm)",
+                  " must be larger than 1.")
         end
 
         dim_phase = dimension(phase_prob)
@@ -68,25 +74,29 @@ struct CLVProblem{DEP} <: AbstractSource
             error("Columns in Q0 are not orthonormal.")
         end
 
-        new{DEP}(phase_prob,
-                 num_forward_tran, num_backward_tran, num_clv,
-                 Q0, tangent_dynamics!)
+        T = promote_type(map(typeof, (t_forward_tran, t_backward_tran,
+                                      t_clv, t_renorm))...)
+        new{DEP, T}(
+            phase_prob,
+            t_forward_tran, t_backward_tran, t_clv, t_renorm,
+            Q0, tangent_dynamics!)
     end
 end
 
-CLVProblem(phase_prob::DEP, num_clv; kwargs...) where {DEP <: ODEProblem} =
-    CLVProblem{ODEProblem}(phase_prob, num_clv; kwargs...)
-CLVProblem(phase_prob::DEP, num_clv; kwargs...) where {DEP <:DiscreteProblem} =
-    CLVProblem{DiscreteProblem}(phase_prob, num_clv; kwargs...)
+CLVProblem(phase_prob::DEP, args...; kwargs...) where {DEP <: ODEProblem} =
+    CLVProblem{ODEProblem}(phase_prob, args...; kwargs...)
+CLVProblem(phase_prob::DEP, args...; kwargs...) where {DEP <:DiscreteProblem} =
+    CLVProblem{DiscreteProblem}(phase_prob, args...; kwargs...)
 
 CLVProblem(prob::LEProblem;
-           num_clv = max(1, floor(Int, prob.t_attr * 0.8)),
+           t_clv = prob.t_attr * 0.8,
+           t_renorm = prob.t_renorm,
            kwargs...) =
     CLVProblem(
-        prob.phase_prob, num_clv;
+        prob.phase_prob, t_clv, t_renorm;
         # t_phase_tran = prob.t_tran,
-        num_forward_tran = floor(Int, prob.t_attr * 0.1),
-        num_backward_tran = floor(Int, prob.t_attr * 0.1),
+        t_forward_tran = prob.t_attr * 0.1,
+        t_backward_tran = prob.t_attr * 0.1,
         Q0 = prob.Q0,
         tangent_dynamics! = prob.tangent_dynamics!,
         kwargs...)
@@ -115,15 +125,18 @@ function get_tangent_prob(prob::CLVProblem{DEP},
 end
 
 function get_le_solver(prob, u0 = phase_tangent_state(prob);
+                       t_renorm = prob.t_renorm,
                        kwargs...)
     tangent_prob = get_tangent_prob(prob, u0)
-    t_attr = prob.num_forward_tran + prob.num_clv + prob.num_backward_tran
+    t_attr = prob.t_forward_tran + prob.t_clv + prob.t_backward_tran
     return TangentRenormalizer(get_integrator(tangent_prob),
-                               t_attr; kwargs...)
+                               t_attr, t_renorm; kwargs...)
 end
 
 
 mutable struct CLVSolution{RecG, RecC, RecD, RecX}
+    num_clv::Int
+    num_backward_tran::Int
     # TODO: make those types more general
     R_history::Vector{UTM}
     G_history::Vector{Matrix{Float64}}
@@ -131,12 +144,15 @@ mutable struct CLVSolution{RecG, RecC, RecD, RecX}
     D_history::Vector{Vector{Float64}}
     x_history::Vector{Vector{Float64}}
 
+    # TODO: Do not store backward transient part in CLVSolution.
+    # Separate it out to some kind of cache object.
+
     function CLVSolution{RecG, RecC, RecD, RecX}(
             dim_phase::Int, dim_lyap::Int,
             num_clv::Int, num_backward_tran::Int,
             ) where {RecG, RecC, RecD, RecX}
 
-        sol = new{RecG, RecC, RecD, RecX}()
+        sol = new{RecG, RecC, RecD, RecX}(num_clv, num_backward_tran)
 
         sol.R_history = allocate_array_of_arrays(
             num_clv + num_backward_tran,
@@ -197,8 +213,8 @@ function CLVSolution(prob::CLVProblem, record::Vector{Symbol})
         (:x in record),
     }(dim_phase,
       dim_lyap,
-      prob.num_clv,
-      prob.num_backward_tran)
+      ceil(Int, prob.t_clv / prob.t_renorm),
+      ceil(Int, prob.t_backward_tran / prob.t_renorm))
 end
 
 # const CLVSolR = CLVSolution

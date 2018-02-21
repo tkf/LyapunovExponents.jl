@@ -2,11 +2,11 @@ using LyapunovExponents
 
 num_rec = 20
 sampling_interval = 5
-num_clv = num_rec * sampling_interval
+t_clv = num_rec * sampling_interval
 prob = CLVProblem(LyapunovExponents.lorenz_63().prob,
-                  num_forward_tran = 4000,
-                  num_backward_tran = 4000,
-                  num_clv = num_clv)
+                  t_forward_tran = 4000,
+                  t_backward_tran = 4000,
+                  t_clv = t_clv)
 solver = init(prob)
 
 x_history = [Vector{Float64}(3) for _ in 1:num_rec]
@@ -37,7 +37,7 @@ using DifferentialEquations
 sol = solve(ODEProblem(
     prob.phase_prob.f,
     x_history[1],
-    (0.0, prob.phase_prob.tspan[end] * num_clv * 3),
+    (0.0, prob.phase_prob.tspan[end] * t_clv * 3),
     prob.phase_prob.p
 ))
 

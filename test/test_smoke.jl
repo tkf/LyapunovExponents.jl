@@ -21,11 +21,10 @@ using LyapunovExponents.Test: @test_nothrow
         @test isdefined(solver.sol, :C_history)
         @test isdefined(solver.sol, :D_history)
         @test isdefined(solver.sol, :x_history)
-        num_fwd = solver.prob.num_clv + solver.prob.num_backward_tran
-        @test length(solver.sol.G_history) == num_fwd
-        @test length(solver.sol.C_history) == solver.prob.num_clv
-        @test length(solver.sol.D_history) == solver.prob.num_clv
-        @test length(solver.sol.x_history) == solver.prob.num_clv
+        @test unique(size.(solver.sol.G_history)) == [(3, 3)]
+        @test unique(size.(solver.sol.C_history)) == [(3, 3)]
+        @test unique(size.(solver.sol.D_history)) == [(3,)]
+        @test unique(size.(solver.sol.x_history)) == [(3,)]
     end
 end
 

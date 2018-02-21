@@ -25,24 +25,24 @@ NullCLVTest(demo::LEDemo;
 
 null_CLV_tests = [
     NullCLVTest(LyapunovExponents.lorenz_63();
-                num_clv = 20000,
-                num_forward_tran = 4000,
-                num_backward_tran = 4000,
-                err_rate = 0.002,  # 0.002 works with num_clv = 20000
+                t_clv = 20000,
+                t_forward_tran = 4000,
+                t_backward_tran = 4000,
+                err_rate = 0.004,
                 tolerance = 1e-2),
     # linz_sprott_99() requires a small `tspan` to make `tolerance`
     # smaller.
     NullCLVTest(LyapunovExponents.linz_sprott_99(tspan=0.1);
-                num_clv = 20000,
-                num_forward_tran = 4000,
-                num_backward_tran = 4000,
-                err_rate = 0.06,  # 0.06 works with num_clv = 2000000
+                t_clv = 2000,
+                t_forward_tran = 4000,
+                t_backward_tran = 4000,
+                err_rate = 0.2,
                 tolerance = 0.2),  # TODO: minimize
     NullCLVTest(LyapunovExponents.beer_95();
-                num_clv = 200,
-                num_forward_tran = 100,
-                num_backward_tran = 100,
-                err_rate = 0.01,  # 0.006 works with num_clv = 2000
+                t_clv = 2000,
+                t_forward_tran = 1000,
+                t_backward_tran = 1000,
+                err_rate = 0.05,
                 tolerance = 1e-2),
 ]
 
@@ -56,9 +56,10 @@ null_CLV_tests = [
     x = solver.sol.x_history
     G = solver.sol.G_history
     C = solver.sol.C_history
-    @test_broken length(x) == prob.num_clv
-    @test_broken length(G) == prob.num_clv
-    @test length(C) == prob.num_clv
+    num_clv = ceil(Int, prob.t_clv / prob.t_renorm)
+    @test_broken length(x) == num_clv
+    @test_broken length(G) == num_clv
+    @test length(C) == num_clv
     @test all(norm(Cₙ[:, i]) ≈ 1 for Cₙ in C for i in 1:size(Cₙ, 2))
     @test all(map(is_semi_unitary, G))
 
@@ -73,7 +74,7 @@ null_CLV_tests = [
             vₙ = G[n] * C[n][:, 2]
             acos(abs(∂ₜxₙ' * vₙ) / norm(∂ₜxₙ))
         end
-        for n in 1:prob.num_clv)
+        for n in 1:num_clv)
 
     @test mean(angles .> tolerance) <= err_rate
 

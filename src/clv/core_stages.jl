@@ -1,15 +1,18 @@
-mutable struct ForwardRelaxer{T <: TangentRenormalizer} <: AbstractStage
-    le_solver::T
-    num_forward_tran::Int
+mutable struct ForwardRelaxer{TR <: TangentRenormalizer,
+                              TT <: Real,
+                              } <: AbstractStage
+    le_solver::TR
+    t_forward_tran::TT
 end
 
 ForwardRelaxer(prob::CLVProblem, ::CLVProblem, ::CLVSolution) =
     ForwardRelaxer(prob)
 ForwardRelaxer(prob::CLVProblem) = ForwardRelaxer(get_le_solver(prob),
-                                                  prob.num_forward_tran)
+                                                  prob.t_forward_tran)
 
 stage_index(frx::ForwardRelaxer) = frx.le_solver.i
-Base.length(frx::ForwardRelaxer) = frx.num_forward_tran
+Base.length(frx::ForwardRelaxer) =
+    ceil(Int, frx.t_forward_tran / frx.le_solver.t_renorm)
 step!(frx::ForwardRelaxer) = step!(frx.le_solver)
 
 mutable struct ForwardDynamics{S <: CLVSolution,
@@ -58,10 +61,8 @@ mutable struct BackwardRelaxer <: AbstractStage
     i::Int
 end
 
-BackwardRelaxer(fitr::ForwardDynamics, prob::CLVProblem, ::CLVSolution) =
-    BackwardRelaxer(fitr, prob)
-BackwardRelaxer(fitr::ForwardDynamics, prob::CLVProblem) =
-    BackwardRelaxer(prob.num_backward_tran,
+BackwardRelaxer(fitr::ForwardDynamics, prob::CLVProblem, sol::CLVSolution) =
+    BackwardRelaxer(sol.num_backward_tran,
                     fitr.R_history,
                     UTM(eye(fitr.R_history[end])),  # TODO: randomize
                     -1)
