@@ -27,16 +27,18 @@ end
         println("$(ex.name) dim_lyap=$dim_lyap")
         @time solver = solve(ex; dim_lyap=dim_lyap)
         @show dim = min(dim_lyap, length(ex.known_exponents))
+        @show ex.known_exponents[1:dim]
+        @show lyapunov_exponents(solver)[1:dim]
         if dim_lyap != length(ex.known_exponents) &&
                 contains(ex.name, "Linz & Sprott (1999)") ||
                 dim_lyap == 1 && contains(ex.name, "van der Pol")
             # TODO: check why they don't work
-            @test_skip isapprox((@show ex.known_exponents[1:dim]),
-                                (@show lyapunov_exponents(solver)[1:dim]);
+            @test_skip isapprox(ex.known_exponents[1:dim],
+                                lyapunov_exponents(solver)[1:dim];
                                 rtol=ex.rtol, atol=ex.atol)
         else
-            @test isapprox((@show ex.known_exponents[1:dim]),
-                           (@show lyapunov_exponents(solver)[1:dim]);
+            @test isapprox(ex.known_exponents[1:dim],
+                           lyapunov_exponents(solver)[1:dim];
                            rtol=ex.rtol, atol=ex.atol)
         end
     end
