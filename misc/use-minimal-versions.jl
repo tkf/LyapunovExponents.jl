@@ -6,12 +6,8 @@ packages = [
 ]
 
 for (name, version) in packages
-    info("Pkg.add($name)")
-    Pkg.add(name)  # to make the following work
-    info("Pkg.free($name)")
-    Pkg.free(name)  # required for Pkg.update
-    info("Pkg.update($name)")
-    Pkg.update(name)  # to update METADATA and package repository
+    info("Pkg.add($name, $version)")
+    Pkg.add(name, version)
     info("Pkg.pin($name, $version)")
     Pkg.pin(name, version)
 end
