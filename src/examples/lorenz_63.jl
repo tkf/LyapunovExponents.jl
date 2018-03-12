@@ -39,13 +39,13 @@ Return a [`LEDemo`](@ref) for the Lorenz system.
 """
 function lorenz_63(;
         u0=[0.1, 0.1, 0.1],
-        tspan=1.0,
+        t_renorm=1.0,
         t_attr=4000,
         atol=0, rtol=1e-2,
         kwargs...)
     LEDemo(ContinuousExample(
         "Lorenz (1963)",
-        phase_dynamics!, u0, tspan, Lorenz63Param(),
+        phase_dynamics!, u0, t_renorm, Lorenz63Param(),
         tangent_dynamics!,
         t_attr,
         [0.9056, 0, -14.5723],  # known_exponents

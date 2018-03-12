@@ -26,14 +26,14 @@ dissipative chaotic flow.
 """
 function linz_sprott_99(;
         u0=[0.1, 0.1, 0.1],
-        tspan=1.0,
+        t_renorm=1.0,
         t_attr=100000,
         atol=1e-2, rtol=1e-2,
         kwargs...)
     A = 0.6
     LEDemo(ContinuousExample(
         "Linz & Sprott (1999)",
-        phase_dynamics!, u0, tspan, A,
+        phase_dynamics!, u0, t_renorm, A,
         tangent_dynamics!,
         t_attr,
         [0.0362, 0, -0.6362],   # known_exponents

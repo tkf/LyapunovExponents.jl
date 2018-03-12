@@ -36,7 +36,7 @@ continuous-time recurrent neural networks by Beer (1995).
 """
 function beer_95(;
         u0=[0.1, 0.1, 0.1],
-        tspan=10.0,
+        t_renorm=10.0,
         t_attr=4000.0,
         atol=0, rtol=5e-1,
         kwargs...)
@@ -52,7 +52,7 @@ function beer_95(;
     )
     LEDemo(ContinuousExample(
         "Beer (1995)",
-        phase_dynamics!, u0, tspan, param,
+        phase_dynamics!, u0, t_renorm, param,
         tangent_dynamics!,
         t_attr,
         [0.010, 0],   # known_exponents

@@ -9,7 +9,7 @@ Baker's map
 """
 function bakers_map(;
         u0=[0.6, 0.4],
-        tspan=10,
+        t_renorm=10,
         t_attr=100000,
         atol=0, rtol=1e-5,
         kwargs...)
@@ -34,7 +34,7 @@ function bakers_map(;
     end
     LEDemo(DiscreteExample(
         "Baker's map",
-        phase_dynamics!, u0, tspan, nothing,
+        phase_dynamics!, u0, t_renorm, nothing,
         tangent_dynamics!,
         t_attr,
         log.([2.0, 0.5]),       # known_exponents

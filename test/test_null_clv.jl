@@ -32,7 +32,7 @@ null_CLV_tests = [
                 tolerance = 1e-2),
     # linz_sprott_99() requires a small `tspan` to make `tolerance`
     # smaller.
-    NullCLVTest(LyapunovExponents.linz_sprott_99(tspan=0.1);
+    NullCLVTest(LyapunovExponents.linz_sprott_99(t_renorm=0.1);
                 t_clv = 2000,
                 t_forward_tran = 4000,
                 t_backward_tran = 4000,

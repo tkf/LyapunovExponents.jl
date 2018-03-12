@@ -22,14 +22,14 @@ Return a [`LEDemo`](@ref) for the Arnold's cat map
 function arnold_cat_map(;
         u0::AbstractVector = [0.1, 0.1],
         M::AbstractMatrix = [2 1; 1 1],
-        tspan=10,
+        t_renorm=10,
         t_attr=10000,
         atol=0, rtol=1e-4,
         kwargs...)
     @assert (length(u0), length(u0)) == size(M)
     LEDemo(DiscreteExample(
         "Arnold's cat map",
-        phase_dynamics!, u0, tspan, M,
+        phase_dynamics!, u0, t_renorm, M,
         tangent_dynamics!,
         t_attr,
         log.(sort!(eigvals(M), rev=true)), # known_exponents

@@ -23,7 +23,7 @@ Return a [`LEDemo`](@ref) for the Chirikov standard map.
 """
 function standard_map(;
         u0=[2.68156, 2.31167],
-        tspan=10,
+        t_renorm=10,
         t_attr=100000,
         atol=0, rtol=0.2,
         kwargs...)
@@ -32,7 +32,7 @@ function standard_map(;
     k = 1
     LEDemo(DiscreteExample(
         "Chirikov standard map",
-        phase_dynamics!, u0, tspan, k,
+        phase_dynamics!, u0, t_renorm, k,
         tangent_dynamics!,
         t_attr,
         [0.10497, -0.10497],   # known_exponents

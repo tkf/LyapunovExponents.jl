@@ -31,13 +31,13 @@ Return a [`LEDemo`](@ref) for the Hénon map.
 """
 function henon_map(;
         u0=[-0.3332501594195585, 0.2743725483437717],
-        tspan=10,
+        t_renorm=10,
         t_attr=10000,
         atol=0, rtol=1e-2,
         kwargs...)
     LEDemo(DiscreteExample(
         "Hénon map",
-        phase_dynamics!, u0, tspan, HenonMapParam(),
+        phase_dynamics!, u0, t_renorm, HenonMapParam(),
         tangent_dynamics!,
         t_attr,
         [0.41922, -1.62319],   # known_exponents

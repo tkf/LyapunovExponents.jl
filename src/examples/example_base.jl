@@ -13,7 +13,7 @@ struct LEExample{ProblemType}
     name
     phase_dynamics!
     u0
-    tspan
+    t_renorm
     param
     tangent_dynamics!
     t_attr
@@ -32,7 +32,7 @@ function LEProblem(example::LEExample{P}; kwargs...) where {P <: LEProblem}
     end
     P(example.phase_dynamics!,
       example.u0,
-      example.tspan,
+      example.t_renorm,
       example.param;
       t_attr = example.t_attr,
       t_tran = t_tran,
