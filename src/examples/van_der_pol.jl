@@ -62,7 +62,7 @@ function van_der_pol(;
         "van der Pol & van der Mark (1927)",
         phase_dynamics!, u0, t_renorm, param,
         tangent_dynamics!,
-        t_attr,
+        t_attr * t_renorm,
         [0.085, -6.7],   # known_exponents
         atol, rtol,
     ); kwargs...)

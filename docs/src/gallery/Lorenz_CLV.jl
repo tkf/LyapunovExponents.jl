@@ -2,8 +2,10 @@ using LyapunovExponents
 
 num_rec = 20
 sampling_interval = 5
-t_clv = num_rec * sampling_interval
+t_renorm = 1
+t_clv = t_renorm * num_rec * sampling_interval
 prob = CLVProblem(LyapunovExponents.lorenz_63().prob,
+                  t_renorm = t_renorm,
                   t_forward_tran = 4000,
                   t_backward_tran = 4000,
                   t_clv = t_clv)
@@ -37,7 +39,7 @@ using DifferentialEquations
 sol = solve(ODEProblem(
     prob.phase_prob.f,
     x_history[1],
-    (0.0, prob.phase_prob.tspan[end] * t_clv * 3),
+    (0.0, t_clv * 3),
     prob.phase_prob.p
 ))
 

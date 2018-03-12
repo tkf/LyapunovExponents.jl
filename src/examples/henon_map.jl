@@ -32,7 +32,7 @@ Return a [`LEDemo`](@ref) for the Hénon map.
 function henon_map(;
         u0=[-0.3332501594195585, 0.2743725483437717],
         t_renorm=10,
-        t_attr=10000,
+        t_attr=100000,
         atol=0, rtol=1e-2,
         kwargs...)
     LEDemo(DiscreteExample(

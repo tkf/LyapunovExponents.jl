@@ -28,7 +28,7 @@ Return a [`LEDemo`](@ref) for the Lozi map.
 function lozi_map(;
         u0=[0.1, 0.1],
         t_renorm=10,
-        t_attr=10000,
+        t_attr=100000,
         atol=0, rtol=0.2,
         kwargs...)
     LEDemo(DiscreteExample(
