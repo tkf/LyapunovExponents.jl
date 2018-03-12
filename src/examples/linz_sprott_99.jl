@@ -27,8 +27,8 @@ dissipative chaotic flow.
 function linz_sprott_99(;
         u0=[0.1, 0.1, 0.1],
         tspan=1.0,
-        t_attr=10000,
-        atol=1e-5, rtol=1e-2,
+        t_attr=100000,
+        atol=1e-2, rtol=1e-2,
         kwargs...)
     A = 0.6
     LEDemo(ContinuousExample(
