@@ -9,7 +9,7 @@ using ..Stages: AbstractSource, AbstractStage, finish_if_not!,
 import ..Stages: current_result, stage_index, record!
 
 using ..LyapunovExponents: LEProblem, LESolver, dimension, is_semi_unitary,
-    default_Q0, get_tangent_dynamics, time_type
+    default_Q0, get_tangent_dynamics, time_type, ceil_if
 import ..LyapunovExponents: phase_tangent_state, get_tangent_prob,
     phase_state, TangentRenormalizer, get_integrator
 

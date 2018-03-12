@@ -93,15 +93,15 @@ CLVProblem(phase_prob::DEP, args...; kwargs...) where {DEP <: ODEProblem} =
 CLVProblem(phase_prob::DEP, args...; kwargs...) where {DEP <:DiscreteProblem} =
     CLVProblem{DiscreteProblem}(phase_prob, args...; kwargs...)
 
-CLVProblem(prob::LEProblem;
-           t_clv = prob.t_attr * 0.8,
+CLVProblem(prob::LEProblem{DEP};
+           t_clv = ceil_if(DEP <: DiscreteProblem, prob.t_attr * 0.8),
            t_renorm = prob.t_renorm,
-           kwargs...) =
+           kwargs...) where {DEP} =
     CLVProblem(
         prob.phase_prob, t_clv, t_renorm;
         # t_phase_tran = prob.t_tran,
-        t_forward_tran = prob.t_attr * 0.1,
-        t_backward_tran = prob.t_attr * 0.1,
+        t_forward_tran = ceil_if(DEP <: DiscreteProblem, prob.t_attr * 0.1),
+        t_backward_tran = ceil_if(DEP <: DiscreteProblem, prob.t_attr * 0.1),
         Q0 = prob.Q0,
         tangent_dynamics! = prob.tangent_dynamics!,
         kwargs...)

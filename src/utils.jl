@@ -20,6 +20,8 @@ function is_semi_unitary(U, error=1e-7)
     sum(diff) / length(diff) <= error
 end
 
+ceil_if(prop, x) = prop ? ceil(Int, x) : x
+
 function default_Q0(T::DataType, dim_phase, dim_lyap)
     Q0 = zeros(T, dim_phase, dim_lyap)
     for i in 1:dim_lyap
