@@ -26,11 +26,16 @@ const ContinuousExample = LEExample{ContinuousLEProblem}
 const DiscreteExample = LEExample{DiscreteLEProblem}
 
 function LEProblem(example::LEExample{P}; kwargs...) where {P <: LEProblem}
+    t_tran = example.t_attr * 0.1
+    if P <: DiscreteLEProblem
+        t_tran = ceil(typeof(example.t_attr), t_tran)
+    end
     P(example.phase_dynamics!,
       example.u0,
       example.tspan,
       example.param;
       t_attr = example.t_attr,
+      t_tran = t_tran,
       tangent_dynamics! = example.tangent_dynamics!,
       kwargs...)
 end
