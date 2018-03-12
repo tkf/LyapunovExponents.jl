@@ -3,6 +3,22 @@ using .Stages: Stageable, AbstractSource, AbstractStage,
     StageIterator, StageState, StagedSolver, goto!
 import .Stages: record!, current_result
 
+function time_type(is_discrete; times...)
+    TT = promote_type((typeof(v) for (_, v) in times)...)
+
+    if is_discrete && ! (TT <: Integer)
+        msg = "Non integer time(s):"
+        for (name, val) in times
+            if ! (val isa Integer)
+                msg = "$msg\n  $name::$(typeof(val)) = $val"
+            end
+        end
+        error(msg)
+    end
+
+    return TT
+end
+
 """
     LEProblem(phase_prob, t_attr; <keyword arguments>)
     LEProblem(phase_prob; t_attr, <keyword arguments>)
@@ -27,28 +43,33 @@ import .Stages: record!, current_result
    provided, `tangent_dynamics` is derived from `phase_prob.f`.  See
    also [`PhaseTangentDynamics`](@ref).
 """
-struct LEProblem{DEP} <: AbstractSource
+struct LEProblem{DEP, TT} <: AbstractSource
     phase_prob::DEP
-    t_tran
-    t_attr
-    t_renorm
+    t_tran::TT
+    t_attr::TT
+    t_renorm::TT
     dim_lyap
     Q0
     tangent_dynamics!
 
     function LEProblem{DEP}(
             phase_prob::DEP, t_attr::Real;
-            t_renorm::T = 1,
-            t_tran=1,
+            t_renorm::Real = 1,
+            t_tran::Real = 1,
             dim_lyap=dimension(phase_prob),
             Q0 = default_Q0(phase_prob, dimension(phase_prob), dim_lyap),
             tangent_dynamics! = nothing,
-    ) where {DEP,
-             T <: Real}
+    ) where {DEP}
         if ! is_semi_unitary(Q0)
             error("Columns in Q0 are not orthonormal.")
         end
-        new{DEP}(
+
+        TT = time_type((DEP <: DiscreteProblem);
+                       t_tran = t_tran,
+                       t_attr = t_attr,
+                       t_renorm = t_renorm)
+
+        new{DEP, TT}(
             phase_prob, t_tran, t_attr, t_renorm,
             dim_lyap, Q0, tangent_dynamics!)
     end

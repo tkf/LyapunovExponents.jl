@@ -74,9 +74,14 @@ struct CLVProblem{DEP,
             error("Columns in Q0 are not orthonormal.")
         end
 
-        T = promote_type(map(typeof, (t_forward_tran, t_backward_tran,
-                                      t_clv, t_renorm))...)
-        new{DEP, T}(
+
+        TT = time_type((DEP <: DiscreteProblem);
+                       t_forward_tran = t_forward_tran,
+                       t_backward_tran = t_backward_tran,
+                       t_clv = t_clv,
+                       t_renorm = t_renorm)
+
+        new{DEP, TT}(
             phase_prob,
             t_forward_tran, t_backward_tran, t_clv, t_renorm,
             Q0, tangent_dynamics!)
