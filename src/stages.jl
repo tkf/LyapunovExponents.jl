@@ -166,8 +166,7 @@ function advance!(solver::StagedSolver, policy::ExecPolicy = NullPolicy())
     return solver.state.stage
 end
 
-function get_last_stage!(solver::StagedSolver,
-                         policy::ExecPolicy = NullPolicy())
+function goto_last!(solver::StagedSolver, policy::ExecPolicy = NullPolicy())
     while advance!(solver, policy) !== nothing end
     return solver.state.stage
 end
@@ -178,7 +177,7 @@ function solve!(solver::StagedSolver; progress=-1)
         # Should it be just a no-op?
     end
     policy = get_exec_policy(progress)
-    get_last_stage!(solver, policy)
+    goto_last!(solver, policy)
     finish_if_not!(solver.state.stage, policy)
     return solver
 end
