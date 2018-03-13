@@ -210,7 +210,8 @@ mutable struct MLERenormalizer{S <: LESolution,
     sol::S
 
     function MLERenormalizer(
-            integrator::Intr, t_attr, t_renorm, sol::S;
+            integrator::Intr, t_attr, t_renorm,
+            sol::S = NullLESolution();
             phase_state::V = init_phase_state(integrator),
             tangent_state::M = init_tangent_state(integrator),
             ) where {S, Intr,

@@ -11,8 +11,11 @@ plot replot: %:
 	$(MAKE) --directory=docs $*
 
 judge:
-	OMP_NUM_THREADS=1 $(JULIA) -e 'using PkgBenchmark: judge; showall(judge("LyapunovExponents", "$(JUDGE_BASELINE)"; promptsave=false, promptoverwrite=false)); println()'
+	OMP_NUM_THREADS=1 $(JULIA) -e 'using PkgBenchmark: judge; showall(judge("LyapunovExponents", "$(JUDGE_BASELINE)")); println()'
 JUDGE_BASELINE = HEAD^
+
+bench:
+	OMP_NUM_THREADS=1 $(JULIA) -e 'using PkgBenchmark: benchmarkpkg; showall(benchmarkpkg("LyapunovExponents")); println()'
 
 docs:
 	$(JULIA) docs/make.jl
