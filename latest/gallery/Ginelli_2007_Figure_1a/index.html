@@ -4,10 +4,12 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A hackable Lyapunov exponents calculator"> 
+    <meta name="author" content="tkf"> 
     <link rel="shortcut icon" href="../../img/favicon.ico">
 
-    <title></title>
+    <title>Ginelli 2007 Figure 1a - LyapunovExponents.jl</title>
 
     <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -216,12 +218,12 @@ function get_angles(solver)
             in backward_dynamics!(solver; progress=1)]
 end
 
-henon_demo = LyapunovExponents.henon_map(num_attr=100000)
+henon_demo = LyapunovExponents.henon_map(t_attr=1000000)
 henon_demo.prob :: LEProblem
 henon_prob = CLVProblem(henon_demo.prob)  # convert it to CLVProblem
 henon_angles = @time get_angles(init(henon_prob))
 
-lozi_prob = CLVProblem(LyapunovExponents.lozi_map(num_attr=100000).prob)
+lozi_prob = CLVProblem(LyapunovExponents.lozi_map(t_attr=1000000).prob)
 lozi_angles = @time get_angles(init(lozi_prob))
 
 using Plots
