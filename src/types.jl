@@ -21,6 +21,7 @@ end
 
 """
     LEProblem(phase_prob, t_attr; <keyword arguments>)
+    LEProblem(phase_prob; t_attr, <keyword arguments>)
 
 # Arguments
 - `phase_prob`: Phase space dynamics represented in the form of
@@ -29,7 +30,8 @@ end
 - `t_attr::Real`: Simulated time on the (presumed) attractor
   used for the solver.  It is used for computation of Lyapunov
   Exponents.  Roughly `t_attr / t_renorm` instantaneous exponents are
-  sampled.
+  sampled.  This argument is always required and can be given as
+  positional or keyword argument.
 - `t_tran::Real`: Number of iterations to throw away to get rid of the
   effect from the transient dynamics.
 - `t_renorm::Real`: Interval between orthonormalizations (renormalizations).
@@ -82,6 +84,12 @@ LEProblem(phase_prob::DEP, t_attr; kwargs...) where {DEP <: ODEProblem} =
     LEProblem{ODEProblem}(phase_prob; t_attr=t_attr, kwargs...)
 LEProblem(phase_prob::DEP, t_attr; kwargs...) where {DEP <:DiscreteProblem} =
     LEProblem{DiscreteProblem}(phase_prob; t_attr=t_attr, kwargs...)
+
+LEProblem(phase_prob::DEProblem;
+          t_attr::Real = error("Positional or keyword argument",
+                               " `t_attr` is required."),
+          kwargs...) =
+    LEProblem(phase_prob, t_attr; kwargs...)
 
 mutable struct PhaseRelaxer{Intr, T} <: AbstractStage
     integrator::Intr
