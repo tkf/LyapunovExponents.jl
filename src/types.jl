@@ -1,4 +1,4 @@
-using DiffEqBase: ODEProblem, DiscreteProblem
+using DiffEqBase: DEProblem, ODEProblem, DiscreteProblem
 using .Stages: Stageable, AbstractSource, AbstractStage,
     StageIterator, StageState, StagedSolver, goto!
 import .Stages: record!, current_result
@@ -21,7 +21,6 @@ end
 
 """
     LEProblem(phase_prob, t_attr; <keyword arguments>)
-    LEProblem(phase_prob; t_attr, <keyword arguments>)
 
 # Arguments
 - `phase_prob`: Phase space dynamics represented in the form of
@@ -30,8 +29,7 @@ end
 - `t_attr::Real`: Simulated time on the (presumed) attractor
   used for the solver.  It is used for computation of Lyapunov
   Exponents.  Roughly `t_attr / t_renorm` instantaneous exponents are
-  sampled.  This argument is always required and can be given as
-  positional or keyword argument.
+  sampled.
 - `t_tran::Real`: Number of iterations to throw away to get rid of the
   effect from the transient dynamics.
 - `t_renorm::Real`: Interval between orthonormalizations (renormalizations).
@@ -53,7 +51,12 @@ struct LEProblem{DEP, TT} <: AbstractSource
     tangent_dynamics!
 
     function LEProblem{DEP}(
-            phase_prob::DEP, t_attr::Real;
+            phase_prob::DEP;
+            # Don't use positional argument for t_attr since Julia
+            # can't disambiguate it from ContinuousLEProblem and
+            # DiscreteLEProblem (even with DEP <: DEProblem):
+            t_attr::Real = error("Positional or keyword argument",
+                                 " `t_attr` is required."),
             t_renorm::Real = 1,
             t_tran::Real = 1,
             dim_lyap=dimension(phase_prob),
@@ -76,15 +79,9 @@ struct LEProblem{DEP, TT} <: AbstractSource
 end
 
 LEProblem(phase_prob::DEP, t_attr; kwargs...) where {DEP <: ODEProblem} =
-    LEProblem{ODEProblem}(phase_prob, t_attr; kwargs...)
+    LEProblem{ODEProblem}(phase_prob; t_attr=t_attr, kwargs...)
 LEProblem(phase_prob::DEP, t_attr; kwargs...) where {DEP <:DiscreteProblem} =
-    LEProblem{DiscreteProblem}(phase_prob, t_attr; kwargs...)
-
-LEProblem{DEP}(phase_prob::DEP;
-               t_attr::Real = error("Positional or keyword argument",
-                                    " `t_attr` is required."),
-               kwargs...) where {DEP} =
-    LEProblem{DEP}(phase_prob, t_attr; kwargs...)
+    LEProblem{DiscreteProblem}(phase_prob; t_attr=t_attr, kwargs...)
 
 mutable struct PhaseRelaxer{Intr, T} <: AbstractStage
     integrator::Intr

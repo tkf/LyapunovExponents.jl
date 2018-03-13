@@ -32,8 +32,8 @@ function LEProblem(example::LEExample{P}; kwargs...) where {P <: LEProblem}
     end
     P(example.phase_dynamics!,
       example.u0,
-      example.t_renorm,
       example.param;
+      t_renorm = example.t_renorm,
       t_attr = example.t_attr,
       t_tran = t_tran,
       tangent_dynamics! = example.tangent_dynamics!,

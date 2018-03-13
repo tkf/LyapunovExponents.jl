@@ -34,29 +34,21 @@ end
 const DiscreteLEProblem = LEProblem{DiscreteProblem}
 
 """
-    DiscreteLEProblem(phase_dynamics!, u0, t_renorm [, p [, t_attr]];
-                      <keyword arguments>)
+    DiscreteLEProblem(phase_dynamics!, u0 [, p];
+                      t_attr=<number>, <keyword arguments>)
 
 This is a short-hand notation for:
 
 ```julia
-LEProblem(DiscreteProblem(...) [, t_attr]; t_renorm=t_renorm, ...)
+LEProblem(DiscreteProblem(phase_dynamics!, u0 [, p]), t_attr)
 ```
 
 For the list of usable keyword arguments, see [`LEProblem`](@ref).
 """
-DiscreteLEProblem(phase_dynamics!, u0, t_renorm::Integer, p=nothing,
-                  args...; tspan=(0, 100), kwargs...) =
-    DiscreteLEProblem(DiscreteProblem(phase_dynamics!, u0, tspan, p),
-                      args...; t_renorm=t_renorm, kwargs...)
-# FIXME: remove this shortcut
-
-"""
-DiscreteLEProblem(phase_dynamics!, u0, p=nothing,
-                  args...; tspan=(0, 100), kwargs...) =
-    DiscreteLEProblem(DiscreteProblem(phase_dynamics!, u0, tspan, p),
-                      args...; kwargs...)
-"""
+DiscreteLEProblem(phase_dynamics!, u0, p=nothing;
+                  tspan=(0, 100), kwargs...) =
+    DiscreteLEProblem(DiscreteProblem(phase_dynamics!, u0, tspan, p);
+                      kwargs...)
 
 init_phase_state(integrator::DiscreteIterator) = integrator.u0[:, 1]
 init_tangent_state(integrator::DiscreteIterator) = integrator.u0[:, 2:end]

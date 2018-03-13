@@ -50,9 +50,10 @@ struct CLVProblem{DEP,
     tangent_dynamics!
 
     function CLVProblem{DEP}(
-            phase_prob::DEP, t_clv, t_renorm;
+            phase_prob::DEP, t_clv;
             t_forward_tran = 0,
             t_backward_tran = 0,
+            t_renorm = 1,
             dim_lyap::Int = dimension(phase_prob),
             Q0 = default_Q0(phase_prob, dimension(phase_prob), dim_lyap),
             tangent_dynamics! = nothing,
@@ -98,10 +99,11 @@ CLVProblem(prob::LEProblem{DEP};
            t_renorm = prob.t_renorm,
            kwargs...) where {DEP} =
     CLVProblem(
-        prob.phase_prob, t_clv, t_renorm;
+        prob.phase_prob, t_clv;
         # t_phase_tran = prob.t_tran,
         t_forward_tran = ceil_if(DEP <: DiscreteProblem, prob.t_attr * 0.1),
         t_backward_tran = ceil_if(DEP <: DiscreteProblem, prob.t_attr * 0.1),
+        t_renorm = t_renorm,
         Q0 = prob.Q0,
         tangent_dynamics! = prob.tangent_dynamics!,
         kwargs...)
