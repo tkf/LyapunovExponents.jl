@@ -5,7 +5,7 @@ using LyapunovExponents.Test: test_tangent_dynamics_against_autodiff
 
 @time @testset "Tangent dynamics $(ex.name)" for ex in
         [ex for ex in [f().example for f in DEMOS]
-         if ex.tangent_dynamics! != nothing]
+         if ex.tangent_dynamics != nothing]
     num_u = 5  # number of random states at which the systems are tested
     opts = Dict(
         # :verbose => true

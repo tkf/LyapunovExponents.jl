@@ -130,7 +130,7 @@ function test_tangent_dynamics_against_autodiff(
         prob::LEProblem, args...;
         dim_lyap = dimension(prob.phase_prob),
         kwargs...)
-    @assert prob.tangent_dynamics! != nothing
+    @assert prob.tangent_dynamics != nothing
     prob_ad = LEProblem(prob.phase_prob, prob.t_attr)
     u0 = phase_tangent_state(prob)
     tspan = (0, prob.t_renorm)

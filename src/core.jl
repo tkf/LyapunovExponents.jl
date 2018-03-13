@@ -26,12 +26,12 @@ end
 
 function get_tangent_dynamics(prob, u0 = phase_tangent_state(prob))
     phase_prob = prob.phase_prob
-    tangent_dynamics! = prob.tangent_dynamics!
-    if tangent_dynamics! == nothing
-        phase_dynamics! = phase_prob.f
-        tangent_dynamics! = PhaseTangentDynamics(phase_dynamics!, u0)
+    tangent_dynamics = prob.tangent_dynamics
+    if tangent_dynamics == nothing
+        phase_dynamics = phase_prob.f
+        tangent_dynamics = PhaseTangentDynamics(phase_dynamics, u0)
     end
-    return tangent_dynamics!
+    return tangent_dynamics
 end
 
 function get_tangent_prob(prob::LEProblem{DEP},

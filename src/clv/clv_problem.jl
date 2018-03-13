@@ -5,7 +5,7 @@ using DiffEqBase: ODEProblem, DiscreteProblem
     CLVProblem(le_prob::LEProblem; <keyword arguments>)
 
 Covariant Lyapunov vector (CLV) problem.  This is a struc that holds
-the dynamical system definition (`phase_prob` and `tangent_dynamics!`)
+the dynamical system definition (`phase_prob` and `tangent_dynamics`)
 and the configuration parameters for the algorithm (`t_clv`, etc.).
 
 The CLVs are calculated using the 'dynamical' algorithm proposed by
@@ -18,7 +18,7 @@ Ginelli et al. (2007, 2013).
   Forward and backward transient dynamics.  They are
   `0.1 * le_prob.t_attr` when constructed from [`LEProblem`](@ref).
 - See [`LEProblem`](@ref) for `phase_prob`, `t_renorm`,
-  `tangent_dynamics!` and `Q0`.
+  `tangent_dynamics` and `Q0`.
 
 ### Examples (in the online documentation)
 - [Ginelli et al. (2007), Figure 1a](@ref)
@@ -47,7 +47,7 @@ struct CLVProblem{DEP,
     t_clv::T
     t_renorm::T
     Q0
-    tangent_dynamics!
+    tangent_dynamics
 
     function CLVProblem{DEP}(
             phase_prob::DEP, t_clv;
@@ -56,7 +56,7 @@ struct CLVProblem{DEP,
             t_renorm = 1,
             dim_lyap::Int = dimension(phase_prob),
             Q0 = default_Q0(phase_prob, dimension(phase_prob), dim_lyap),
-            tangent_dynamics! = nothing,
+            tangent_dynamics = nothing,
             ) where {DEP}
 
         if t_clv / t_renorm < 1
@@ -85,7 +85,7 @@ struct CLVProblem{DEP,
         new{DEP, TT}(
             phase_prob,
             t_forward_tran, t_backward_tran, t_clv, t_renorm,
-            Q0, tangent_dynamics!)
+            Q0, tangent_dynamics)
     end
 end
 
@@ -105,7 +105,7 @@ CLVProblem(prob::LEProblem{DEP};
         t_backward_tran = ceil_if(DEP <: DiscreteProblem, prob.t_attr * 0.1),
         t_renorm = t_renorm,
         Q0 = prob.Q0,
-        tangent_dynamics! = prob.tangent_dynamics!,
+        tangent_dynamics = prob.tangent_dynamics,
         kwargs...)
 
 # DRY: it's almost the same as for prob::LEProblem

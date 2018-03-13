@@ -11,11 +11,11 @@ A type to hold an example dynamical system and its known Lyapunov exponents.
 """
 struct LEExample{ProblemType}
     name
-    phase_dynamics!
+    phase_dynamics
     u0
     t_renorm
     param
-    tangent_dynamics!
+    tangent_dynamics
     t_attr
     known_exponents
     atol
@@ -30,13 +30,13 @@ function LEProblem(example::LEExample{P}; kwargs...) where {P <: LEProblem}
     if P <: DiscreteLEProblem
         t_tran = ceil(typeof(example.t_attr), t_tran)
     end
-    P(example.phase_dynamics!,
+    P(example.phase_dynamics,
       example.u0,
       example.param;
       t_renorm = example.t_renorm,
       t_attr = example.t_attr,
       t_tran = t_tran,
-      tangent_dynamics! = example.tangent_dynamics!,
+      tangent_dynamics = example.tangent_dynamics,
       kwargs...)
 end
 

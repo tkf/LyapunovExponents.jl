@@ -48,7 +48,7 @@ struct LEProblem{DEP, TT} <: AbstractSource
     t_renorm::TT
     dim_lyap
     Q0
-    tangent_dynamics!
+    tangent_dynamics
 
     function LEProblem{DEP}(
             phase_prob::DEP;
@@ -61,7 +61,7 @@ struct LEProblem{DEP, TT} <: AbstractSource
             t_tran::Real = 1,
             dim_lyap=dimension(phase_prob),
             Q0 = default_Q0(phase_prob, dimension(phase_prob), dim_lyap),
-            tangent_dynamics! = nothing,
+            tangent_dynamics = nothing,
     ) where {DEP}
         if ! is_semi_unitary(Q0)
             error("Columns in Q0 are not orthonormal.")
@@ -74,7 +74,7 @@ struct LEProblem{DEP, TT} <: AbstractSource
 
         new{DEP, TT}(
             phase_prob, t_tran, t_attr, t_renorm,
-            dim_lyap, Q0, tangent_dynamics!)
+            dim_lyap, Q0, tangent_dynamics)
     end
 end
 
