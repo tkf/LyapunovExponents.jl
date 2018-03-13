@@ -4,7 +4,7 @@ using DiffEqBase: ODEProblem, DiscreteProblem
     CLVProblem(phase_prob, t_clv; <keyword arguments>)
     CLVProblem(le_prob::LEProblem; <keyword arguments>)
 
-Covariant Lyapunov vector (CLV) problem.  This is a struc that holds
+Covariant Lyapunov vector (CLV) problem.  This is a struct that holds
 the dynamical system definition (`phase_prob` and `tangent_dynamics`)
 and the configuration parameters for the algorithm (`t_clv`, etc.).
 
