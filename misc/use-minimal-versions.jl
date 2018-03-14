@@ -8,12 +8,16 @@ packages = [
 for (name, version) in packages
     info("Pkg.add($name)")
     Pkg.add(name)  # to make the following work
-    info("Pkg.free($name)")
-    Pkg.free(name)  # required for Pkg.update
-    info("Pkg.update($name)")
-    Pkg.update(name)  # to update METADATA and package repository
+end
+names = map(first, packages)
+info("Pkg.free & .update: $(join(names, ", "))")
+Pkg.free(names)            # required for Pkg.update
+Pkg.update(names...)       # to update METADATA and package repository
+
+for (name, version) in packages
     info("Pkg.pin($name, $version)")
     Pkg.pin(name, version)
 end
+
 println("Pkg.resolve()")
 Pkg.resolve()
