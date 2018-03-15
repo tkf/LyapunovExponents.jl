@@ -1,32 +1,22 @@
 """
 Auto-generated dynamics for solving phase and tangent dynamics together.
 """
-type PhaseTangentDynamics
+struct PhaseTangentDynamics{F, J}
     "A callable in `(du, u, p, t)` format (inplace version for `ODEProblem`)."
-    phase_dynamics
+    phase_dynamics::F
 
     "Temporary variable to store the Jacobian of the `phase_dynamics`."
-    jacobian
+    jacobian::J
 
     # TODO: store ForwardDiff config here
-
-    function PhaseTangentDynamics(phase_dynamics, array_type,
-                                  dimension::Integer)
-        jacobian = array_type(dimension, dimension)
-        new(phase_dynamics,
-            jacobian,
-            )
-    end
 end
 
-function PhaseTangentDynamics(
-        phase_dynamics, x0::AbstractArray{T, 1}) where {T}
-    PhaseTangentDynamics(phase_dynamics, Array{eltype(x0)}, length(x0))
-end
-
-function PhaseTangentDynamics(
-        phase_dynamics, u0::AbstractArray{T, 2}) where {T}
-    PhaseTangentDynamics(phase_dynamics, u0[:, 1])
+function fdiff_tangent_dynamics(phase_dynamics, x0)
+    dimension = size(x0, 1)
+    return PhaseTangentDynamics(
+        phase_dynamics,
+        similar(x0, (dimension, dimension)),
+    )
 end
 
 """Co-evolve phase- and tangent-sapce dynamics."""

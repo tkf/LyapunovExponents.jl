@@ -7,10 +7,10 @@ using ..ExampleBase: LEDemo, ContinuousExample
 σ(x) = 1 / (1 + exp(-x))
 σ′(x) = σ(x) * (1 - σ(x))
 
-type ContinuousRNN
-    w
-    θ
-    τ
+struct ContinuousRNN{W,TH,TA}
+    w::W
+    θ::TH
+    τ::TA
 end
 
 @inline function phase_dynamics!(du, u, p, t)

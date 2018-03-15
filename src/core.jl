@@ -29,7 +29,7 @@ function get_tangent_dynamics(prob, u0 = phase_tangent_state(prob))
     tangent_dynamics = prob.tangent_dynamics
     if tangent_dynamics == nothing
         phase_dynamics = phase_prob.f
-        tangent_dynamics = PhaseTangentDynamics(phase_dynamics, u0)
+        tangent_dynamics = fdiff_tangent_dynamics(phase_dynamics, u0)
     end
     return tangent_dynamics
 end
