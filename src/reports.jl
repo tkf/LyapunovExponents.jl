@@ -33,6 +33,12 @@ end
 function report(io::IO, convergence::ConvergenceHistory;
                 dim_lyap = min(10, length(convergence.errors)))
 
+    if isempty(convergence.orth)
+        print_with_color(:red, io, "NO convergence test is done!", bold=true)
+        println(io)
+        return
+    end
+
     print_with_color(:blue, io, "Convergence")
     print(io, " #Orth.=$(convergence.orth[end])")
     if convergence.kinds[end] == UnstableConvError
