@@ -36,7 +36,7 @@ end
     thresholdmarker = [:hline for _ in 1:length(errormarker)]
 
     seriestype := :scatter
-    markersize --> [3 5]
+    markersize --> [5 2]
     label := ""
     markershape --> [errormarker thresholdmarker]
     # markerstrokestyle := [:solid :dash]
@@ -136,7 +136,7 @@ end
         subplot := dim_lyap + 1
         ylabel := "Correlation"
         xlabel := "Lag (orthonormalizations)"
-        label := ["$i" for i in 1:dim_lyap]
+        label := ["FTLE$i" for i in 1:dim_lyap]
         legend := :top
 
         (lags, corrs)
