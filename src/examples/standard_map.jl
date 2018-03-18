@@ -24,9 +24,11 @@ Return a [`LEDemo`](@ref) for the Chirikov standard map.
 function standard_map(;
         u0=[2.68156, 2.31167],
         t_renorm=10,
-        t_attr=100000,
-        atol=0, rtol=0.2,
-        terminator_options = [:atol => atol, :rtol => rtol],
+        t_attr=1000000,
+        atol=0, rtol=0.01,
+        terminator_options = [:atol => atol, :rtol => rtol,
+                              :max_tail_corr => rtol,
+                              :first_check => 10000],
         kwargs...)
     # TODO: Improve the accuracy. Check the paper.  It looks like
     # `t_attr=1000000` is required to see some kind of convergence.
