@@ -10,6 +10,14 @@ using LyapunovExponents.Test: test_tangent_dynamics_against_autodiff
     opts = Dict(
         # :verbose => true
     )
+    if contains(ex.name, "Linz & Sprott (1999)")
+        # linz_sprott_99 is solved with a more accurate and expensive
+        # ODE algorithm and with larger t_renorm.  But tangent test
+        # (with evolve=true) is done with the default ODE algorithm.
+        # So let's old t_renorm as the span.
+        # See: [[../src/examples/linz_sprott_99.jl::de_options]]
+        opts[:tspan] = (0.0, 1.0)
+    end
     test_tangent_dynamics_against_autodiff(LEProblem(ex), num_u; opts...)
     if contains(ex.name, "Hénon map")
         # TODO: It fails maybe because some randomly generated states
