@@ -1,6 +1,6 @@
 using Base.Test
 using LyapunovExponents: DEMOS, dimension, solve, lyapunov_exponents,
-    LEProblem
+    LEProblem, report
 using LyapunovExponents.Test: test_tangent_dynamics_against_autodiff
 
 @time @testset "Tangent dynamics $(ex.name)" for ex in
@@ -26,10 +26,10 @@ end
     for dim_lyap in 1:dimension(ex)
         println("$(ex.name) dim_lyap=$dim_lyap")
         @time sol = solve(ex; record=true, dim_lyap=dim_lyap)
-        @show dim = min(dim_lyap, length(ex.known_exponents))
+        dim = min(dim_lyap, length(ex.known_exponents))
+        report(sol)
+        @show dim
         @show ex.known_exponents[1:dim]
-        @show lyapunov_exponents(sol)[1:dim]
-        @show sol.num_orth
         if ! (contains(ex.name, "standard map") ||
               contains(ex.name, "van der Pol") ||
               contains(ex.name, "Beer"))
