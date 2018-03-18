@@ -87,6 +87,7 @@ function solve!(demo::LEDemo; progress = -1, record = true, kwargs...)
     demo.solver = solve(demo.prob;
                         progress = progress,
                         record = record,
+                        terminator_options = demo.example.terminator_options,
                         kwargs...)
     return demo
 end
