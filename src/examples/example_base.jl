@@ -4,7 +4,7 @@ import DifferentialEquations: solve, solve!
 
 using ...LyapunovExponents: LEProblem, ContinuousLEProblem, DiscreteLEProblem,
     init
-import ...LyapunovExponents: dimension
+import ...LyapunovExponents: dimension, report
 
 """
 A type to hold an example dynamical system and its known Lyapunov exponents.
@@ -98,6 +98,25 @@ function Base.show(io::IO, demo::LEDemo)
         print(io, ", ", demo.solver)
     else
         print(io, " [solver not initialized]")
+    end
+end
+
+function report(io::IO, demo::LEDemo)
+    print_with_color(:blue, io, "Lyapunov Exponents Demo")
+    println(io, ": ", demo.example.name)
+
+    if isdefined(demo, :solver)
+        report(io, demo.solver)
+    else
+        print_with_color(:red, io, "[solver not initialized]")
+        println(io)
+    end
+
+    if ! isempty(demo.example.known_exponents)
+        print_with_color(:yellow, io, "Known LEs")
+        print(io, ": ")
+        show(IOContext(io, :limit => true), demo.example.known_exponents)
+        println(io)
     end
 end
 
