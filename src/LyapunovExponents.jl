@@ -2,7 +2,7 @@ __precompile__()
 module LyapunovExponents
 
 export LEProblem, ContinuousLEProblem, DiscreteLEProblem, lyapunov_exponents,
-    phase_state
+    phase_state, report
 
 # Re-export methods from DifferentialEquations extended here:
 export init, solve, solve!, step!
