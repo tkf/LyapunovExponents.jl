@@ -49,6 +49,7 @@ Lauterborn (1990).
   (Figure 6)
 """
 function van_der_pol(;
+        params = [],
         u0=[0.1, 0.1],
         t_attr=200,
         atol=0, rtol=1e-1,
@@ -57,14 +58,20 @@ function van_der_pol(;
     # Note that with larger t_attr (e.g., 10000), the last Lyapunov
     # exponents negatively overshoots what Geist, Parlitz & Lauterborn
     # (1990) reported.  t_attr=100 is required for test to pass.
-    param = VanDerPolParam()
+    if isempty(params)
+        param = VanDerPolParam()
+        known_exponents = [0.085, -6.7]
+    else
+        param = VanDerPolParam(; params...)
+        known_exponents = Float64[]
+    end
     t_renorm = 2 * π / param.ω
     LEDemo(ContinuousExample(
         "van der Pol & van der Mark (1927)",
         phase_dynamics!, u0, t_renorm, param,
         tangent_dynamics!,
         t_attr * t_renorm,
-        [0.085, -6.7],   # known_exponents
+        known_exponents,
         atol, rtol,
         terminator_options,
     ); kwargs...)

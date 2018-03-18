@@ -33,7 +33,7 @@ function arnold_cat_map(;
         phase_dynamics!, u0, t_renorm, M,
         tangent_dynamics!,
         t_attr,
-        log.(sort!(eigvals(M), rev=true)), # known_exponents
+        log.(sort!(abs.(eigvals(M)), rev=true)), # known_exponents
         atol, rtol,
         terminator_options,
     ); kwargs...)

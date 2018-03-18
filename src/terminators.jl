@@ -97,7 +97,8 @@ function should_terminate_stable!(tmnr::AutoCovTerminator, sol::LESolRecFTLE)
     ok = true
     for i in 1:dim_lyap
         w = floor(Int, n / tmnr.chunks)
-        ms = [mean(x[i] for x in ftle[j:j+w-1]) for j in 1:w:n]
+        ms = [mean(x[i] for x in ftle[j:j+w-1]) for j in 1:w:n-w+1]
+        @assert length(ms) == tmnr.chunks
         h = maximum(ms)
         l = minimum(ms)
         th = atol + max(abs(h), abs(l)) * rtol
