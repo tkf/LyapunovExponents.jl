@@ -92,10 +92,12 @@ mutable struct PhaseRelaxer{Intr, T} <: AbstractStage
         new{Intr, T}(integrator, t_tran, 0)
 end
 
-mutable struct LESolution{RecOS, RecFTLE, SS, MS, VV}
+
+mutable struct LESolution{RecOS, RecFTLE, SS, MS, VV, CH}
     series::SS
     main_stat::MS
     ftle_history::VV
+    convergence::CH
     num_orth::Int
     # TODO: Bundle ftle_history and num_orth in a struct.
     converged::Bool
@@ -121,7 +123,10 @@ function LESolution(dim_lyap::Int;
         [history_type(dim_lyap) for _ in 1:num_attr]
         # TODO: generalize outer array type?
     end
-    args = (series, main_stat, ftle_history)
+    convergence = if RecOS && RecFTLE
+        ConvergenceHistory(dim_lyap)
+    end
+    args = (series, main_stat, ftle_history, convergence)
     return LESolution{RecOS, RecFTLE, map(typeof, args)...}(
         args...,
         0,                      # num_orth

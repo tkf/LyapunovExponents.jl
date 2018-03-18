@@ -1,5 +1,45 @@
 using RecipesBase
 
+
+struct ConvErrorBars
+    convergence::ConvergenceHistory
+    exponents::AbstractVector
+    i::Int
+end
+
+@recipe function f(data::ConvErrorBars;
+                   threshold_color = :green,
+                   unstable_color = :darkblue,
+                   stable_color = :darkred)
+    history = data.convergence
+    exponents = data.exponents
+    i = data.i
+
+    kind_to_color = Dict(
+        UnstableConvError => unstable_color,
+        StableConvError => stable_color,
+    )
+    errorcolor = [kind_to_color[k] for k in history.kinds]
+    thresholdcolor = [threshold_color for _ in errorcolor]
+    invisibles = [nothing for _ in errorcolor]
+
+    seriestype := :scatter
+    markersize --> [3 5]
+    label := ""
+    markershape --> :+
+    # markerstrokestyle := [:solid :dash]
+    markercolor := [errorcolor invisibles]
+    markerstrokecolor := [errorcolor thresholdcolor]
+    yerror := [history.errors[i] history.thresholds[i]]
+    x = history.orth
+    l = [exponents[n] for n in history.orth]
+    y = [l l]
+
+    (x, y)
+    # nothing
+end
+
+
 """ Plot `LERecordingSolver` via `RecipesBase`."""
 @recipe function f(solver::Union{LESolverRecFTLE,
                                  AbstractRenormalizer{<: LESolRecFTLE},
@@ -29,9 +69,6 @@ using RecipesBase
         @series begin
             subplot := i
             label --> ""
-            ylabel := "LE$i"
-            ylim --> ylims[i]
-            xlim --> (1, Inf)
             color --> 1
             fillcolor --> 2
             fillalpha --> 0.5
@@ -43,19 +80,34 @@ using RecipesBase
             # but it looks like that Plots.jl has some trouble
             # rendering fillrange with NaN.
         end
+        if has_convergence_history(solver, i)
+            @series begin
+                subplot := i
+                data = ConvErrorBars(
+                    convergence_history(solver),
+                    view(le_hist, i, :),
+                    i)
+                (data,)
+            end
+        end
         if i <= length(known_exponents)
             @series begin
                 subplot := i
                 linetype := :hline
                 label --> ""
-
-                # repeating ylabel/ylim; otherwise they are ignored
-                ylabel := "LE$i"
-                ylim --> ylims[i]
-                xlim --> (1, Inf)
-
                 [known_exponents[i]]
             end
+        end
+        @series begin
+            subplot := i
+            label := ""
+            ylabel := "LE$i"
+            if i == dim_lyap
+                xlabel := "Number of orthonormalizations"
+            end
+            ylim --> ylims[i]
+            xlim --> (1, Inf)
+            []
         end
     end
 end

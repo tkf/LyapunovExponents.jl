@@ -18,6 +18,69 @@ struct NullTerminator <: Terminator end
 check_cache_type(::NullTerminator, ::Any, ::LESolution) = true
 should_terminate!(::NullTerminator, ::LESolution) = false
 
+@enum ConvErrorType UnstableConvError=1 StableConvError=2
+
+abstract type ConvDetail end
+struct UnstableConvDetail <: ConvDetail
+    var::Float64
+    cov::Float64
+end
+struct StableConvDetail <: ConvDetail
+    high::Float64
+    low::Float64
+end
+
+struct ConvergenceHistory
+    orth::Vector{Int}
+    kinds::Vector{ConvErrorType}
+    errors::Vector{Vector{Float64}}
+    thresholds::Vector{Vector{Float64}}
+    details::Vector{Vector{ConvDetail}}
+end
+
+ConvergenceHistory(dim_lyap::Int) =
+    ConvergenceHistory(
+        Vector{Int}(),
+        Vector{ConvErrorType}(),
+        [Vector{Float64}() for _ in 1:dim_lyap],
+        [Vector{Float64}() for _ in 1:dim_lyap],
+        [Vector{ConvDetail}() for _ in 1:dim_lyap],
+    )
+
+function new_error!(history::ConvergenceHistory, n::Int, kind::ConvErrorType)
+    push!(history.orth, n)
+    push!(history.kinds, kind)
+end
+
+function record_error!(history::ConvergenceHistory,
+                       ::Type{Val{UnstableConvError}},
+                       i::Int, err, th, var, cov)
+    push!(history.errors[i], err)
+    push!(history.thresholds[i], th)
+    push!(history.details[i], UnstableConvDetail(var, cov))
+end
+
+function record_error!(history::ConvergenceHistory,
+                       ::Type{Val{StableConvError}},
+                       i::Int, err, th, high, low)
+    push!(history.errors[i], err)
+    push!(history.thresholds[i], th)
+    push!(history.details[i], StableConvDetail(high, low))
+end
+
+function assert_consistent(history::ConvergenceHistory)
+    @assert [length(history.orth)] ==
+        [length(history.kinds)] ==
+        unique(length.(history.errors)) ==
+        unique(length.(history.thresholds)) ==
+        unique(length.(history.details))
+end
+
+absolute_error(history::ConvergenceHistory, i::Int) = history.errors[i]
+
+relative_error(history::ConvergenceHistory, i::Int) =
+    history.errors[i] ./ history.thresholds[i]
+
 
 mutable struct AutoCovTerminator <: Terminator
     rtol::Float64
@@ -64,6 +127,8 @@ function should_terminate!(tmnr::AutoCovTerminator, sol::LESolRecFTLE)
     ftle = @view sol.ftle_history[1:n]
     dim_lyap = size(ftle[1], 1)
 
+    history = sol.convergence
+    new_error!(history, n, UnstableConvError)
     rerr = 1.0
     ok = true
     for i in 1:dim_lyap
@@ -74,7 +139,9 @@ function should_terminate!(tmnr::AutoCovTerminator, sol::LESolRecFTLE)
         rerr = max(rerr, err / th)
         ok = ok && err < th
         ok = ok && abs(c[end]) < abs(c[1]) * tmnr.max_cutoff_corr
+        record_error!(history, Val{UnstableConvError}, i, err, th, c[1], c[end])
     end
+    assert_consistent(history)
 
     if !ok
         # aiming for err < th/2 (so that's why "4 *")
@@ -93,6 +160,8 @@ function should_terminate_stable!(tmnr::AutoCovTerminator, sol::LESolRecFTLE)
     ftle = @view sol.ftle_history[1:n]
     dim_lyap = size(ftle[1], 1)
 
+    history = sol.convergence
+    new_error!(history, n, StableConvError)
     rerr = 1.0
     ok = true
     for i in 1:dim_lyap
@@ -105,7 +174,9 @@ function should_terminate_stable!(tmnr::AutoCovTerminator, sol::LESolRecFTLE)
         err = h - l
         rerr = max(rerr, err / th)
         ok = ok && err < th
+        record_error!(history, Val{StableConvError}, i, err, th, h, l)
     end
+    assert_consistent(history)
 
     if !ok
         # aiming for err < th/2 (so that's why "2 *")
@@ -138,12 +209,12 @@ end
 
 """Choose appropriate terminator."""
 function Terminator(::Void, prob, sol; tmnr_opts...)
-    tmnr_type = if sol isa LESolution{true, true}
-        AutoCovTerminator
+    if sol isa LESolution{true, true}
+        tmnr = AutoCovTerminator(; tmnr_opts...)
     else
-        NullTerminator
+        @assert isempty(tmnr_opts)
+        tmnr = NullTerminator()
     end
-    tmnr = tmnr_type(; tmnr_opts...)
     check_cache_type(tmnr, prob, sol)
     return tmnr
 end
@@ -152,3 +223,15 @@ function Terminator(tmnr::Terminator, prob, sol)
     check_cache_type(tmnr, prob, sol)
     return tmnr
 end
+
+
+has_convergence_history(::Any, i::Int) = false
+has_convergence_history(solver::LESolver, i) =
+    has_convergence_history(solver.sol, i)
+has_convergence_history(sol::LESolution, i) =
+    has_convergence_history(sol.convergence, i)
+has_convergence_history(history::ConvergenceHistory, i::Int) =
+    1 <= i <= length(history.errors)
+
+convergence_history(solver::LESolver) = convergence_history(solver.sol)
+convergence_history(sol::LESolution) = sol.convergence
