@@ -1,5 +1,6 @@
 module LinzSprott99
 export linz_sprott_99
+using OrdinaryDiffEq
 using ..ExampleBase: LEDemo, ContinuousExample
 
 @inline function phase_dynamics!(du, u, A, t)
@@ -31,6 +32,10 @@ function linz_sprott_99(;
         atol=1e-2, rtol=1e-2,
         # terminator_options = [:atol => atol, :rtol => rtol],  # TODO: use it
         terminator_options = [],
+        de_options = [
+            :alg => Vern6(),
+            # :alg => BS5(),
+        ],
         kwargs...)
     A = 0.6
     LEDemo(ContinuousExample(
@@ -41,6 +46,7 @@ function linz_sprott_99(;
         [0.0362, 0, -0.6362],   # known_exponents
         atol, rtol,
         terminator_options,
+        de_options = de_options,
     ); kwargs...)
 end
 

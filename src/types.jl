@@ -307,6 +307,7 @@ end
 
 function LESolver(prob::LEProblem, stage_types::AbstractVector;
                   record::Bool = false,
+                  de_options = [],
                   terminator = nothing,
                   terminator_options = [],
                   kwargs...)
@@ -318,7 +319,8 @@ function LESolver(prob::LEProblem, stage_types::AbstractVector;
                      end,
                      kwargs...)
     tmnr = Terminator(terminator, prob, sol; terminator_options...)
-    args = (prob, sol, tmnr)  # additional arguments to each `stage_types`
+    # Additional arguments to each `stage_types`:
+    args = (prob, sol, tmnr, de_options)
     return StagedSolver(prob, sol, stage_types, args)
 end
 

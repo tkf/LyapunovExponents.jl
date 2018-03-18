@@ -1,6 +1,7 @@
 module ExampleBase
 
 import DifferentialEquations: solve, solve!
+using Parameters: @with_kw
 
 using ...LyapunovExponents: LEProblem, ContinuousLEProblem, DiscreteLEProblem,
     init
@@ -9,7 +10,7 @@ import ...LyapunovExponents: dimension, report
 """
 A type to hold an example dynamical system and its known Lyapunov exponents.
 """
-struct LEExample{ProblemType}
+@with_kw struct LEExample{ProblemType}
     name
     phase_dynamics
     u0
@@ -21,7 +22,36 @@ struct LEExample{ProblemType}
     atol
     rtol
     terminator_options
+    de_options = []
 end
+
+LEExample{ProblemType}(
+            name,
+            phase_dynamics,
+            u0,
+            t_renorm,
+            param,
+            tangent_dynamics,
+            t_attr,
+            known_exponents,
+            atol,
+            rtol,
+            terminator_options;
+            kwargs...
+        ) where {ProblemType} =
+    LEExample{ProblemType}(;
+            name = name,
+            phase_dynamics = phase_dynamics,
+            u0 = u0,
+            t_renorm = t_renorm,
+            param = param,
+            tangent_dynamics = tangent_dynamics,
+            t_attr = t_attr,
+            known_exponents = known_exponents,
+            atol = atol,
+            rtol = rtol,
+            terminator_options = terminator_options,
+            kwargs...)
 
 const ContinuousExample = LEExample{ContinuousLEProblem}
 const DiscreteExample = LEExample{DiscreteLEProblem}
@@ -47,6 +77,7 @@ function solve(example::LEExample;
                dim_lyap=dimension(example), kwargs...)
     solve(LEProblem(example; dim_lyap=dim_lyap);
           terminator_options = example.terminator_options,
+          de_options = example.de_options,
           kwargs...)
 end
 
@@ -88,6 +119,7 @@ function solve!(demo::LEDemo; progress = -1, record = true, kwargs...)
                         progress = progress,
                         record = record,
                         terminator_options = demo.example.terminator_options,
+                        de_options = demo.example.de_options,
                         kwargs...)
     return demo
 end
