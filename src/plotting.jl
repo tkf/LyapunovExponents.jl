@@ -1,4 +1,5 @@
 using RecipesBase
+using StatsBase: autocor
 
 
 struct ConvErrorBars
@@ -44,12 +45,17 @@ end
 @recipe function f(solver::Union{LESolverRecFTLE,
                                  AbstractRenormalizer{<: LESolRecFTLE},
                                  LESolRecFTLE};
+                   correlation = true,
                    known_exponents=nothing)
     le_hist, ci_hist = exponents_stat_history(solver)
     dim_lyap = size(le_hist)[1]
     known_exponents = known_exponents == nothing ? [] : known_exponents
-    layout --> (dim_lyap, 1)
-    xscale --> :log10
+
+    if correlation
+        layout := (dim_lyap + 1, 1)
+    else
+        layout := (dim_lyap, 1)
+    end
 
     ylims = @views [[minimum(le_hist[i, :]),
                      maximum(le_hist[i, :])]
@@ -107,8 +113,22 @@ end
             end
             ylim --> ylims[i]
             xlim --> (1, Inf)
+            xscale --> :log10
             []
         end
+    end
+
+    @series begin
+        lags = 0:ceil(Int, sqrt(length(ftle_history(solver))))
+        corrs = [autocor(ftle_history(solver, i), lags) for i in 1:dim_lyap]
+
+        subplot := dim_lyap + 1
+        ylabel := "Correlation"
+        xlabel := "Lag (orthonormalizations)"
+        label := ["$i" for i in 1:dim_lyap]
+        legend := :top
+
+        (lags, corrs)
     end
 end
 

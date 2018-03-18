@@ -222,13 +222,18 @@ end
 ftle(stage::TangentRenormalizer) = stage.inst_exponents
 ftle(stage::MLERenormalizer) = [stage.inst_exponent]
 
+ftle_history(solver::Union{LESolverRecFTLE,
+                           AbstractRenormalizer{<: LESolRecFTLE}},
+             args...) =
+    ftle_history(solver.sol, args...)
+
+ftle_history(sol::LESolRecFTLE) = @view sol.ftle_history[1:sol.num_orth]
+ftle_history(sol::LESolRecFTLE, i) =
+    [x[i] for x in sol.ftle_history[1:sol.num_orth]]
+
 const Vecs = AbstractVector{<: AbstractVector}
 
-exponents_history(solver::Union{LESolverRecFTLE,
-                                AbstractRenormalizer{<: LESolRecFTLE}}) =
-    exponents_history(solver.sol)
-
-exponents_history(sol::LESolRecFTLE) = exponents_history(sol.ftle_history)
+exponents_history(sol) = exponents_history(ftle_history(sol))
 
 function exponents_history(ftle_history::Vecs)
     t_attr = length(ftle_history)
@@ -245,7 +250,7 @@ function exponents_history(ftle_history::Vecs)
 end
 
 exponents_stat_history(sol::LESolRecFTLE) =
-    exponents_stat_history(@view sol.ftle_history[1:sol.num_orth])
+    exponents_stat_history(ftle_history(sol))
 
 function exponents_stat_history(ftle_history::Vecs, coverageprob = 0.95)
     t_attr = length(ftle_history)
