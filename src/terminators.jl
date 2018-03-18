@@ -23,7 +23,8 @@ should_terminate!(::NullTerminator, ::LESolution) = false
 abstract type ConvDetail end
 struct UnstableConvDetail <: ConvDetail
     var::Float64
-    cov::Float64
+    tail_cov::Float64
+    tail_ok::Bool
 end
 struct StableConvDetail <: ConvDetail
     high::Float64
@@ -54,10 +55,10 @@ end
 
 function record_error!(history::ConvergenceHistory,
                        ::Type{Val{UnstableConvError}},
-                       i::Int, err, th, var, cov)
+                       i::Int, err, th, args...)
     push!(history.errors[i], err)
     push!(history.thresholds[i], th)
-    push!(history.details[i], UnstableConvDetail(var, cov))
+    push!(history.details[i], UnstableConvDetail(args...))
 end
 
 function record_error!(history::ConvergenceHistory,
@@ -87,7 +88,8 @@ mutable struct AutoCovTerminator <: Terminator
     atol::Float64
     chunks::Int
     max_mle::Float64
-    max_cutoff_corr::Float64
+    max_tail_corr::Float64
+    tail_ratio::Float64
     next_check::Int
 end
 # TODO: separate state (next_check) and settings.
@@ -97,13 +99,15 @@ function AutoCovTerminator(;
         atol = 0.1,
         chunks = 2,
         max_mle = 0.01,
-        max_cutoff_corr = 0.05,
-        first_check = 100,
+        max_tail_corr = 0.05,
+        tail_ratio = 0.1,
+        first_check = 400,
         )
     @assert chunks > 1
     AutoCovTerminator(rtol, atol,
                       chunks, max_mle,
-                      max_cutoff_corr,
+                      max_tail_corr,
+                      tail_ratio,
                       first_check)
 end
 
@@ -137,9 +141,13 @@ function should_terminate!(tmnr::AutoCovTerminator, sol::LESolRecFTLE)
         err, c = correlated_sem_with_cov(xs)
         th = atol + abs(m) * rtol
         rerr = max(rerr, err / th)
+        tail_width = ceil(Int, length(c) * tmnr.tail_ratio)
+        tail_cov = mean(abs, @view c[end-tail_width:end])
+        tail_ok = tail_cov < abs(c[1]) * tmnr.max_tail_corr
         ok = ok && err < th
-        ok = ok && abs(c[end]) < abs(c[1]) * tmnr.max_cutoff_corr
-        record_error!(history, Val{UnstableConvError}, i, err, th, c[1], c[end])
+        ok = ok && tail_ok
+        record_error!(history, Val{UnstableConvError}, i, err, th,
+                      c[1], tail_cov, tail_ok)
     end
     assert_consistent(history)
 
