@@ -10,8 +10,6 @@ import DiffEqBase: init, step!
 using DiffEqBase: solve!, set_u!
 # solve and solve! are imported/extended in stages.jl
 
-using Requires
-
 include("documents.jl")
 include("stages.jl")
 include("utils.jl")
@@ -28,7 +26,6 @@ include("interface.jl")
 include("examples/examples.jl")
 include("test.jl")
 include("diffeq_hack.jl")
-
-@require RecipesBase include("plotting.jl")
+include("plotting.jl")
 
 end # module
