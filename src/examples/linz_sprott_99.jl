@@ -27,11 +27,10 @@ dissipative chaotic flow.
 """
 function linz_sprott_99(;
         u0=[0.1, 0.1, 0.1],
-        t_renorm=1.0,
-        t_attr=100000,
+        t_renorm=10.0,
+        t_attr=1000000,
         atol=1e-2, rtol=1e-2,
-        # terminator_options = [:atol => atol, :rtol => rtol],  # TODO: use it
-        terminator_options = [],
+        terminator_options = [:atol => atol, :rtol => rtol],
         de_options = [
             :alg => Vern6(),
             # :alg => BS5(),
