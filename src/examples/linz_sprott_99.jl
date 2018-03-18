@@ -29,6 +29,8 @@ function linz_sprott_99(;
         t_renorm=1.0,
         t_attr=100000,
         atol=1e-2, rtol=1e-2,
+        # terminator_options = [:atol => atol, :rtol => rtol],  # TODO: use it
+        terminator_options = [],
         kwargs...)
     A = 0.6
     LEDemo(ContinuousExample(
@@ -38,6 +40,7 @@ function linz_sprott_99(;
         t_attr,
         [0.0362, 0, -0.6362],   # known_exponents
         atol, rtol,
+        terminator_options,
     ); kwargs...)
 end
 

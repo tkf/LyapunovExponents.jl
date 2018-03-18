@@ -5,7 +5,8 @@ dimension(prob::DEProblem) = length(prob.u0)
 
 PhaseRelaxer(prob::LEProblem,
              ::LEProblem,
-             ::LESolution) =
+             ::LESolution,
+             ::Terminator) =
     PhaseRelaxer(get_integrator(prob.phase_prob),
                  prob.t_tran)
 
@@ -54,13 +55,15 @@ function get_tangent_integrator(prob::LEProblem, relaxer)
     return get_integrator(tangent_prob)
 end
 
-TangentRenormalizer(relaxer::PhaseRelaxer, prob::LEProblem, sol::LESolution) =
+TangentRenormalizer(relaxer::PhaseRelaxer, prob::LEProblem, sol::LESolution,
+                    tmnr::Terminator) =
     TangentRenormalizer(get_tangent_integrator(prob, relaxer),
-                        prob.t_attr, prob.t_renorm, sol)
+                        prob.t_attr, prob.t_renorm, sol, tmnr)
 
-MLERenormalizer(relaxer::PhaseRelaxer, prob::LEProblem, sol::LESolution) =
+MLERenormalizer(relaxer::PhaseRelaxer, prob::LEProblem, sol::LESolution,
+                tmnr::Terminator) =
     MLERenormalizer(get_tangent_integrator(prob, relaxer),
-                    prob.t_attr, prob.t_renorm, sol)
+                    prob.t_attr, prob.t_renorm, sol, tmnr)
 
 Base.length(stage::AbstractRenormalizer) =
     ceil(Int, stage.t_attr / stage.t_renorm)
@@ -137,7 +140,11 @@ function step!(stage::AbstractRenormalizer)
     post_evolve!(stage)
     record!(stage, Val{:OS})
     record!(stage, Val{:FTLE})
+    stage.is_finished = should_terminate!(stage.tmnr, stage.sol)
 end
+
+is_finished(stage::AbstractRenormalizer) =
+    stage.is_finished || (stage.i >= length(stage))
 
 function post_evolve!(stage::TangentRenormalizer)
     dim_lyap = length(stage.inst_exponents)
@@ -187,8 +194,11 @@ function record!(stage::MLERenormalizer{<: LESolRecOS}, ::Type{Val{:OS}})
     OnlineStats.fit!(stage.sol.series, [stage.inst_exponent])
 end
 
-record!(stage::AbstractRenormalizer{<: LESolRecFTLE}, ::Type{Val{:FTLE}}) =
+function record!(stage::AbstractRenormalizer{<: LESolRecFTLE},
+                 ::Type{Val{:FTLE}})
     stage.sol.ftle_history[stage.i] .= ftle(stage)
+    stage.sol.num_orth = stage.i
+end
 
 current_result(stage::TangentRenormalizer) = stage.inst_exponents
 current_result(stage::MLERenormalizer) = stage.inst_exponent
@@ -235,7 +245,7 @@ function exponents_history(ftle_history::Vecs)
 end
 
 exponents_stat_history(sol::LESolRecFTLE) =
-    exponents_stat_history(sol.ftle_history)
+    exponents_stat_history(@view sol.ftle_history[1:sol.num_orth])
 
 function exponents_stat_history(ftle_history::Vecs, coverageprob = 0.95)
     t_attr = length(ftle_history)

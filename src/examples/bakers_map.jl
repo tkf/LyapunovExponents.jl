@@ -12,6 +12,7 @@ function bakers_map(;
         t_renorm=10,
         t_attr=100000,
         atol=0, rtol=1e-5,
+        terminator_options = [:atol => atol, :rtol => rtol],
         kwargs...)
     @inline function phase_dynamics!(u_next, u, p, t)
         if u[1] < 0.5
@@ -39,6 +40,7 @@ function bakers_map(;
         t_attr,
         log.([2.0, 0.5]),       # known_exponents
         atol, rtol,
+        terminator_options,
     ); kwargs...)
 end
 

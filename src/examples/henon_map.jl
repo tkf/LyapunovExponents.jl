@@ -34,6 +34,7 @@ function henon_map(;
         t_renorm=10,
         t_attr=100000,
         atol=0, rtol=1e-2,
+        terminator_options = [:atol => atol, :rtol => rtol],
         kwargs...)
     LEDemo(DiscreteExample(
         "Hénon map",
@@ -42,6 +43,7 @@ function henon_map(;
         t_attr,
         [0.41922, -1.62319],   # known_exponents
         atol, rtol,
+        terminator_options,
     ); kwargs...)
 end
 

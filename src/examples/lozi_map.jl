@@ -30,6 +30,8 @@ function lozi_map(;
         t_renorm=10,
         t_attr=100000,
         atol=0, rtol=0.2,
+        # terminator_options = [:atol => atol, :rtol => rtol],  # TODO: use it
+        terminator_options = [],
         kwargs...)
     LEDemo(DiscreteExample(
         "Lozi map",
@@ -38,6 +40,7 @@ function lozi_map(;
         t_attr,
         Float64[],   # known_exponents
         atol, rtol,
+        terminator_options,
     ); kwargs...)
 end
 

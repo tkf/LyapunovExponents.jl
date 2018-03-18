@@ -25,6 +25,7 @@ function arnold_cat_map(;
         t_renorm=10,
         t_attr=10000,
         atol=0, rtol=1e-4,
+        terminator_options = [:atol => atol, :rtol => rtol],
         kwargs...)
     @assert (length(u0), length(u0)) == size(M)
     LEDemo(DiscreteExample(
@@ -34,6 +35,7 @@ function arnold_cat_map(;
         t_attr,
         log.(sort!(eigvals(M), rev=true)), # known_exponents
         atol, rtol,
+        terminator_options,
     ); kwargs...)
 end
 

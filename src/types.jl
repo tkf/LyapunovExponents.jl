@@ -1,7 +1,7 @@
 using DiffEqBase: DEProblem, ODEProblem, DiscreteProblem
 using .Stages: Stageable, AbstractSource, AbstractStage,
     StageIterator, StageState, StagedSolver, goto!
-import .Stages: record!, current_result
+import .Stages: record!, current_result, is_finished
 
 function time_type(is_discrete; times...)
     TT = promote_type((typeof(v) for (_, v) in times)...)
@@ -92,10 +92,13 @@ mutable struct PhaseRelaxer{Intr, T} <: AbstractStage
         new{Intr, T}(integrator, t_tran, 0)
 end
 
-struct LESolution{RecOS, RecFTLE, SS, MS, VV}
+mutable struct LESolution{RecOS, RecFTLE, SS, MS, VV}
     series::SS
     main_stat::MS
     ftle_history::VV
+    num_orth::Int
+    # TODO: Bundle ftle_history and num_orth in a struct.
+    converged::Bool
 end
 
 const LESolRecOS = LESolution{true}
@@ -119,7 +122,11 @@ function LESolution(dim_lyap::Int;
         # TODO: generalize outer array type?
     end
     args = (series, main_stat, ftle_history)
-    return LESolution{RecOS, RecFTLE, map(typeof, args)...}(args...)
+    return LESolution{RecOS, RecFTLE, map(typeof, args)...}(
+        args...,
+        0,                      # num_orth
+        false,                  # converged
+    )
 end
 
 NullLESolution() = LESolution(0; main_stat = nothing)
@@ -127,6 +134,8 @@ NullLESolution() = LESolution(0; main_stat = nothing)
 # TODO: define record!(sol::LESolution, ftle)
 
 get_dim_lyap(integrator) = size(init_tangent_state(integrator))[2]
+
+abstract type Terminator end
 
 abstract type AbstractRenormalizer{S} <: AbstractStage end
 
@@ -137,6 +146,7 @@ A type representing the main calculation of Lyapunov Exponents (LE).
 This struct holds all temporary state required for LE calculation.
 """
 mutable struct TangentRenormalizer{S <: LESolution,
+                                   TMNR <: Terminator,
                                    Intr, T, V, M,
                                    } <: AbstractRenormalizer{S}
     integrator::Intr
@@ -152,13 +162,17 @@ mutable struct TangentRenormalizer{S <: LESolution,
     # TODO: Make sure that they result in concrete types
 
     sol::S
+    tmnr::TMNR
+    is_finished::Bool
 
     function TangentRenormalizer(
             integrator::Intr, t_attr, t_renorm,
-            sol::S = NullLESolution();
+            sol::S = NullLESolution(),
+            tmnr::TMNR = NullTerminator();
             phase_state::V = init_phase_state(integrator),
             tangent_state::M = init_tangent_state(integrator),
             ) where {S, Intr,
+                     TMNR <: Terminator,
                      V <: AbstractVector,
                      M <: AbstractMatrix}
 
@@ -174,7 +188,7 @@ mutable struct TangentRenormalizer{S <: LESolution,
         sign_R = Array{Bool}(dim_lyap)
 
         T = promote_type(map(typeof, (t_attr, t_renorm))...)
-        return new{S, Intr, T, V, M}(
+        return new{S, TMNR, Intr, T, V, M}(
             integrator,
             t_attr,
             t_renorm,
@@ -186,11 +200,14 @@ mutable struct TangentRenormalizer{S <: LESolution,
             R,
             sign_R,
             sol,
+            tmnr,
+            false,  # is_finished
         )
     end
 end
 
 mutable struct MLERenormalizer{S <: LESolution,
+                               TMNR <: Terminator,
                                Intr,
                                T <: Real,
                                E <: Real,
@@ -208,13 +225,17 @@ mutable struct MLERenormalizer{S <: LESolution,
     # TODO: Make sure that they result in concrete types
 
     sol::S
+    tmnr::TMNR
+    is_finished::Bool
 
     function MLERenormalizer(
             integrator::Intr, t_attr, t_renorm,
-            sol::S = NullLESolution();
+            sol::S = NullLESolution(),
+            tmnr::TMNR = NullTerminator();
             phase_state::V = init_phase_state(integrator),
             tangent_state::M = init_tangent_state(integrator),
             ) where {S, Intr,
+                     TMNR <: Terminator,
                      V <: AbstractVector,
                      M <: AbstractMatrix}
 
@@ -227,7 +248,7 @@ mutable struct MLERenormalizer{S <: LESolution,
         E = eltype(phase_state)
         exponent = E(0)
         T = promote_type(map(typeof, (t_attr, t_renorm))...)
-        new{S, Intr, T, E, V, M}(
+        new{S, TMNR, Intr, T, E, V, M}(
             integrator,
             t_attr,
             t_renorm,
@@ -237,6 +258,8 @@ mutable struct MLERenormalizer{S <: LESolution,
             phase_state,
             tangent_state,
             sol,
+            tmnr,
+            false,  # is_finished
         )
     end
 end
@@ -279,6 +302,8 @@ end
 
 function LESolver(prob::LEProblem, stage_types::AbstractVector;
                   record::Bool = false,
+                  terminator = nothing,
+                  terminator_options = [],
                   kwargs...)
     sol = LESolution(prob.dim_lyap;
                      num_attr = if record
@@ -287,7 +312,8 @@ function LESolver(prob::LEProblem, stage_types::AbstractVector;
                          nothing
                      end,
                      kwargs...)
-    args = (prob, sol)  # additional arguments to each `stage_types`
+    tmnr = Terminator(terminator, prob, sol; terminator_options...)
+    args = (prob, sol, tmnr)  # additional arguments to each `stage_types`
     return StagedSolver(prob, sol, stage_types, args)
 end
 

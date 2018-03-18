@@ -25,10 +25,16 @@ end
 @time @testset "Example $(ex.name)" for ex in [f().example for f in DEMOS]
     for dim_lyap in 1:dimension(ex)
         println("$(ex.name) dim_lyap=$dim_lyap")
-        @time sol = solve(ex; dim_lyap=dim_lyap)
+        @time sol = solve(ex; record=true, dim_lyap=dim_lyap)
         @show dim = min(dim_lyap, length(ex.known_exponents))
         @show ex.known_exponents[1:dim]
         @show lyapunov_exponents(sol)[1:dim]
+        @show sol.num_orth
+        if ! (contains(ex.name, "standard map") ||
+              contains(ex.name, "van der Pol") ||
+              contains(ex.name, "Beer"))
+            @test sol.converged
+        end
         if dim_lyap != length(ex.known_exponents) &&
                 contains(ex.name, "Linz & Sprott (1999)") ||
                 dim_lyap == 1 && contains(ex.name, "van der Pol")

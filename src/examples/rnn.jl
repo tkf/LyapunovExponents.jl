@@ -39,6 +39,8 @@ function beer_95(;
         t_renorm=10.0,
         t_attr=4000.0,
         atol=0, rtol=5e-1,
+        # terminator_options = [:atol => atol, :rtol => rtol],  # TODO: use it
+        terminator_options = [],
         kwargs...)
     param = ContinuousRNN(
         # w
@@ -57,6 +59,7 @@ function beer_95(;
         t_attr,
         [0.010, 0],   # known_exponents
         atol, rtol,
+        terminator_options,
     ); kwargs...)
 end
 

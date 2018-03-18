@@ -26,6 +26,7 @@ function standard_map(;
         t_renorm=10,
         t_attr=100000,
         atol=0, rtol=0.2,
+        terminator_options = [:atol => atol, :rtol => rtol],
         kwargs...)
     # TODO: Improve the accuracy. Check the paper.  It looks like
     # `t_attr=1000000` is required to see some kind of convergence.
@@ -37,6 +38,7 @@ function standard_map(;
         t_attr,
         [0.10497, -0.10497],   # known_exponents
         atol, rtol,
+        terminator_options,
     ); kwargs...)
 end
 

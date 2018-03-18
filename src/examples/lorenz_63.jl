@@ -40,8 +40,10 @@ Return a [`LEDemo`](@ref) for the Lorenz system.
 function lorenz_63(;
         u0=[0.1, 0.1, 0.1],
         t_renorm=1.0,
-        t_attr=4000,
+        t_attr=100000,
         atol=0, rtol=1e-2,
+        # terminator_options = [:atol => atol, :rtol => rtol],  # TODO: use it
+        terminator_options = [],
         kwargs...)
     LEDemo(ContinuousExample(
         "Lorenz (1963)",
@@ -50,6 +52,7 @@ function lorenz_63(;
         t_attr,
         [0.9056, 0, -14.5723],  # known_exponents
         atol, rtol,
+        terminator_options,
     ); kwargs...)
 end
 

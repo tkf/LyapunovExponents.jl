@@ -20,6 +20,7 @@ struct LEExample{ProblemType}
     known_exponents
     atol
     rtol
+    terminator_options
 end
 
 const ContinuousExample = LEExample{ContinuousLEProblem}
@@ -45,6 +46,7 @@ dimension(example::LEExample) = length(example.u0)
 function solve(example::LEExample;
                dim_lyap=dimension(example), kwargs...)
     solve(LEProblem(example; dim_lyap=dim_lyap);
+          terminator_options = example.terminator_options,
           kwargs...)
 end
 

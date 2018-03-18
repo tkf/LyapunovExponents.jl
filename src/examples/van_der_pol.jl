@@ -52,6 +52,7 @@ function van_der_pol(;
         u0=[0.1, 0.1],
         t_attr=200,
         atol=0, rtol=1e-1,
+        terminator_options = [:atol => atol, :rtol => rtol],
         kwargs...)
     # Note that with larger t_attr (e.g., 10000), the last Lyapunov
     # exponents negatively overshoots what Geist, Parlitz & Lauterborn
@@ -65,6 +66,7 @@ function van_der_pol(;
         t_attr * t_renorm,
         [0.085, -6.7],   # known_exponents
         atol, rtol,
+        terminator_options,
     ); kwargs...)
 end
 
