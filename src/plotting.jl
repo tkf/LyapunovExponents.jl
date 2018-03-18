@@ -24,10 +24,21 @@ end
     thresholdcolor = [threshold_color for _ in errorcolor]
     invisibles = [nothing for _ in errorcolor]
 
+    history.details
+    errormarker = [
+        if (k == UnstableConvError) && ! history.details[i][j].tail_ok
+            :xcross
+        else
+            :hline
+        end
+        for (j, k) in enumerate(history.kinds)
+    ]
+    thresholdmarker = [:hline for _ in 1:length(errormarker)]
+
     seriestype := :scatter
     markersize --> [3 5]
     label := ""
-    markershape --> :+
+    markershape --> [errormarker thresholdmarker]
     # markerstrokestyle := [:solid :dash]
     markercolor := [errorcolor invisibles]
     markerstrokecolor := [errorcolor thresholdcolor]
