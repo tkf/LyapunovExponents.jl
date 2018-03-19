@@ -32,7 +32,10 @@ end
 
 @time @testset "Example $(ex.name)" for ex in [f().example for f in DEMOS]
     for dim_lyap in 1:dimension(ex)
-        println("$(ex.name) dim_lyap=$dim_lyap")
+        println()
+        print_with_color(:blue, "$(ex.name)", bold=true)
+        println(" dim_lyap=$dim_lyap")
+
         @time sol = solve(ex; record=true, dim_lyap=dim_lyap)
         dim = min(dim_lyap, length(ex.known_exponents))
         report(sol)
@@ -43,17 +46,26 @@ end
               contains(ex.name, "Beer"))
             @test sol.converged
         end
+
+        rtol = ex.rtol
+        atol = ex.atol
+        if contains(ex.name, "standard map")
+            rtol = 5rtol
+            atol = 5atol
+        end
+
         if dim_lyap != length(ex.known_exponents) &&
                 contains(ex.name, "Linz & Sprott (1999)") ||
                 dim_lyap == 1 && contains(ex.name, "van der Pol")
             # TODO: check why they don't work
-            @test_skip isapprox(ex.known_exponents[1:dim],
-                                lyapunov_exponents(sol)[1:dim];
-                                rtol=ex.rtol, atol=ex.atol)
+            @test_skip(
+                lyapunov_exponents(sol)[1:dim] ≈ ex.known_exponents[1:dim],
+                rtol = rtol,
+                atol = atol)
         else
-            @test isapprox(ex.known_exponents[1:dim],
-                           lyapunov_exponents(sol)[1:dim];
-                           rtol=ex.rtol, atol=ex.atol)
+            @test(lyapunov_exponents(sol)[1:dim] ≈ ex.known_exponents[1:dim],
+                  rtol = rtol,
+                  atol = atol)
         end
     end
 end
