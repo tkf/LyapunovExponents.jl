@@ -50,9 +50,10 @@ end
         rtol = ex.rtol
         atol = ex.atol
         if contains(ex.name, "standard map")
-            rtol = 5rtol
-            atol = 5atol
+            rtol *= 20
+            atol *= 20
         end
+        @show rtol, atol
 
         if dim_lyap != length(ex.known_exponents) &&
                 contains(ex.name, "Linz & Sprott (1999)") ||
