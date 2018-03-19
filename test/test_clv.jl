@@ -13,11 +13,17 @@ using LyapunovExponents.CovariantVectors: goto!
                 2:dimension(f().example),  # dim_lyap
             )
         le_prob = f(dim_lyap=dim_lyap).prob::LEProblem
+        t_renorm = le_prob.t_renorm
+        if contains(objname(f), "linz_sprott_99")
+            t_renorm = 1.0
+            # See [[./test_examples.jl::de_options]]
+        end
         prob = CLVProblem(le_prob;
-                          t_clv = 5 * le_prob.t_renorm,
+                          t_renorm = t_renorm,
+                          t_clv = 5 * t_renorm,
                           # use nbt in forward for extra variation:
-                          t_forward_tran = nbt * 11 * le_prob.t_renorm,
-                          t_backward_tran = nbt * le_prob.t_renorm)
+                          t_forward_tran = nbt * 11 * t_renorm,
+                          t_backward_tran = nbt * t_renorm)
 
         dims = (dp, dl) = size(prob.Q0)
         @assert dims == (dimension(prob.phase_prob), dim_lyap)
