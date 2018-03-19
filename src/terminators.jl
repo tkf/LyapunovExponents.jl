@@ -142,7 +142,7 @@ function should_terminate!(tmnr::AutoCovTerminator, sol::LESolRecFTLE)
         th = atol + abs(m) * rtol
         rerr = max(rerr, err / th)
         tail_width = ceil(Int, length(c) * tmnr.tail_ratio)
-        tail_cov = mean(abs, @view c[end-tail_width:end])
+        tail_cov = sum(abs, @view c[end-tail_width:end])
         tail_ok = tail_cov < abs(c[1]) * tmnr.max_tail_corr
         ok = ok && err < th
         ok = ok && tail_ok
