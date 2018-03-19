@@ -41,9 +41,10 @@ end
         report(sol)
         @show dim
         @show ex.known_exponents[1:dim]
-        if ! (contains(ex.name, "standard map") ||
-              contains(ex.name, "van der Pol") ||
-              contains(ex.name, "Beer"))
+        if contains(ex.name, "standard map") ||
+                contains(ex.name, "van der Pol")
+            @test_broken sol.converged
+        else
             @test sol.converged
         end
 
