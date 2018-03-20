@@ -59,8 +59,7 @@ end
 
         skip = (
             dim_lyap != length(ex.known_exponents) &&
-            contains(ex.name, "Linz & Sprott (1999)") ||
-            dim_lyap == 1 && contains(ex.name, "van der Pol")
+            contains(ex.name, "Linz & Sprott (1999)")
         )
         # TODO: check why they don't work
 

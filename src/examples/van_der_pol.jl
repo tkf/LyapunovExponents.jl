@@ -51,8 +51,8 @@ Lauterborn (1990).
 function van_der_pol(;
         params = [],
         u0=[0.1, 0.1],
-        t_attr=200,
-        atol=0, rtol=1e-1,
+        t_attr = 800,
+        atol=0, rtol=2e-1,
         terminator_options = [:atol => atol, :rtol => rtol],
         kwargs...)
     # Note that with larger t_attr (e.g., 10000), the last Lyapunov
