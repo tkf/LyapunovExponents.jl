@@ -16,6 +16,11 @@ end
     exponents = data.exponents
     i = data.i
 
+    if isempty(history.kinds)
+        label := ""
+        return []  # to suppress the warning about makershape
+    end
+
     kind_to_color = Dict(
         UnstableConvError => unstable_color,
         StableConvError => stable_color,
