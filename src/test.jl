@@ -1,7 +1,7 @@
 module Test
 
 using Base: rtoldefault
-using Base.Test: @test
+using Base.Test: @test, record, get_testset, Pass, Fail, Error, Broken
 using DiffEqBase: DEProblem, set_u!, step!, remake
 using LyapunovExponents: LEProblem, dimension, phase_tangent_state,
     get_tangent_prob, get_integrator, de_prob, current_state
@@ -14,6 +14,102 @@ macro test_nothrow(ex)
             true
         end
     end
+end
+
+
+function macro_kwargs(kwargs)
+    params = map(
+        kw -> begin
+            @assert kw isa Expr
+            @assert kw.head == :(=)
+            Expr(:kw, kw.args...)
+        end,
+        kwargs)
+    return Expr(:parameters, params...)
+end
+
+
+macro test_isapprox_pairwise(x, y, kwargs...)
+    args = [
+        esc(x), esc(y),
+        QuoteNode(x), QuoteNode(y), QuoteNode(kwargs),
+    ]
+    Expr(:call,
+         test_isapprox_pairwise,
+         esc(macro_kwargs(kwargs)),
+         args...)
+end
+
+
+function test_isapprox_pairwise(x, y, xexpr, yexpr, orig_kwargs;
+                                skip::Bool = false,
+                                broken::Bool = false,
+                                rtol::Real = rtoldefault(x,y),
+                                atol::Real = 0)
+    appx = isapprox.(x, y; rtol=rtol, atol=atol)
+    ok = all(appx)
+
+    if !ok
+        abserr = abs.(x .- y)
+        amp = max.(abs.(x), abs.(y))
+        th = atol .+ rtol .* amp
+        relerr = abserr ./ amp
+
+        print_with_color(:red, "Not pairwise isapprox")
+        println()
+        println("x = ", xexpr)
+        println("y = ", yexpr)
+
+        columns = [
+            :i => 1:length(x),
+            :x => x,
+            :y => y,
+            :relerr => relerr,
+            :abserr => abserr,
+            :th => th,
+        ]
+        table = []
+        for (name, value) in columns
+            push!(table, (name, sprint.(showcompact, value)))
+        end
+        mark = Dict(true => "✔", false => "!!")
+        push!(table, ("ok?", [mark[x] for x in appx]))
+        widths = [max(length(string(name)), maximum(length.(c)))
+                  for (name, c) in table]
+
+        for ((name, _), width) in zip(table, widths)
+            print("  ")
+            print(lpad(name, width))
+        end
+        println()
+        for i in 1:length(x)
+            for ((_, c), width) in zip(table, widths)
+                print("  ")
+                print(lpad(c[i], width))
+            end
+            println()
+        end
+    end
+
+    orig_expr = Expr(:macrocall,
+                     (:@test_isapprox_pairwise).args[1],
+                     xexpr, yexpr, orig_kwargs...)
+    result = if skip
+        Broken(:skipped, orig_expr)
+    elseif broken
+        if ok
+            Error(:test_unbroken, orig_expr, ok, nothing)
+        else
+            Broken(:test, orig_expr)
+        end
+    else
+        if ok
+            Pass(:test, orig_expr, nothing, ok)
+        else
+            Fail(:test, orig_expr, nothing, ok)
+        end
+    end
+    record(get_testset(), result)
 end
 
 

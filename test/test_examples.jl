@@ -1,7 +1,8 @@
 using Base.Test
 using LyapunovExponents: DEMOS, dimension, solve!, lyapunov_exponents,
     LEProblem, report, objname
-using LyapunovExponents.Test: test_tangent_dynamics_against_autodiff
+using LyapunovExponents.Test: test_tangent_dynamics_against_autodiff,
+    @test_isapprox_pairwise
 
 @time @testset "Tangent dynamics $(ex.name)" for ex in
         [ex for ex in [f().example for f in DEMOS]
@@ -55,18 +56,19 @@ end
         end
         @show rtol, atol
 
-        if dim_lyap != length(ex.known_exponents) &&
-                contains(ex.name, "Linz & Sprott (1999)") ||
-                dim_lyap == 1 && contains(ex.name, "van der Pol")
-            # TODO: check why they don't work
-            @test_skip(
-                lyapunov_exponents(sol)[1:dim] ≈ ex.known_exponents[1:dim],
-                rtol = rtol,
-                atol = atol)
-        else
-            @test(lyapunov_exponents(sol)[1:dim] ≈ ex.known_exponents[1:dim],
-                  rtol = rtol,
-                  atol = atol)
-        end
+        skip = (
+            dim_lyap != length(ex.known_exponents) &&
+            contains(ex.name, "Linz & Sprott (1999)") ||
+            dim_lyap == 1 && contains(ex.name, "van der Pol")
+        )
+        # TODO: check why they don't work
+
+        @test_isapprox_pairwise(
+            lyapunov_exponents(sol)[1:dim],
+            ex.known_exponents[1:dim],
+            rtol = rtol,
+            atol = atol,
+            skip = skip,
+        )
     end
 end
