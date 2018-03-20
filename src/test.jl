@@ -56,7 +56,7 @@ function test_isapprox_pairwise(x, y, xexpr, yexpr, orig_kwargs;
         relerr = abserr ./ amp
 
         print_with_color(:red, "Not pairwise isapprox")
-        println()
+        println("  ", "rtol=", rtol, "  ", "atol=", atol)
         println("x = ", xexpr)
         println("y = ", yexpr)
 

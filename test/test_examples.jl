@@ -33,6 +33,8 @@ end
 
 @time @testset "Example $(objname(f))" for f in DEMOS
     for dim_lyap in 1:dimension(f().example)
+        println()
+
         demo = f(dim_lyap=dim_lyap)
         @time solve!(demo; record=true)
         report(demo)
@@ -54,7 +56,6 @@ end
             rtol *= 20
             atol *= 20
         end
-        @show rtol, atol
 
         skip = (
             dim_lyap != length(ex.known_exponents) &&
