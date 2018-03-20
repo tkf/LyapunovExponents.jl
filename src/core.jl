@@ -7,8 +7,8 @@ PhaseRelaxer(prob::LEProblem,
              ::LEProblem,
              ::LESolution,
              ::Terminator,
-             de_options) =
-    PhaseRelaxer(get_integrator(prob.phase_prob; de_options...),
+             integrator_options) =
+    PhaseRelaxer(get_integrator(prob.phase_prob; integrator_options...),
                  prob.t_tran)
 
 function step!(relaxer::PhaseRelaxer)
@@ -50,20 +50,23 @@ end
 current_state(relaxer::Union{PhaseRelaxer, AbstractRenormalizer}) =
     current_state(relaxer.integrator)
 
-function get_tangent_integrator(prob::LEProblem, relaxer; de_options...)
+function get_tangent_integrator(prob::LEProblem, relaxer;
+                                integrator_options...)
     u0 = phase_tangent_state(prob, current_state(relaxer))
     tangent_prob = get_tangent_prob(prob, u0)
-    return get_integrator(tangent_prob; de_options...)
+    return get_integrator(tangent_prob; integrator_options...)
 end
 
 TangentRenormalizer(relaxer::PhaseRelaxer, prob::LEProblem, sol::LESolution,
-                    tmnr::Terminator, de_options) =
-    TangentRenormalizer(get_tangent_integrator(prob, relaxer; de_options...),
+                    tmnr::Terminator, integrator_options) =
+    TangentRenormalizer(get_tangent_integrator(prob, relaxer;
+                                               integrator_options...),
                         prob.t_attr, prob.t_renorm, sol, tmnr)
 
 MLERenormalizer(relaxer::PhaseRelaxer, prob::LEProblem, sol::LESolution,
-                tmnr::Terminator, de_options) =
-    MLERenormalizer(get_tangent_integrator(prob, relaxer; de_options...),
+                tmnr::Terminator, integrator_options) =
+    MLERenormalizer(get_tangent_integrator(prob, relaxer;
+                                           integrator_options...),
                     prob.t_attr, prob.t_renorm, sol, tmnr)
 
 Base.length(stage::AbstractRenormalizer) =

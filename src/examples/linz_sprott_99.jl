@@ -31,7 +31,7 @@ function linz_sprott_99(;
         t_attr=1000000,
         atol=1e-2, rtol=1e-2,
         terminator_options = [:atol => atol, :rtol => rtol],
-        de_options = [
+        integrator_options = [
             :alg => Vern6(),
             # :alg => BS5(),
         ],
@@ -45,7 +45,7 @@ function linz_sprott_99(;
         [0.0362, 0, -0.6362],   # known_exponents
         atol, rtol,
         terminator_options,
-        de_options = de_options,
+        integrator_options = integrator_options,
     ); kwargs...)
 end
 

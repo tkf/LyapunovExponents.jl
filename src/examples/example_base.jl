@@ -22,7 +22,7 @@ A type to hold an example dynamical system and its known Lyapunov exponents.
     atol
     rtol
     terminator_options
-    de_options = []
+    integrator_options = []
 end
 
 LEExample{ProblemType}(
@@ -77,7 +77,7 @@ function solve(example::LEExample;
                dim_lyap=dimension(example), kwargs...)
     solve(LEProblem(example; dim_lyap=dim_lyap);
           terminator_options = example.terminator_options,
-          de_options = example.de_options,
+          integrator_options = example.integrator_options,
           kwargs...)
 end
 
@@ -119,7 +119,7 @@ function solve!(demo::LEDemo; progress = -1, record = true, kwargs...)
                         progress = progress,
                         record = record,
                         terminator_options = demo.example.terminator_options,
-                        de_options = demo.example.de_options,
+                        integrator_options = demo.example.integrator_options,
                         kwargs...)
     return demo
 end
