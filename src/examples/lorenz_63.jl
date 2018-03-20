@@ -41,9 +41,8 @@ function lorenz_63(;
         u0=[0.1, 0.1, 0.1],
         t_renorm=1.0,
         t_attr=100000,
-        atol=0, rtol=1e-2,
-        # terminator_options = [:atol => atol, :rtol => rtol],  # TODO: use it
-        terminator_options = [],
+        atol=1e-2, rtol=1e-2,
+        terminator_options = [:atol => atol, :rtol => rtol],
         kwargs...)
     LEDemo(ContinuousExample(
         "Lorenz (1963)",
