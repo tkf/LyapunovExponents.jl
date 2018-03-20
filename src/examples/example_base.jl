@@ -5,7 +5,7 @@ using DiffEqBase: init
 using Parameters: @with_kw
 
 using ...LyapunovExponents: LEProblem, ContinuousLEProblem, DiscreteLEProblem,
-    LESolver
+    LESolver, lyapunov_exponents
 import ...LyapunovExponents: dimension, report
 
 """
@@ -148,11 +148,30 @@ function report(io::IO, demo::LEDemo;
     end
 
     if ! isempty(demo.example.known_exponents)
+        known_exponents = demo.example.known_exponents
+
         print_with_color(:yellow, io, "Known LEs")
         print(io, ": ")
-        show(IOContext(io, :limit => true), demo.example.known_exponents)
+        show(IOContext(io, :limit => true), known_exponents)
         println(io)
-    end
+
+        LEs = lyapunov_exponents(demo.solver)
+        dim = min(length(known_exponents), length(LEs))
+        actual = LEs[1:dim]
+        desired = known_exponents[1:dim]
+        abserr = abs.(actual .- desired)
+        relerr = abserr ./ max.(abs.(actual), abs.(desired))
+
+        print_with_color(:yellow, io, "Abs. Error")
+        print(io, ": ")
+        show(IOContext(io, :limit => true), abserr)
+        println(io)
+
+        print_with_color(:yellow, io, "Rel. Error")
+        print(io, ": ")
+        show(IOContext(io, :limit => true), relerr)
+        println(io)
+   end
 
     if convergence
         report(io, demo.solver.sol.convergence)
