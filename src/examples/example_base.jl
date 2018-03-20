@@ -1,10 +1,11 @@
 module ExampleBase
 
 import DifferentialEquations: solve, solve!
+using DiffEqBase: init
 using Parameters: @with_kw
 
 using ...LyapunovExponents: LEProblem, ContinuousLEProblem, DiscreteLEProblem,
-    init
+    LESolver
 import ...LyapunovExponents: dimension, report
 
 """
@@ -82,9 +83,9 @@ function solve(example::LEExample;
 end
 
 mutable struct LEDemo
-    example
-    prob
-    solver
+    example::LEExample
+    prob::LEProblem
+    solver::LESolver
 
     LEDemo(example, prob) = new(example, prob)
 end
@@ -115,12 +116,13 @@ Initialize `demo.solver` from `demo.prob` and run
 `solve!(demo.solver)` to calculate the Lyapunov exponents.
 """
 function solve!(demo::LEDemo; progress = -1, record = true, kwargs...)
-    demo.solver = solve(demo.prob;
-                        progress = progress,
-                        record = record,
-                        terminator_options = demo.example.terminator_options,
-                        integrator_options = demo.example.integrator_options,
-                        kwargs...)
+    demo.solver = init(demo.prob;
+                       record = record,
+                       terminator_options = demo.example.terminator_options,
+                       integrator_options = demo.example.integrator_options,
+                       kwargs...)
+    solve!(demo.solver,
+           progress = progress)
     return demo
 end
 

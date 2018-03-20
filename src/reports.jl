@@ -1,5 +1,9 @@
 report(x) = report(STDOUT, x)
 
+function report(io::IO, solver::LESolver)
+    report(io, solver.sol)
+end
+
 function report(io::IO, sol::LESolution)
     LEs = lyapunov_exponents(sol)
 

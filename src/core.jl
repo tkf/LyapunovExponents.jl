@@ -253,7 +253,9 @@ function exponents_history(ftle_history::Vecs)
     return le_hist
 end
 
-exponents_stat_history(sol::LESolRecFTLE) =
+exponents_stat_history(sol::Union{LESolRecFTLE,
+                                  AbstractRenormalizer{<: LESolRecFTLE},
+                                  LESolverRecFTLE}) =
     exponents_stat_history(ftle_history(sol))
 
 function exponents_stat_history(ftle_history::Vecs, coverageprob = 0.95)
