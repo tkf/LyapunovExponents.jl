@@ -48,12 +48,26 @@ function report(io::IO, convergence::ConvergenceHistory;
 
     print_with_color(:blue, io, "Convergence")
     print(io, " #Orth.=$(convergence.orth[end])")
+    print(io, " #Checks=$(length(convergence.orth))")
     if convergence.kinds[end] == UnstableConvError
         print(io, " [unstable]")
     else
         print(io, " [stable]")
     end
     println(io)
+
+    if length(convergence.kinds) > 1
+        print_with_color(:yellow, io, "Stability")
+        print(io, ": ")
+        for k in convergence.kinds
+            if k == UnstableConvError
+                print(io, "x")
+            else
+                print(io, ".")
+            end
+        end
+        println(io)
+    end
 
     print(io, " "^(length("LE$dim_lyap")), "  ",
           "      error", "   ",
@@ -62,7 +76,7 @@ function report(io::IO, convergence::ConvergenceHistory;
         print(io,
               "   variance",
               "   tail cov",
-              "  small?")
+              " small tail?")
     end
     println(io)
 
