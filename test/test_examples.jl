@@ -1,6 +1,6 @@
 using Base.Test
-using LyapunovExponents: DEMOS, dimension, solve, lyapunov_exponents,
-    LEProblem, report
+using LyapunovExponents: DEMOS, dimension, solve!, lyapunov_exponents,
+    LEProblem, report, objname
 using LyapunovExponents.Test: test_tangent_dynamics_against_autodiff
 
 @time @testset "Tangent dynamics $(ex.name)" for ex in
@@ -30,17 +30,16 @@ using LyapunovExponents.Test: test_tangent_dynamics_against_autodiff
     end
 end
 
-@time @testset "Example $(ex.name)" for ex in [f().example for f in DEMOS]
-    for dim_lyap in 1:dimension(ex)
-        println()
-        print_with_color(:blue, "$(ex.name)", bold=true)
-        println(" dim_lyap=$dim_lyap")
+@time @testset "Example $(objname(f))" for f in DEMOS
+    for dim_lyap in 1:dimension(f().example)
+        demo = f(dim_lyap=dim_lyap)
+        @time solve!(demo; record=true)
+        report(demo)
 
-        @time sol = solve(ex; record=true, dim_lyap=dim_lyap)
+        sol = demo.solver.sol
+        ex = demo.example
         dim = min(dim_lyap, length(ex.known_exponents))
-        report(sol)
-        @show dim
-        @show ex.known_exponents[1:dim]
+
         if contains(ex.name, "standard map") ||
                 contains(ex.name, "van der Pol")
             @test_broken sol.converged
