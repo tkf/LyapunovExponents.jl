@@ -1,10 +1,11 @@
 report(x) = report(STDOUT, x)
 
-function report(io::IO, solver::LESolver)
-    report(io, solver.sol)
+function report(io::IO, solver::LESolver; kwargs...)
+    report(io, solver.sol; kwargs...)
 end
 
-function report(io::IO, sol::LESolution)
+function report(io::IO, sol::LESolution;
+                convergence::Bool = true)
     LEs = lyapunov_exponents(sol)
 
     print_with_color(:blue, io, "Lyapunov Exponents Solution")
@@ -31,7 +32,9 @@ function report(io::IO, sol::LESolution)
         println(io)
     end
 
-    report(io, sol.convergence)
+    if convergence
+        report(io, sol.convergence)
+    end
 end
 
 function report(io::IO, convergence::ConvergenceHistory;

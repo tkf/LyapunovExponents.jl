@@ -135,12 +135,13 @@ function Base.show(io::IO, demo::LEDemo)
     end
 end
 
-function report(io::IO, demo::LEDemo)
+function report(io::IO, demo::LEDemo;
+                convergence::Bool = true)
     print_with_color(:blue, io, "Lyapunov Exponents Demo")
     println(io, ": ", demo.example.name)
 
     if isdefined(demo, :solver)
-        report(io, demo.solver)
+        report(io, demo.solver; convergence = false)
     else
         print_with_color(:red, io, "[solver not initialized]")
         println(io)
@@ -151,6 +152,10 @@ function report(io::IO, demo::LEDemo)
         print(io, ": ")
         show(IOContext(io, :limit => true), demo.example.known_exponents)
         println(io)
+    end
+
+    if convergence
+        report(io, demo.solver.sol.convergence)
     end
 end
 
