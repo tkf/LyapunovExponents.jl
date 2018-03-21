@@ -1,4 +1,4 @@
-JULIA = julia --color=yes
+JULIA = time julia --color=yes
 DOCS_PORT = 35729
 LIVERELOAD = livereload --port $(DOCS_PORT) --wait 0.5
 
