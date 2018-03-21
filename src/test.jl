@@ -235,6 +235,6 @@ function test_tangent_dynamics_against_autodiff(
                        args...; kwargs...)
 end
 
-end
+end  # module TestTools
 
 using .TestTools
