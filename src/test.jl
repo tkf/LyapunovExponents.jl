@@ -1,4 +1,4 @@
-module Test
+module TestTools
 
 using Base: rtoldefault
 using Base.Test: @test, record, get_testset, Pass, Fail, Error, Broken
@@ -237,4 +237,4 @@ end
 
 end
 
-using .Test
+using .TestTools

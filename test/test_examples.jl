@@ -1,7 +1,7 @@
 using Base.Test
 using LyapunovExponents: DEMOS, dimension, solve!, lyapunov_exponents,
     LEProblem, report, objname
-using LyapunovExponents.Test: test_tangent_dynamics_against_autodiff,
+using LyapunovExponents.TestTools: test_tangent_dynamics_against_autodiff,
     @test_isapprox_pairwise
 
 @time @testset "Tangent dynamics $(ex.name)" for ex in

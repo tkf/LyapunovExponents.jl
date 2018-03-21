@@ -3,7 +3,7 @@ using Plots
 using OnlineStats: CovMatrix
 using LyapunovExponents
 using LyapunovExponents: VecVariance
-using LyapunovExponents.Test: @test_nothrow
+using LyapunovExponents.TestTools: @test_nothrow
 
 @time @testset "Smoke test CLV" begin
     @test_nothrow begin

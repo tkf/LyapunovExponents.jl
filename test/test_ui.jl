@@ -1,6 +1,6 @@
 using Base.Test
 using LyapunovExponents
-using LyapunovExponents.Test: @test_nothrow
+using LyapunovExponents.TestTools: @test_nothrow
 
 @testset "User interface" begin
     args = [
