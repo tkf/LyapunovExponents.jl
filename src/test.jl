@@ -2,7 +2,7 @@ module TestTools
 
 using Base: rtoldefault
 using Base.Test: @test, record, get_testset, Pass, Fail, Error, Broken
-using DiffEqBase: DEProblem, set_u!, step!, remake
+using DiffEqBase: DEProblem, set_u!, step!
 using LyapunovExponents: LEProblem, dimension, phase_tangent_state,
     get_tangent_prob, get_integrator, de_prob, current_state
 
@@ -187,17 +187,17 @@ end
 
 
 function test_same_dynamics(p1::P1, p2::P2, u_list::AbstractArray;
+                            t_evolve::Real = p1.tspan[2] - p1.tspan[1],
                             kwargs...) where {P1 <: DEProblem,
                                               P2 <: DEProblem}
-    @assert p1.tspan == p2.tspan
 
     for u in u_list
         i1 = get_integrator(p1)
         i2 = get_integrator(p2)
         set_u!(i1, copy(u))
         set_u!(i2, copy(u))
-        step!(i1, p1.tspan[2] - p1.tspan[1], true)
-        step!(i2, p2.tspan[2] - p2.tspan[1], true)
+        step!(i1, t_evolve, true)
+        step!(i2, t_evolve, true)
         u1 = current_state(i1)
         u2 = current_state(i2)
         compare_states(u1, u2; kwargs...)
@@ -210,13 +210,16 @@ function test_same_dynamics(p1::P1, p2::P2, num_u::Int;
                             rng = Base.GLOBAL_RNG,
                             u_gen = randn,
                             p_list = [p1.p],
+                            t_list = p1.tspan[1]:p1.tspan[2],
+                            t_evolve::Real = p1.tspan[2] - p1.tspan[1],
                             kwargs...) where {P1 <: DEProblem,
                                               P2 <: DEProblem}
     u_list = gen_u_list(rng, u_gen, num_u, p1.u0)
     if evolve
-        test_same_dynamics(p1, p2, u_list; kwargs...)
+        test_same_dynamics(p1, p2, u_list;
+                           t_evolve = t_evolve,
+                           kwargs...)
     else
-        t_list = p1.tspan[1]:p1.tspan[2]
         test_same_dynamics(p1.f, p2.f, u_list, p_list, t_list; kwargs...)
     end
 end
@@ -225,14 +228,16 @@ end
 function test_tangent_dynamics_against_autodiff(
         prob::LEProblem, args...;
         dim_lyap = dimension(prob.phase_prob),
-        tspan = (0, prob.t_renorm),
         kwargs...)
     @assert prob.tangent_dynamics != nothing
     prob_ad = LEProblem(prob.phase_prob, prob.t_attr)
     u0 = phase_tangent_state(prob)
-    test_same_dynamics(remake(get_tangent_prob(prob, u0), tspan=tspan),
-                       remake(get_tangent_prob(prob_ad, u0), tspan=tspan),
-                       args...; kwargs...)
+    test_same_dynamics(get_tangent_prob(prob, u0),
+                       get_tangent_prob(prob_ad, u0),
+                       args...;
+                       t_evolve = prob.t_renorm,
+                       t_list = 0:prob.t_renorm,
+                       kwargs...)
 end
 
 end  # module TestTools

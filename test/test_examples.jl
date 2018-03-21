@@ -17,7 +17,8 @@ using LyapunovExponents.TestTools: test_tangent_dynamics_against_autodiff,
         # (with evolve=true) is done with the default ODE algorithm.
         # So let's old t_renorm as the span.
         # See: [[../src/examples/linz_sprott_99.jl::de_options]]
-        opts[:tspan] = (0.0, 1.0)
+        opts[:t_evolve] = 1.0
+        opts[:t_list] = 0:0.5:1.0
     end
     test_tangent_dynamics_against_autodiff(LEProblem(ex), num_u; opts...)
     if contains(ex.name, "Hénon map")
