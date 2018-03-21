@@ -176,7 +176,9 @@ function compare_states(u1, u2; verbose=false, kwargs...)
         @display u1 - u2
     end
     @show_diff_info(u1, u2)
-    @test isapprox(u1, u2; kwargs...)
+    local ok
+    @test ok = isapprox(u1, u2; kwargs...)
+    ok
 end
 
 
@@ -188,7 +190,10 @@ function test_same_dynamics(f1!, f2!, u_list, p_list, t_list; kwargs...)
                 u2 = similar(u)
                 f1!(u1, copy(u), p, t)
                 f2!(u2, copy(u), p, t)
-                compare_states(u1, u2; kwargs...)
+                ok = compare_states(u1, u2; kwargs...)
+                if !ok
+                    return
+                end
             end
         end
     end
@@ -209,7 +214,10 @@ function test_same_dynamics(p1::P1, p2::P2, u_list::AbstractArray;
         step!(i2, t_evolve, true)
         u1 = current_state(i1)
         u2 = current_state(i2)
-        compare_states(u1, u2; kwargs...)
+        ok = compare_states(u1, u2; kwargs...)
+        if !ok
+            return
+        end
     end
 end
 
