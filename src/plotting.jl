@@ -134,17 +134,20 @@ end
         end
     end
 
-    @series begin
-        lags = 0:ceil(Int, sqrt(length(ftle_history(solver))))
-        corrs = [autocor(ftle_history(solver, i), lags) for i in 1:dim_lyap]
+    if correlation && length(ftle_history(solver)) > 1
+        @series begin
+            lags = 0:ceil(Int, sqrt(length(ftle_history(solver))))
+            corrs = [autocor(ftle_history(solver, i), lags)
+                     for i in 1:dim_lyap]
 
-        subplot := dim_lyap + 1
-        ylabel := "Correlation"
-        xlabel := "Lag (orthonormalizations)"
-        label := ["FTLE$i" for i in 1:dim_lyap]
-        legend := :top
+            subplot := dim_lyap + 1
+            ylabel := "Correlation"
+            xlabel := "Lag (orthonormalizations)"
+            label := ["FTLE$i" for i in 1:dim_lyap]
+            legend := :top
 
-        (lags, corrs)
+            (lags, corrs)
+        end
     end
 end
 
