@@ -235,6 +235,16 @@ ftle_history(sol::LESolRecFTLE) = @view sol.ftle_history[1:sol.num_orth]
 ftle_history(sol::LESolRecFTLE, i) =
     [x[i] for x in sol.ftle_history[1:sol.num_orth]]
 
+function ftle_history(::Type{A}, sol::LESolRecFTLE) where {A <: AbstractMatrix}
+    dim_lyap = length(sol.ftle_history[1])
+    num_orth = sol.num_orth
+    arr = A(dim_lyap, num_orth)
+    for (i, ftle) in enumerate(ftle_history(sol))
+        arr[:, i] .= ftle
+    end
+    return arr
+end
+
 const Vecs = AbstractVector{<: AbstractVector}
 
 exponents_history(sol) = exponents_history(ftle_history(sol))
