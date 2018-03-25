@@ -37,6 +37,10 @@ end
                        t_attr = 100000).example,
         van_der_pol(params = [:a => 3],
                     t_attr = 100000).example,
+        van_der_pol(params = [:a => 0],
+                    t_attr = 100000).example,
+        van_der_pol(params = [:a => 0.1],
+                    t_attr = 100000).example,
         ]
     for dim_lyap in 1:dimension(ex)
         println("$(ex.name) dim_lyap=$dim_lyap")
