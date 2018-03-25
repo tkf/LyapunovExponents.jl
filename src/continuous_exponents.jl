@@ -32,7 +32,7 @@ LEProblem(ODEProblem(phase_dynamics, u0 [, p]), t_attr)
 For the list of usable keyword arguments, see [`LEProblem`](@ref).
 """
 ContinuousLEProblem(phase_dynamics, u0, p=nothing;
-                    tspan=(0.0, 100.0), kwargs...) =
+                    tspan=(0.0, Inf), kwargs...) =
     ContinuousLEProblem(ODEProblem(phase_dynamics, u0, tspan, p);
                         kwargs...)
 
