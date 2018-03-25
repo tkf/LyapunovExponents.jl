@@ -36,7 +36,7 @@ end
 @time @testset "Terminate stable system $(ex.name)" for ex in [
         arnold_cat_map(M = [0.5 0.1; 1 0.1],
                        t_attr = 100000).example,
-        van_der_pol(params = [:a => 0.1],
+        van_der_pol(params = [:a => 3],
                     t_attr = 100000).example,
         ]
     for dim_lyap in 1:dimension(ex)
