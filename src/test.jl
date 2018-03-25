@@ -29,19 +29,19 @@ function macro_kwargs(kwargs)
 end
 
 
-macro test_isapprox_pairwise(x, y, kwargs...)
+macro test_isapprox_elemwise(x, y, kwargs...)
     args = [
         esc(x), esc(y),
         QuoteNode(x), QuoteNode(y), QuoteNode(kwargs),
     ]
     Expr(:call,
-         test_isapprox_pairwise,
+         test_isapprox_elemwise,
          esc(macro_kwargs(kwargs)),
          args...)
 end
 
 
-function test_isapprox_pairwise(x, y, xexpr, yexpr, orig_kwargs;
+function test_isapprox_elemwise(x, y, xexpr, yexpr, orig_kwargs;
                                 skip::Bool = false,
                                 broken::Bool = false,
                                 rtol::Real = rtoldefault(x,y),
@@ -92,7 +92,7 @@ function test_isapprox_pairwise(x, y, xexpr, yexpr, orig_kwargs;
     end
 
     orig_expr = Expr(:macrocall,
-                     (:@test_isapprox_pairwise).args[1],
+                     (:@test_isapprox_elemwise).args[1],
                      xexpr, yexpr, orig_kwargs...)
     result = if skip
         Broken(:skipped, orig_expr)

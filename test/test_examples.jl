@@ -2,7 +2,7 @@ using Base.Test
 using LyapunovExponents: DEMOS, dimension, solve!, lyapunov_exponents,
     LEProblem, report, objname
 using LyapunovExponents.TestTools: test_tangent_dynamics_against_autodiff,
-    @test_isapprox_pairwise
+    @test_isapprox_elemwise
 
 @time @testset "Tangent dynamics $(ex.name)" for ex in
         [ex for ex in [f().example for f in DEMOS]
@@ -58,7 +58,7 @@ end
             atol *= 20
         end
 
-        @test_isapprox_pairwise(
+        @test_isapprox_elemwise(
             lyapunov_exponents(sol)[1:dim],
             ex.known_exponents[1:dim],
             rtol = rtol,
