@@ -216,11 +216,11 @@ end
 
 
 """Choose appropriate terminator."""
-function Terminator(::Void, prob, sol; tmnr_opts...)
+function Terminator(::Void, prob, sol; terminator_options...)
     if sol isa LESolution{true, true}
-        tmnr = AutoCovTerminator(; tmnr_opts...)
+        tmnr = AutoCovTerminator(; terminator_options...)
     else
-        @assert isempty(tmnr_opts)
+        @assert isempty(terminator_options)
         tmnr = NullTerminator()
     end
     check_cache_type(tmnr, prob, sol)
