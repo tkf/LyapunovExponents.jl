@@ -29,7 +29,15 @@ function macro_kwargs(kwargs)
 end
 
 
-macro test_isapprox_elemwise(x, y, kwargs...)
+macro test_isapprox_elemwise(args...)
+    quote
+        record(get_testset(),
+               @_test_isapprox_elemwise_result($(esc.(args)...)))
+    end
+end
+
+
+macro _test_isapprox_elemwise_result(x, y, kwargs...)
     args = [
         esc(x), esc(y),
         QuoteNode(x), QuoteNode(y), QuoteNode(kwargs),
@@ -44,6 +52,7 @@ end
 function test_isapprox_elemwise(x, y, xexpr, yexpr, orig_kwargs;
                                 skip::Bool = false,
                                 broken::Bool = false,
+                                io = STDOUT,
                                 rtol::Real = rtoldefault(eltype(x), eltype(y)),
                                 atol::Real = 0)
     appx = isapprox.(x, y; rtol=rtol, atol=atol)
@@ -55,10 +64,10 @@ function test_isapprox_elemwise(x, y, xexpr, yexpr, orig_kwargs;
         th = atol .+ rtol .* amp
         relerr = abserr ./ amp
 
-        print_with_color(:red, "Not pairwise isapprox")
-        println("  ", "rtol=", rtol, "  ", "atol=", atol)
-        println("x = ", xexpr)
-        println("y = ", yexpr)
+        print_with_color(:red, io, "Not pairwise isapprox")
+        println(io, "  ", "rtol=", rtol, "  ", "atol=", atol)
+        println(io, "x = ", xexpr)
+        println(io, "y = ", yexpr)
 
         columns = [
             :i => 1:length(x),
@@ -78,23 +87,24 @@ function test_isapprox_elemwise(x, y, xexpr, yexpr, orig_kwargs;
                   for (name, c) in table]
 
         for ((name, _), width) in zip(table, widths)
-            print("  ")
-            print(lpad(name, width))
+            print(io, "  ")
+            print(io, lpad(name, width))
         end
-        println()
+        println(io)
         for i in 1:length(x)
             for ((_, c), width) in zip(table, widths)
-                print("  ")
-                print(lpad(c[i], width))
+                print(io, "  ")
+                print(io, lpad(c[i], width))
             end
-            println()
+            println(io)
         end
     end
 
     orig_expr = Expr(:macrocall,
                      (:@test_isapprox_elemwise).args[1],
                      xexpr, yexpr, orig_kwargs...)
-    result = if skip
+
+    return if skip
         Broken(:skipped, orig_expr)
     elseif broken
         if ok
@@ -109,7 +119,6 @@ function test_isapprox_elemwise(x, y, xexpr, yexpr, orig_kwargs;
             Fail(:test, orig_expr, nothing, ok)
         end
     end
-    record(get_testset(), result)
 end
 
 
