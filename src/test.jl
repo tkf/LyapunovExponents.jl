@@ -44,7 +44,7 @@ end
 function test_isapprox_elemwise(x, y, xexpr, yexpr, orig_kwargs;
                                 skip::Bool = false,
                                 broken::Bool = false,
-                                rtol::Real = rtoldefault(x,y),
+                                rtol::Real = rtoldefault(eltype(x), eltype(y)),
                                 atol::Real = 0)
     appx = isapprox.(x, y; rtol=rtol, atol=atol)
     ok = all(appx)
