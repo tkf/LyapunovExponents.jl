@@ -94,8 +94,8 @@ function report(io::IO, convergence::ConvergenceHistory;
         end
         @printf(io, " %10.5g", th)
 
+        detail = convergence.details[i][end]
         if convergence.kinds[end] == UnstableConvError
-            detail = convergence.details[i][end]
             @printf(io, " %10.5g", detail.var)
             @printf(io, " %10.5g", detail.tail_cov)
             print(io, "  ")
@@ -104,8 +104,21 @@ function report(io::IO, convergence::ConvergenceHistory;
             else
                 print_with_color(:red, io, "no")
             end
+        else
+            print(io, "  ")
+            compact_report(io, detail)
         end
 
         println(io)
     end
 end
+
+compact_report(io, _) = nothing
+compact_report(io, ::FixedPointConvDetail) =
+    print(io, "\"period\" < 1")
+compact_report(io, detail::PeriodicConvDetail) =
+    print(io, "\"period\": ", detail.period)
+compact_report(io, ::NonNegativeAutoCovConvDetail) =
+    print(io, "too short (NN)")
+compact_report(io, ::NonPeriodicConvDetail) =
+    print(io, "too short (NP)")
