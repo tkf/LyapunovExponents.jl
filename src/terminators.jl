@@ -277,16 +277,32 @@ function stable_le_error(ftle::AbstractVector;
     end
     min_cov = min_periodic_corr * v
     j = findfirst(x -> x > min_cov, @view g[i + 1:end])
-    if j == 0
+    if j in (0, length(g) - 1)
         max_cov = maximum(@view g[i + 1:end])
         return (Inf, NonPeriodicConvDetail(v, max_cov / v))
     end
     period = i + j
 
-    n = length(ftle)
-    peak = maximum(abs(x - m) for x in ftle)
-    err = period / n * peak
+    err = periodic_mean_error(ftle, period)
     return err, PeriodicConvDetail(period)
+end
+
+
+function periodic_mean_error(xs::AbstractVector, period::Int)
+    meanstat = OnlineStats.Mean()
+    s0 = OnlineStats.Series(meanstat)
+    extstat = OnlineStats.Extrema()
+    s1 = OnlineStats.Series(extstat)
+
+    OnlineStats.fit!(s0, @view xs[1:end - period])
+    for x in @view xs[end - period + 1:end]
+        OnlineStats.fit!(s1, mean(meanstat))
+        OnlineStats.fit!(s0, x)
+    end
+    OnlineStats.fit!(s1, mean(meanstat))
+
+    min, max = OnlineStats.value(extstat)
+    return max - min
 end
 
 

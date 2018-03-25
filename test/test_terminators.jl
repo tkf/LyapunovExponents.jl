@@ -10,7 +10,6 @@ using LyapunovExponents: stable_le_error, FixedPointConvDetail,
     for xs in with_negative(repeat(1:3, outer=10))
         err, detail = stable_le_error(xs)
         @test detail.period == 3
-        @test err == 3 / (3 * 10) * 1
     end
 
     for xs in with_negative(repeat([1], outer=10))
