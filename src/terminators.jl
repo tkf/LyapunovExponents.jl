@@ -26,10 +26,6 @@ struct UnstableConvDetail <: ConvDetail
     tail_cov::Float64
     tail_ok::Bool
 end
-struct StableConvDetail <: ConvDetail
-    high::Float64
-    low::Float64
-end
 
 struct ConvergenceHistory
     orth::Vector{Int}
@@ -62,11 +58,10 @@ function record_error!(history::ConvergenceHistory,
 end
 
 function record_error!(history::ConvergenceHistory,
-                       ::Type{Val{StableConvError}},
-                       i::Int, err, th, high, low)
+                       i::Int, err, th, detail)
     push!(history.errors[i], err)
     push!(history.thresholds[i], th)
-    push!(history.details[i], StableConvDetail(high, low))
+    push!(history.details[i], detail)
 end
 
 function assert_consistent(history::ConvergenceHistory)
@@ -90,9 +85,22 @@ mutable struct AutoCovTerminator <: Terminator
     max_mle::Float64
     max_tail_corr::Float64
     tail_ratio::Float64
+    max_fp_cv::Float64
+    min_periodic_corr::Float64
+    skip_ratio::Float64
     next_check::Int
 end
 # TODO: separate state (next_check) and settings.
+#
+# TODO: Separate terminator for unstable (chaotic) and stable cases
+# and add a terminator combinator for composing them.  The stable case
+# can be decomposed into more sub-components (see stable_le_error).
+#
+# TODO: rtol and atol are used for unstable (chaotic) and stable cases
+# but they have different semantics in each case.  Find a way to
+# translate one to the other and/or use different option.  Using
+# different option would be trivial once the combinator is
+# implemented.
 
 function AutoCovTerminator(;
         rtol = 0.1,
@@ -101,6 +109,9 @@ function AutoCovTerminator(;
         max_mle = 0.01,
         max_tail_corr = 0.05,
         tail_ratio = 0.1,
+        skip_ratio = 0.1,
+        max_fp_cv = 0.001,
+        min_periodic_corr = 0.8,
         first_check = 400,
         )
     @assert chunks > 1
@@ -108,6 +119,9 @@ function AutoCovTerminator(;
                       chunks, max_mle,
                       max_tail_corr,
                       tail_ratio,
+                      skip_ratio,
+                      max_fp_cv,
+                      min_periodic_corr,
                       first_check)
 end
 
@@ -165,24 +179,23 @@ function should_terminate_stable!(tmnr::AutoCovTerminator, sol::LESolRecFTLE)
     atol = tmnr.atol
     rtol = tmnr.rtol
     n = sol.num_orth
-    ftle = @view sol.ftle_history[1:n]
-    dim_lyap = size(ftle[1], 1)
+    skip = max(1, floor(Int, n * tmnr.skip_ratio))
+    dim_lyap = size(sol.ftle_history[1], 1)
 
     history = sol.convergence
     new_error!(history, n, StableConvError)
     rerr = 1.0
     ok = true
     for i in 1:dim_lyap
-        w = floor(Int, n / tmnr.chunks)
-        ms = [mean(x[i] for x in ftle[j:j+w-1]) for j in 1:w:n-w+1]
-        @assert length(ms) == tmnr.chunks
-        h = maximum(ms)
-        l = minimum(ms)
-        th = atol + max(abs(h), abs(l)) * rtol
-        err = h - l
-        rerr = max(rerr, err / th)
+        ftle = @view ftle_history(sol, i)[skip:end]
+        m = mean(ftle)
+        th = atol + abs(m) * rtol
+        err, detail = stable_le_error(ftle)
+        if isfinite(err)
+            rerr = max(rerr, err / th)
+        end
         ok = ok && err < th
-        record_error!(history, Val{StableConvError}, i, err, th, h, l)
+        record_error!(history, i, err, th, detail)
     end
     assert_consistent(history)
 
@@ -212,6 +225,68 @@ function correlated_sem_with_cov(xs::AbstractVector,
     sem² = (σ + 2sum((n - k) ./ n .* g)) / n
     sem = sqrt(max(σ / n, sem²))    # TODO: should I use max?
     return (sem, c)
+end
+
+
+struct FixedPointConvDetail <: ConvDetail
+    var::Float64
+end
+
+struct NonNegativeAutoCovConvDetail <: ConvDetail
+    var::Float64
+    min_corr::Float64
+end
+
+struct NonPeriodicConvDetail <: ConvDetail
+    var::Float64
+    max_corr::Float64
+end
+
+struct PeriodicConvDetail <: ConvDetail
+    period::Int
+end
+
+stable_le_error(ftle, opts) =
+    stable_le_error(ftle;
+                    max_fp_cv = opts.max_fp_cv,
+                    min_periodic_corr = opts.min_periodic_corr,
+                    )
+
+function stable_le_error(ftle::AbstractVector;
+                         max_fp_cv = 0.001,
+                         min_periodic_corr = 0.8,
+                         cutoff = length(ftle) ÷ 2)
+
+    v = var(ftle, corrected=false)  # = autocov(ftle, 0:0)[1]
+    m = mean(ftle)
+
+    # Handle non-fluctuating LE first.  Likely a fixed point.
+    if sqrt(v) / abs(m) < max_fp_cv
+        # TODO: detect fixed-point directly in the phase space.
+        return 0.0, FixedPointConvDetail(v)
+    end
+
+    # Detect "period" in ftle.  Here, "period" is refered to the index
+    # with maximum covariance *after* it crosses the negative value.
+    g = autocov(ftle, 1:cutoff)
+    i = findfirst(x -> x < 0, g)
+    if i == 0
+        # Dynamics assumed to be periodic but autocovariance does not
+        # cross 0.  Probably length(ftle) is too small.
+        return (Inf, NonNegativeAutoCovConvDetail(v, minimum(g) / v))
+    end
+    min_cov = min_periodic_corr * v
+    j = findfirst(x -> x > min_cov, @view g[i + 1:end])
+    if j == 0
+        max_cov = maximum(@view g[i + 1:end])
+        return (Inf, NonPeriodicConvDetail(v, max_cov / v))
+    end
+    period = i + j
+
+    n = length(ftle)
+    peak = maximum(abs(x - m) for x in ftle)
+    err = period / n * peak
+    return err, PeriodicConvDetail(period)
 end
 
 
