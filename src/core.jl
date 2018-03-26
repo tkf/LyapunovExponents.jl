@@ -1,4 +1,4 @@
-using DiffEqBase: DEProblem, set_t!
+using DiffEqBase: DEProblem, set_t!, remake
 using Distributions: Normal, cquantile
 
 dimension(prob::DEProblem) = length(prob.u0)
@@ -36,15 +36,12 @@ function get_tangent_dynamics(prob, u0 = phase_tangent_state(prob))
     return tangent_dynamics
 end
 
-function get_tangent_prob(prob::LEProblem{DEP},
-                          u0 = phase_tangent_state(prob)) where {DEP}
+function get_tangent_prob(prob::LEProblem,
+                          u0 = phase_tangent_state(prob))
     phase_prob = prob.phase_prob
-    return DEP(
-        get_tangent_dynamics(prob),
-        u0,
-        phase_prob.tspan,
-        phase_prob.p,
-    )
+    return remake(phase_prob,
+                  f = get_tangent_dynamics(prob),
+                  u0 = u0)
 end
 
 current_state(relaxer::Union{PhaseRelaxer, AbstractRenormalizer}) =
