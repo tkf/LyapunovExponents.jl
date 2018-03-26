@@ -1,4 +1,5 @@
-using DiffEqBase: DEProblem, ODEProblem, DiscreteProblem
+using DiffEqBase: DEProblem, ODEProblem, DiscreteProblem,
+    parameterless_type
 using .Stages: Stageable, AbstractSource, AbstractStage,
     StageIterator, StageState, StagedSolver, goto!
 import .Stages: record!, current_result, is_finished
@@ -78,10 +79,8 @@ struct LEProblem{DEP, TT} <: AbstractSource
     end
 end
 
-LEProblem(phase_prob::DEP, t_attr; kwargs...) where {DEP <: ODEProblem} =
-    LEProblem{ODEProblem}(phase_prob; t_attr=t_attr, kwargs...)
-LEProblem(phase_prob::DEP, t_attr; kwargs...) where {DEP <:DiscreteProblem} =
-    LEProblem{DiscreteProblem}(phase_prob; t_attr=t_attr, kwargs...)
+LEProblem(phase_prob::DEP, t_attr; kwargs...) where {DEP <: DEProblem} =
+    LEProblem{parameterless_type(DEP)}(phase_prob; t_attr=t_attr, kwargs...)
 
 mutable struct PhaseRelaxer{Intr, T} <: AbstractStage
     integrator::Intr
