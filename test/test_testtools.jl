@@ -1,8 +1,9 @@
 using Base.Test
 using Base.Test: Fail, Error, Broken
 using LyapunovExponents
-using LyapunovExponents.TestTools: @test_isapprox_elemwise,
-    @_test_isapprox_elemwise_result
+using LyapunovExponents: objname
+using LyapunovExponents.TestTools: test_same_dynamics,
+    @test_isapprox_elemwise, @_test_isapprox_elemwise_result
 
 @testset "@test_isapprox_elemwise" begin
     @test_isapprox_elemwise([0], [0])
@@ -29,4 +30,16 @@ using LyapunovExponents.TestTools: @test_isapprox_elemwise,
     io = IOBuffer()
     result = @_test_isapprox_elemwise_result([0], [1], io=io, broken=true)
     @test result isa Broken
+end
+
+@testset "test_same_dynamics: $(objname(f))" for f in [
+        LyapunovExponents.henon_map,
+        LyapunovExponents.van_der_pol,
+        ]
+    p1 = f().prob.phase_prob
+    p2 = f().prob.phase_prob
+    num_u = 5  # number of random states at which the systems are tested
+    test_same_dynamics(p1, p2, num_u)
+    test_same_dynamics(p1, p2, num_u; evolve=true)
+    test_same_dynamics(p1, p2, [p1.u0, p1.u0 + 0.1])
 end

@@ -196,7 +196,7 @@ end
 
 
 function test_same_dynamics(p1::P1, p2::P2, u_list::AbstractArray;
-                            t_evolve::Real = p1.tspan[2] - p1.tspan[1],
+                            t_evolve::Real = one(p1.tspan[1]),
                             kwargs...) where {P1 <: DEProblem,
                                               P2 <: DEProblem}
 
@@ -219,8 +219,8 @@ function test_same_dynamics(p1::P1, p2::P2, num_u::Int;
                             rng = Base.GLOBAL_RNG,
                             u_gen = randn,
                             p_list = [p1.p],
-                            t_list = p1.tspan[1]:p1.tspan[2],
-                            t_evolve::Real = p1.tspan[2] - p1.tspan[1],
+                            t_list = p1.tspan[1]:p1.tspan[1] + 1,
+                            t_evolve::Real = one(p1.tspan[1]),
                             kwargs...) where {P1 <: DEProblem,
                                               P2 <: DEProblem}
     u_list = gen_u_list(rng, u_gen, num_u, p1.u0)
