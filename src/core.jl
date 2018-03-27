@@ -37,12 +37,14 @@ function get_tangent_dynamics(prob, u0 = phase_tangent_state(prob))
 end
 
 function get_tangent_prob(prob::LEProblem{DEP},
-                          u0 = phase_tangent_state(prob)) where {DEP}
+                          u0 = phase_tangent_state(prob);
+                          tspan = prob.phase_prob.tspan,
+                          ) where {DEP}
     phase_prob = prob.phase_prob
     return DEP(
         get_tangent_dynamics(prob),
         u0,
-        phase_prob.tspan,
+        tspan,
         phase_prob.p,
     )
 end
@@ -53,9 +55,21 @@ current_state(relaxer::Union{PhaseRelaxer, AbstractRenormalizer}) =
 function get_tangent_integrator(prob::LEProblem, relaxer;
                                 integrator_options...)
     u0 = phase_tangent_state(prob, current_state(relaxer))
-    tangent_prob = get_tangent_prob(prob, u0)
+    # Carray on simulated time to tangent integrator [*]:
+    tspan = if relaxer.integrator isa ODEIntegrator
+        (relaxer.integrator.t, Inf)
+    else
+        # Support this in discrete problem
+        prob.phase_prob.tspan
+    end
+    tangent_prob = get_tangent_prob(prob, u0, tspan=tspan)
     return get_integrator(tangent_prob; integrator_options...)
 end
+# [*] Another way to propagate simulated time to tangent integrator is
+# to use set_t!() after init().  However, init() calls phase_prob.f
+# with phase_prob.tspan[1] which is less than relaxer.integrator.t.
+# It causes problems in some rare cases with stateful problem
+# definitions.
 
 TangentRenormalizer(relaxer::PhaseRelaxer, prob::LEProblem, sol::LESolution,
                     tmnr::Terminator, integrator_options) =
