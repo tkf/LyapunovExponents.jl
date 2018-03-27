@@ -1,8 +1,15 @@
 using DifferentialEquations
 using ForwardDiff
+using DiffEqBase: ODEProblem, SDEProblem, RODEProblem, DEIntegrator
 using OrdinaryDiffEq: ODEIntegrator
+using StochasticDiffEq: SDEIntegrator
 
-function get_integrator(prob::ODEProblem; save_everystep=false,
+""" Continuous-time problem. """
+const CTProblem = Union{ODEProblem, SDEProblem, RODEProblem}
+# TODO: maybe use Abstract*Problem; but note that
+# AbstractDiscreteProblem <: AbstractODEProblem
+
+function get_integrator(prob::CTProblem; save_everystep=false,
                         alg = nothing,
                         kwargs...)
     if alg === nothing
@@ -36,7 +43,7 @@ ContinuousLEProblem(phase_dynamics, u0, p=nothing;
     ContinuousLEProblem(ODEProblem(phase_dynamics, u0, tspan, p);
                         kwargs...)
 
-init_phase_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 1]
-init_tangent_state(integrator::ODEIntegrator) = integrator.sol.prob.u0[:, 2:end]
+init_phase_state(integrator::DEIntegrator) = integrator.sol.prob.u0[:, 1]
+init_tangent_state(integrator::DEIntegrator) = integrator.sol.prob.u0[:, 2:end]
 
-current_state(integrator::ODEIntegrator) = integrator.u
+current_state(integrator::DEIntegrator) = integrator.u

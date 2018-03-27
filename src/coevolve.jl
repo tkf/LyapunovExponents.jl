@@ -20,10 +20,10 @@ function fdiff_tangent_dynamics(phase_dynamics, x0)
 end
 
 """Co-evolve phase- and tangent-sapce dynamics."""
-@inline function (dyn::PhaseTangentDynamics)(du, u, phase_param, t)
+@inline function (dyn::PhaseTangentDynamics)(du, u, args...)
     ForwardDiff.jacobian!(
         dyn.jacobian,
-        (dx, x) -> dyn.phase_dynamics(dx, x, phase_param, t),
+        (dx, x) -> dyn.phase_dynamics(dx, x, args...),
         (@view du[:, 1]),       # phase space derivative `dx` goes here
         (@view u[:, 1]),        # current phase space state `x`
     )

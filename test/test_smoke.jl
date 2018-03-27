@@ -2,7 +2,7 @@ using Base.Test
 using Plots
 using OnlineStats: CovMatrix
 using LyapunovExponents
-using LyapunovExponents: VecVariance
+using LyapunovExponents: VecVariance, with_input_noise, with_output_noise
 using LyapunovExponents.TestTools: @test_nothrow
 
 @time @testset "Smoke test CLV" begin
@@ -45,5 +45,24 @@ end
         sol = demo.solver.sol
         @test isa(sol.main_stat, ST)
         @test_nothrow plot(demo, show = false)
+    end
+end
+
+@time @testset "Smoke test RODE" begin
+    ode = LyapunovExponents.lorenz_63().prob.phase_prob
+    rode = with_input_noise(ode, 1)
+    @test_nothrow begin
+        t_attr = 3
+        prob = LEProblem(rode, t_attr)
+        sol = solve(prob; record=true, integrator_options=[:dt => 1e-3])
+        plot(sol)
+    end
+
+    rode = with_output_noise(ode, 1)
+    @test_nothrow begin
+        t_attr = 3
+        prob = LEProblem(rode, t_attr)
+        sol = solve(prob; record=true, integrator_options=[:dt => 1e-3])
+        plot(sol)
     end
 end

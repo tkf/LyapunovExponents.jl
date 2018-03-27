@@ -1,4 +1,4 @@
-using DifferentialEquations: DEProblem
+using DiffEqBase: DEProblem, ODEProblem
 using ProgressMeter
 
 macro showprogress_if(pred, args...)

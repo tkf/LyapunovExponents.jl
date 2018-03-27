@@ -10,3 +10,4 @@ Parameters 0.8.1
 Plots 0.15
 ProgressMeter 0.5
 RecipesBase 0.2.3
+StochasticDiffEq 3.2.0
