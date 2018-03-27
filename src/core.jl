@@ -1,4 +1,4 @@
-using DiffEqBase: DEProblem, set_t!
+using DiffEqBase: DEProblem
 using Distributions: Normal, cquantile
 
 dimension(prob::DEProblem) = length(prob.u0)
@@ -54,11 +54,7 @@ function get_tangent_integrator(prob::LEProblem, relaxer;
                                 integrator_options...)
     u0 = phase_tangent_state(prob, current_state(relaxer))
     tangent_prob = get_tangent_prob(prob, u0)
-    integrator = get_integrator(tangent_prob; integrator_options...)
-    if integrator isa ODEIntegrator
-        set_t!(integrator, relaxer.integrator.t)
-    end
-    return integrator
+    return get_integrator(tangent_prob; integrator_options...)
 end
 
 TangentRenormalizer(relaxer::PhaseRelaxer, prob::LEProblem, sol::LESolution,

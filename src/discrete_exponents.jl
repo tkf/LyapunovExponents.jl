@@ -46,7 +46,7 @@ LEProblem(DiscreteProblem(phase_dynamics, u0 [, p]), t_attr)
 For the list of usable keyword arguments, see [`LEProblem`](@ref).
 """
 DiscreteLEProblem(phase_dynamics, u0, p=nothing;
-                  tspan=(0, typemax(Int)), kwargs...) =
+                  tspan=(0, 100), kwargs...) =
     DiscreteLEProblem(DiscreteProblem(phase_dynamics, u0, tspan, p);
                       kwargs...)
 
