@@ -29,6 +29,7 @@ Implemented:
 * Continuous dynamical systems support based on [DifferentialEquations.jl].
   This means that [the rich set of ODE solvers](http://docs.juliadiffeq.org/latest/solvers/ode_solve.html)
   can be used.
+* [Random ordinary differential equation][RODE] support.
 * [Various examples of continuous and discrete dynamical systems.][Examples]
 * [OnlineStats.jl] support: on-the-fly calculation of Lyapunov
   exponents, their variance, covariance, and any other statics it
@@ -44,6 +45,7 @@ Wanted list:
 [Examples]: https://tkf.github.io/LyapunovExponents.jl/latest/examples/
 [CLV example]: https://tkf.github.io/LyapunovExponents.jl/latest/gallery/Ginelli_2007_Figure_1a/
 [DifferentialEquations.jl]: http://juliadiffeq.org
+[RODE]: http://docs.juliadiffeq.org/latest/types/rode_types.html
 [ForwardDiff.jl]: http://www.juliadiff.org/ForwardDiff.jl
 [ChaosTools.jl]: https://juliadynamics.github.io/DynamicalSystems.jl/latest/chaos/overview/
 [DynamicalSystems.jl]: https://juliadynamics.github.io/DynamicalSystems.jl/latest/
