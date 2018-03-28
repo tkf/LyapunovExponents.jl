@@ -25,7 +25,8 @@ using LyapunovExponents.CovariantVectors: goto!
                           t_forward_tran = nbt * 11 * t_renorm,
                           t_backward_tran = nbt * t_renorm)
 
-        dims = (dp, dl) = size(prob.Q0)
+        Q0 = @view prob.tangent_prob.u0[:, 2:end]
+        dims = (dp, dl) = size(Q0)
         @assert dims == (dimension(prob.phase_prob), dim_lyap)
         solver = init(prob;
                       backward_dynamics = CLV.BackwardDynamicsWithD)

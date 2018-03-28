@@ -1,11 +1,6 @@
 using DiffEqBase: ODEProblem, RODEProblem
 
-
-function get_tangent_prob(prob::LEProblem{RODEProblem},
-                          u0 = phase_tangent_state(prob);
-                          kwargs...)
-    phase_prob = prob.phase_prob
-
+function make_tangent_prob(phase_prob::RODEProblem, tangent_dynamics, u0)
     dim_phase = length(phase_prob.u0)
     rand_prototype = if phase_prob.rand_prototype === nothing
         similar(phase_prob.u0, dim_phase)
@@ -13,11 +8,11 @@ function get_tangent_prob(prob::LEProblem{RODEProblem},
         phase_prob.rand_prototype
     end
 
-    return remake(phase_prob;
-                  f = get_tangent_dynamics(prob),
-                  u0 = u0,
-                  rand_prototype = rand_prototype,
-                  kwargs...)
+    return remake(
+        phase_prob;
+        f = tangent_dynamics,
+        u0 = u0,
+        rand_prototype = rand_prototype)
 end
 
 

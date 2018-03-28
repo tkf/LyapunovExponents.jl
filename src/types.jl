@@ -1,4 +1,4 @@
-using DiffEqBase: DEProblem, ODEProblem, DiscreteProblem,
+using DiffEqBase: DEProblem, ODEProblem, DiscreteProblem, remake,
     parameterless_type
 using .Stages: Stageable, AbstractSource, AbstractStage,
     StageIterator, StageState, StagedSolver, goto!
@@ -42,45 +42,78 @@ end
    provided, `tangent_dynamics` is derived from `phase_prob.f`.  See
    also [`PhaseTangentDynamics`](@ref).
 """
-struct LEProblem{DEP, TT} <: AbstractSource
-    phase_prob::DEP
+struct LEProblem{PPr, TPr, TT} <: AbstractSource
+    phase_prob::PPr
+    tangent_prob::TPr
     t_tran::TT
     t_attr::TT
     t_renorm::TT
-    dim_lyap
-    Q0
-    tangent_dynamics
 
-    function LEProblem{DEP}(
-            phase_prob::DEP;
-            # Don't use positional argument for t_attr since Julia
-            # can't disambiguate it from ContinuousLEProblem and
-            # DiscreteLEProblem (even with DEP <: DEProblem):
-            t_attr::Real = error("Positional or keyword argument",
-                                 " `t_attr` is required."),
+    function LEProblem{PPr, TPr}(
+            phase_prob::PPr,
+            tangent_prob::TPr,
+            t_attr::Real;
             t_renorm::Real = 1,
             t_tran::Real = 1,
-            dim_lyap=dimension(phase_prob),
-            Q0 = default_Q0(phase_prob, dimension(phase_prob), dim_lyap),
-            tangent_dynamics = nothing,
-    ) where {DEP}
-        if ! is_semi_unitary(Q0)
-            error("Columns in Q0 are not orthonormal.")
-        end
+    ) where {PPr, TPr}
 
-        TT = time_type((DEP <: DiscreteProblem);
+        TT = time_type((PPr <: DiscreteProblem);
                        t_tran = t_tran,
                        t_attr = t_attr,
                        t_renorm = t_renorm)
 
-        new{DEP, TT}(
-            phase_prob, t_tran, t_attr, t_renorm,
-            dim_lyap, Q0, tangent_dynamics)
+        new{PPr, TPr, TT}(
+            phase_prob, tangent_prob,
+            t_tran, t_attr, t_renorm)
     end
 end
 
-LEProblem(phase_prob::DEP, t_attr; kwargs...) where {DEP <: DEProblem} =
-    LEProblem{parameterless_type(DEP)}(phase_prob; t_attr=t_attr, kwargs...)
+make_tangent_prob(phase_prob, tangent_dynamics, u0) =
+    remake(phase_prob,
+           f = tangent_dynamics,
+           u0 = u0)
+
+function validate_tangent_prob(phase_prob::DEProblem,
+                               tangent_prob,
+                               tangent_dynamics,
+                               Q0)
+    if tangent_prob !== nothing
+        if tangent_dynamics !== nothing
+            error("Both tangent_prob and tangent_dynamics are given. ",
+                  "Only at most one of them can be specified.")
+        end
+    else
+        x0 = phase_prob.u0
+        u0 = similar(x0, (length(x0), size(Q0, 2) + 1))
+        u0[:, 1] = x0  # ignored anyway
+        u0[:, 2:end] = Q0
+        if tangent_dynamics == nothing
+            tangent_dynamics = fdiff_tangent_dynamics(phase_prob.f, u0)
+        end
+        tangent_prob = make_tangent_prob(phase_prob, tangent_dynamics, u0)
+    end
+    if ! is_semi_unitary(@view tangent_prob.u0[:, 2:end])
+        error("Columns in Q0 are not orthonormal.\n",
+              "Q0 = tangent_prob.u0[:, 2:end]")
+    end
+    return tangent_prob
+end
+
+function LEProblem(phase_prob::PPr;
+                   t_attr::Real = error("Keyword argument",
+                                        " `t_attr` is required."),
+                   tangent_dynamics = nothing,
+                   tangent_prob::Union{Void, DEProblem} = nothing,
+                   dim_lyap = dimension(phase_prob),
+                   Q0 = default_Q0(phase_prob, dimension(phase_prob), dim_lyap),
+                   kwargs...) where {PPr <: DEProblem}
+    tangent_prob = validate_tangent_prob(
+        phase_prob, tangent_prob, tangent_dynamics, Q0)
+    LEProblem{parameterless_type(PPr),
+              parameterless_type(typeof(tangent_prob))}(
+        phase_prob, tangent_prob, t_attr;
+        kwargs...)
+end
 
 mutable struct PhaseRelaxer{Intr, T} <: AbstractStage
     integrator::Intr
@@ -137,7 +170,10 @@ NullLESolution() = LESolution(0; main_stat = nothing)
 
 # TODO: define record!(sol::LESolution, ftle)
 
-get_dim_lyap(integrator) = size(init_tangent_state(integrator))[2]
+"""
+    get_dim_lyap(thing)::Int
+"""
+function get_dim_lyap end
 
 abstract type Terminator end
 
@@ -291,7 +327,7 @@ passed.
 """
 function LESolver(prob::LEProblem;
                   phase_relaxer = PhaseRelaxer,
-                  renormalizer = if prob.dim_lyap == 1
+                  renormalizer = if get_dim_lyap(prob) == 1
                       MLERenormalizer
                   else
                       TangentRenormalizer
@@ -310,7 +346,7 @@ function LESolver(prob::LEProblem, stage_types::AbstractVector;
                   terminator = nothing,
                   terminator_options = [],
                   kwargs...)
-    sol = LESolution(prob.dim_lyap;
+    sol = LESolution(get_dim_lyap(prob);
                      num_attr = if record
                          ceil(Int, prob.t_attr / prob.t_renorm)
                      else

@@ -17,33 +17,12 @@ function step!(relaxer::PhaseRelaxer)
 end
 Base.length(relaxer::PhaseRelaxer) = 1  # FIXME
 
-function phase_tangent_state(prob::LEProblem, x0 = prob.phase_prob.u0)
-    dim_lyap = prob.dim_lyap
-    Q0 = prob.Q0
-    u0 = similar(x0, (length(x0), dim_lyap + 1))
-    u0[:, 1] = x0
-    u0[:, 2:end] = Q0
-    u0
-end
-
-function get_tangent_dynamics(prob, u0 = phase_tangent_state(prob))
-    phase_prob = prob.phase_prob
-    tangent_dynamics = prob.tangent_dynamics
-    if tangent_dynamics == nothing
-        phase_dynamics = phase_prob.f
-        tangent_dynamics = fdiff_tangent_dynamics(phase_dynamics, u0)
-    end
-    return tangent_dynamics
-end
-
-function get_tangent_prob(prob::LEProblem,
-                          u0 = phase_tangent_state(prob);
+function get_tangent_prob(prob;
+                          x0 = prob.phase_prob.u0,
                           kwargs...)
-    phase_prob = prob.phase_prob
-    return remake(phase_prob;
-                  f = get_tangent_dynamics(prob),
-                  u0 = u0,
-                  kwargs...)
+    u0 = copy(prob.tangent_prob.u0)
+    u0[:, 1] = x0
+    return remake(prob.tangent_prob; u0=u0, kwargs...)
 end
 
 current_state(relaxer::Union{PhaseRelaxer, AbstractRenormalizer}) =
@@ -51,7 +30,6 @@ current_state(relaxer::Union{PhaseRelaxer, AbstractRenormalizer}) =
 
 function get_tangent_integrator(prob::LEProblem, relaxer;
                                 integrator_options...)
-    u0 = phase_tangent_state(prob, current_state(relaxer))
     # Carray on simulated time to tangent integrator [*]:
     tspan = if relaxer.integrator isa ODEIntegrator
         (relaxer.integrator.t, Inf)
@@ -59,7 +37,8 @@ function get_tangent_integrator(prob::LEProblem, relaxer;
         # Support this in discrete problem
         prob.phase_prob.tspan
     end
-    tangent_prob = get_tangent_prob(prob, u0, tspan=tspan)
+    x0 = current_state(relaxer)
+    tangent_prob = get_tangent_prob(prob; x0=x0, tspan=tspan)
     return get_integrator(tangent_prob; integrator_options...)
 end
 # [*] Another way to propagate simulated time to tangent integrator is

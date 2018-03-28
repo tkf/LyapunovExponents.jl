@@ -3,8 +3,8 @@ module TestTools
 using Base: rtoldefault
 using Base.Test: @test, record, get_testset, Pass, Fail, Error, Broken
 using DiffEqBase: DEProblem, set_u!, step!
-using LyapunovExponents: LEProblem, dimension, phase_tangent_state,
-    get_tangent_prob, get_integrator, de_prob, current_state
+using LyapunovExponents: LEProblem, dimension, get_integrator, current_state,
+    PhaseTangentDynamics
 
 
 macro test_nothrow(ex)
@@ -238,11 +238,12 @@ function test_tangent_dynamics_against_autodiff(
         prob::LEProblem, args...;
         dim_lyap = dimension(prob.phase_prob),
         kwargs...)
-    @assert prob.tangent_dynamics != nothing
-    prob_ad = LEProblem(prob.phase_prob, prob.t_attr)
-    u0 = phase_tangent_state(prob)
-    test_same_dynamics(get_tangent_prob(prob, u0),
-                       get_tangent_prob(prob_ad, u0),
+    @assert ! (prob.tangent_prob.f isa PhaseTangentDynamics)
+    prob_ad = LEProblem(prob.phase_prob; t_attr=prob.t_attr)
+    prob_ad.tangent_prob.u0 .= prob.tangent_prob.u0
+    prob_ad.tangent_prob.f :: PhaseTangentDynamics
+    test_same_dynamics(prob.tangent_prob,
+                       prob_ad.tangent_prob,
                        args...;
                        t_evolve = prob.t_renorm,
                        t_list = 0:prob.t_renorm,

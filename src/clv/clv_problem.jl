@@ -1,4 +1,4 @@
-using DiffEqBase: ODEProblem, DiscreteProblem
+using DiffEqBase: DEProblem, ODEProblem, DiscreteProblem, parameterless_type
 
 """
     CLVProblem(phase_prob, t_clv; <keyword arguments>)
@@ -37,27 +37,25 @@ See: <https://tkf.github.io/LyapunovExponents.jl/latest/gallery/>
   Journal of Physics A: Mathematical and Theoretical, 46(25), 254005.
   <http://doi.org/10.1088/1751-8113/46/25/254005>
 """
-struct CLVProblem{DEP,
+struct CLVProblem{PPr, TPr,
                   T <: Real,
                   } <: AbstractSource
-    phase_prob::DEP
+    phase_prob::PPr
+    tangent_prob::TPr
     # t_phase_tran
     t_forward_tran::T
     t_backward_tran::T
     t_clv::T
     t_renorm::T
-    Q0
-    tangent_dynamics
 
-    function CLVProblem{DEP}(
-            phase_prob::DEP, t_clv;
+    function CLVProblem{PPr, TPr}(
+            phase_prob::PPr,
+            tangent_prob::TPr,
+            t_clv;
             t_forward_tran = 0,
             t_backward_tran = 0,
             t_renorm = 1,
-            dim_lyap::Int = dimension(phase_prob),
-            Q0 = default_Q0(phase_prob, dimension(phase_prob), dim_lyap),
-            tangent_dynamics = nothing,
-            ) where {DEP}
+            ) where {PPr, TPr}
 
         if t_clv / t_renorm < 1
             error("t_clv / t_renorm = $(t_clv / t_renorm)",
@@ -65,76 +63,50 @@ struct CLVProblem{DEP,
                   " must be larger than 1.")
         end
 
-        dim_phase = dimension(phase_prob)
-        Q0_size_1 = size(Q0, 1)
-        if Q0_size_1 != dim_phase
-            error("size(Q0, 1) = $Q0_size_1 != dim_phase = $dim_phase")
-        end
-
-        if ! is_semi_unitary(Q0)
-            error("Columns in Q0 are not orthonormal.")
-        end
-
-
-        TT = time_type((DEP <: DiscreteProblem);
+        TT = time_type((PPr <: DiscreteProblem);
                        t_forward_tran = t_forward_tran,
                        t_backward_tran = t_backward_tran,
                        t_clv = t_clv,
                        t_renorm = t_renorm)
 
-        new{DEP, TT}(
-            phase_prob,
-            t_forward_tran, t_backward_tran, t_clv, t_renorm,
-            Q0, tangent_dynamics)
+        new{PPr, TPr, TT}(
+            phase_prob, tangent_prob,
+            t_forward_tran, t_backward_tran, t_clv, t_renorm)
     end
 end
 
-CLVProblem(phase_prob::DEP, args...; kwargs...) where {DEP <: ODEProblem} =
-    CLVProblem{ODEProblem}(phase_prob, args...; kwargs...)
-CLVProblem(phase_prob::DEP, args...; kwargs...) where {DEP <:DiscreteProblem} =
-    CLVProblem{DiscreteProblem}(phase_prob, args...; kwargs...)
+function CLVProblem(phase_prob::PPr;
+                    t_clv::Real = error("Keyword argument",
+                                        " `t_clv` is required."),
+                    tangent_dynamics = nothing,
+                    tangent_prob::Union{Void, DEProblem} = nothing,
+                    dim_lyap = dimension(phase_prob),
+                    Q0 = default_Q0(phase_prob, dimension(phase_prob), dim_lyap),
+                    kwargs...) where {PPr <: DEProblem}
+    tangent_prob = validate_tangent_prob(
+        phase_prob, tangent_prob, tangent_dynamics, Q0)
+    CLVProblem{parameterless_type(PPr),
+              parameterless_type(typeof(tangent_prob))}(
+        phase_prob, tangent_prob, t_clv;
+        kwargs...)
+end
 
-CLVProblem(prob::LEProblem{DEP};
-           t_clv = ceil_if(DEP <: DiscreteProblem, prob.t_attr * 0.8),
-           t_renorm = prob.t_renorm,
-           kwargs...) where {DEP} =
+CLVProblem(prob::LEProblem{DEP}; kwargs...) where {DEP} =
     CLVProblem(
-        prob.phase_prob, t_clv;
+        prob.phase_prob;
+        t_clv = ceil_if(DEP <: DiscreteProblem, prob.t_attr * 0.8),
         # t_phase_tran = prob.t_tran,
         t_forward_tran = ceil_if(DEP <: DiscreteProblem, prob.t_attr * 0.1),
         t_backward_tran = ceil_if(DEP <: DiscreteProblem, prob.t_attr * 0.1),
-        t_renorm = t_renorm,
-        Q0 = prob.Q0,
-        tangent_dynamics = prob.tangent_dynamics,
+        t_renorm = prob.t_renorm,
+        tangent_prob = prob.tangent_prob,
         kwargs...)
 
-# DRY: it's almost the same as for prob::LEProblem
-function phase_tangent_state(prob::CLVProblem, x0 = prob.phase_prob.u0)
-    dim_phase = dimension(prob.phase_prob)
-    Q0 = prob.Q0
-    dim_phase, dim_lyap = size(Q0)
-    u0 = similar(x0, (dim_phase, dim_lyap + 1))
-    u0[:, 1] = x0
-    u0[:, 2:end] = Q0
-    u0
-end
-
-# DRY: it's exactly the same as for prob::LEProblem
-function get_tangent_prob(prob::CLVProblem{DEP},
-                          u0 = phase_tangent_state(prob)) where {DEP}
-    phase_prob = prob.phase_prob
-    return DEP(
-        get_tangent_dynamics(prob),
-        u0,
-        phase_prob.tspan,
-        phase_prob.p,
-    )
-end
-
-function get_le_solver(prob, u0 = phase_tangent_state(prob);
+function get_le_solver(prob;
+                       x0 = prob.phase_prob.u0,
                        t_renorm = prob.t_renorm,
                        kwargs...)
-    tangent_prob = get_tangent_prob(prob, u0)
+    tangent_prob = get_tangent_prob(prob; x0=x0)
     t_attr = prob.t_forward_tran + prob.t_clv + prob.t_backward_tran
     return TangentRenormalizer(get_integrator(tangent_prob),
                                t_attr, t_renorm; kwargs...)
@@ -212,7 +184,8 @@ function CLVSolution(prob::CLVProblem, record::Vector{Symbol})
         error("Unsupported record key(s): $unsupported")
     end
 
-    dim_phase, dim_lyap = size(prob.Q0)
+    Q0 = @view prob.tangent_prob.u0[:, 2:end]
+    dim_phase, dim_lyap = size(Q0)
     return CLVSolution{
         (:G in record),
         (:C in record),

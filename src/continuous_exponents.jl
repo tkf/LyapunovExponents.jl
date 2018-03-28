@@ -40,8 +40,8 @@ For the list of usable keyword arguments, see [`LEProblem`](@ref).
 """
 ContinuousLEProblem(phase_dynamics, u0, p=nothing;
                     tspan=(0.0, 100.0), kwargs...) =
-    ContinuousLEProblem(ODEProblem(phase_dynamics, u0, tspan, p);
-                        kwargs...)
+    LEProblem(ODEProblem(phase_dynamics, u0, tspan, p);
+              kwargs...)
 
 init_phase_state(integrator::DEIntegrator) = integrator.sol.prob.u0[:, 1]
 init_tangent_state(integrator::DEIntegrator) = integrator.sol.prob.u0[:, 2:end]

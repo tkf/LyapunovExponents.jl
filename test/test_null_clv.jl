@@ -52,7 +52,8 @@ null_CLV_tests = [
     solver = init(prob; record=[:G, :C, :x])
     solve!(solver)
 
-    dims = size(prob.Q0)
+    Q0 = @view prob.tangent_prob.u0[:, 2:end]
+    dims = size(Q0)
     x = solver.sol.x_history
     G = solver.sol.G_history
     C = solver.sol.C_history

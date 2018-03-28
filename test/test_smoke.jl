@@ -53,7 +53,7 @@ end
     rode = with_input_noise(ode, 1)
     @test_nothrow begin
         t_attr = 3
-        prob = LEProblem(rode, t_attr)
+        prob = LEProblem(rode; t_attr=t_attr)
         sol = solve(prob; record=true, integrator_options=[:dt => 1e-3])
         plot(sol)
     end
@@ -61,7 +61,7 @@ end
     rode = with_output_noise(ode, 1)
     @test_nothrow begin
         t_attr = 3
-        prob = LEProblem(rode, t_attr)
+        prob = LEProblem(rode; t_attr=t_attr)
         sol = solve(prob; record=true, integrator_options=[:dt => 1e-3])
         plot(sol)
     end

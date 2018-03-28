@@ -47,8 +47,8 @@ For the list of usable keyword arguments, see [`LEProblem`](@ref).
 """
 DiscreteLEProblem(phase_dynamics, u0, p=nothing;
                   tspan=(0, 100), kwargs...) =
-    DiscreteLEProblem(DiscreteProblem(phase_dynamics, u0, tspan, p);
-                      kwargs...)
+    LEProblem(DiscreteProblem(phase_dynamics, u0, tspan, p);
+              kwargs...)
 
 init_phase_state(integrator::DiscreteIterator) = integrator.u0[:, 1]
 init_tangent_state(integrator::DiscreteIterator) = integrator.u0[:, 2:end]
