@@ -236,10 +236,15 @@ end
 
 function test_tangent_dynamics_against_autodiff(
         prob::LEProblem, args...;
-        dim_lyap = dimension(prob.phase_prob),
         kwargs...)
     @assert ! (prob.tangent_prob.f isa PhaseTangentDynamics)
-    prob_ad = LEProblem(prob.phase_prob; t_attr=prob.t_attr)
+    prob_ad = LEProblem(prob.phase_prob;
+                        # t_attr is unused in the following, but it's
+                        # a required argument:
+                        t_attr = prob.t_attr,
+                        # Q0 is required to match the size of
+                        # tangent_prob.u0:
+                        Q0 = prob.tangent_prob.u0[:, 2:end])
     prob_ad.tangent_prob.u0 .= prob.tangent_prob.u0
     prob_ad.tangent_prob.f :: PhaseTangentDynamics
     test_same_dynamics(prob.tangent_prob,

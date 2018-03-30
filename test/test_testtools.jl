@@ -1,8 +1,9 @@
 using Base.Test
 using Base.Test: Fail, Error, Broken
 using LyapunovExponents
-using LyapunovExponents: objname
+using LyapunovExponents: objname, dimension
 using LyapunovExponents.TestTools: test_same_dynamics,
+    test_tangent_dynamics_against_autodiff,
     @test_isapprox_elemwise, @_test_isapprox_elemwise_result
 
 @testset "@test_isapprox_elemwise" begin
@@ -42,4 +43,12 @@ end
     test_same_dynamics(p1, p2, num_u)
     test_same_dynamics(p1, p2, num_u; evolve=true)
     test_same_dynamics(p1, p2, [p1.u0, p1.u0 + 0.1])
+end
+
+@testset "test_tangent_dynamics_against_autodiff: dim_lyap=$dim_lyap" for
+        dim_lyap in 1:3
+    prob = LEProblem(LyapunovExponents.lorenz_63().example; dim_lyap=dim_lyap)
+    @test size(prob.tangent_prob.u0) == (3, 1 + dim_lyap)
+    num_u = 5
+    test_tangent_dynamics_against_autodiff(prob, num_u)
 end
