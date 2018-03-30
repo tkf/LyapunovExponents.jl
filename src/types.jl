@@ -343,7 +343,7 @@ end
 function LESolver(prob::LEProblem, stage_types::AbstractVector;
                   record::Bool = false,
                   integrator_options = [],
-                  terminator = nothing,
+                  terminator = false,
                   terminator_options = [],
                   kwargs...)
     sol = LESolution(get_dim_lyap(prob);

@@ -37,7 +37,7 @@ end
         println()
 
         demo = f(dim_lyap=dim_lyap)
-        @time solve!(demo; record=true)
+        @time solve!(demo)
         report(demo)
 
         sol = demo.solver.sol

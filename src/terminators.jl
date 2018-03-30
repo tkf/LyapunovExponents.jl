@@ -307,11 +307,6 @@ end
 
 
 """Choose appropriate terminator."""
-function Terminator(::Void, prob, sol; terminator_options...)
-    return Terminator(sol isa LESolution{true, true},
-                      prob, sol; terminator_options...)
-end
-
 function Terminator(flag::Bool, prob, sol; terminator_options...)
     if flag
         tmnr = AutoCovTerminator(; terminator_options...)

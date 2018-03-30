@@ -44,7 +44,7 @@ end
         ]
     for dim_lyap in 1:dimension(ex)
         println("$(ex.name) dim_lyap=$dim_lyap")
-        @time sol = solve(ex; record=true, dim_lyap=dim_lyap)
+        @time sol = solve(ex; dim_lyap=dim_lyap)
         report(sol)
         @test lyapunov_exponents(sol)[1] < 0
         @test sol.converged

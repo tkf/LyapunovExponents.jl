@@ -34,6 +34,7 @@ Implemented:
 * [OnlineStats.jl] support: on-the-fly calculation of Lyapunov
   exponents, their variance, covariance, and any other statics it
   supports.
+* (Experimental) Automatic termination.
 
 Wanted list:
 

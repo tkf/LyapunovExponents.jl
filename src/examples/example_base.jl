@@ -77,6 +77,8 @@ dimension(example::LEExample) = length(example.u0)
 function solve(example::LEExample;
                dim_lyap=dimension(example), kwargs...)
     solve(LEProblem(example; dim_lyap=dim_lyap);
+          record = true,
+          terminator = true,
           terminator_options = example.terminator_options,
           integrator_options = example.integrator_options,
           kwargs...)
@@ -115,9 +117,10 @@ end
 Initialize `demo.solver` from `demo.prob` and run
 `solve!(demo.solver)` to calculate the Lyapunov exponents.
 """
-function solve!(demo::LEDemo; progress = -1, record = true, kwargs...)
+function solve!(demo::LEDemo; progress = -1, kwargs...)
     demo.solver = init(demo.prob;
-                       record = record,
+                       record = true,
+                       terminator = true,
                        terminator_options = demo.example.terminator_options,
                        integrator_options = demo.example.integrator_options,
                        kwargs...)
