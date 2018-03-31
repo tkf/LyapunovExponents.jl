@@ -30,7 +30,7 @@ current_state(relaxer::Union{PhaseRelaxer, AbstractRenormalizer}) =
 
 function get_tangent_integrator(prob::LEProblem, relaxer;
                                 integrator_options...)
-    # Carray on simulated time to tangent integrator [*]:
+    # Carry on simulated time to tangent integrator [*]:
     tspan = if relaxer.integrator isa ODEIntegrator
         (relaxer.integrator.t, Inf)
     else
