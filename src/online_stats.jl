@@ -1,31 +1,37 @@
-using OnlineStats: ExactStat, VectorOb, smooth!, smooth, value, unbias
+using OnlineStats: OnlineStat, EqualWeight, VectorOb,
+    smooth!, smooth, value, unbias
 import OnlineStats
 import OnlineStatsBase
 
-struct VecMean <: ExactStat{1}
+mutable struct VecMean{W} <: OnlineStat{VectorOb}
     μs::Vector{Float64}
-    VecMean(μs::Vector{Float64}) = new(μs)
+    weight::W
+    nobs::Int
 end
+VecMean(μs::Vector{Float64}; weight = EqualWeight()) = VecMean(μs, weight, 0)
 VecMean(len::Integer) = VecMean(zeros(Float64, len))
-OnlineStatsBase.fit!(o::VecMean, x::VectorOb, γ::Float64) = smooth!(o.μs, x, γ)
+OnlineStatsBase._fit!(o::VecMean, x::VectorOb) =
+    smooth!(o.μs, x, o.weight(o.nobs += 1))
 Base.mean(o::VecMean) = value(o)
 
 
-mutable struct VecVariance <: ExactStat{1}
+mutable struct VecVariance{W} <: OnlineStat{VectorOb}
     σ2s::Vector{Float64}     # biased variance
     μs::Vector{Float64}
     tmp::Vector{Float64}
+    weight::W
     nobs::Int
-    function VecVariance(σ2s::Vector{Float64}, μs::Vector{Float64})
-        @assert size(σ2s) == size(μs)
-        new(σ2s, μs, similar(μs), 0)
-    end
+end
+function VecVariance(σ2s::Vector{Float64}, μs::Vector{Float64};
+                     weight = EqualWeight())
+    @assert size(σ2s) == size(μs)
+    VecVariance(σ2s, μs, similar(μs), weight, 0)
 end
 VecVariance(len::Integer) = VecVariance(zeros(Float64, len),
                                         zeros(Float64, len))
 
-function OnlineStatsBase.fit!(o::VecVariance, x::VectorOb, γ::Float64)
-    o.nobs += 1
+function OnlineStatsBase._fit!(o::VecVariance, x::VectorOb)
+    γ = o.weight(o.nobs += 1)
     o.tmp .= smooth.(o.μs, x, γ)
     o.σ2s .= smooth.(o.σ2s, (x .- o.μs) .* (x .- o.tmp), γ)
     o.tmp, o.μs = o.μs, o.tmp

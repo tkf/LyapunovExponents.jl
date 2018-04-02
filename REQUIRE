@@ -3,8 +3,8 @@ DiffEqBase 3.6
 DifferentialEquations 4.0 5.0
 Distributions 0.12
 ForwardDiff 0.7
-OnlineStats 0.16
-OnlineStatsBase 0.6
+OnlineStats 0.17
+OnlineStatsBase 0.7 0.8
 OrdinaryDiffEq 3.3
 Parameters 0.8.1
 Plots 0.15
