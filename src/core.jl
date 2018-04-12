@@ -68,6 +68,7 @@ Base.length(stage::AbstractRenormalizer) =
     u0[:, 2:end] = stage.tangent_state
     set_u!(stage.integrator, u0)
     step!(stage.integrator, stage.t_renorm, true)
+    assert_success(stage.integrator)
     # TODO: maybe use step!(solver.integrator, dt) aka "inexact step"
     u0 = current_state(stage)
     stage.phase_state[:] = @view u0[:, 1]

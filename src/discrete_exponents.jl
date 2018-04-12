@@ -31,6 +31,8 @@ end
 # - [[../../OrdinaryDiffEq/src/solve.jl::solve!.*::ODEIntegrator]]
 # - http://devdocs.juliadiffeq.org/latest/contributing/diffeq_internals.html
 
+@inline assert_success(integrator::DiscreteIterator) = nothing
+
 const DiscreteLEProblem = LEProblem{DiscreteProblem}
 
 """

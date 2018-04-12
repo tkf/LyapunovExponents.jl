@@ -24,6 +24,13 @@ end
 # - [[../../OrdinaryDiffEq/src/solve.jl::function init\b]]
 # - http://docs.juliadiffeq.org/latest/basics/common_solver_opts.html
 
+@inline function assert_success(integrator::DEIntegrator)
+    if ! (integrator.sol.retcode in (:Default, :Success))
+        error("Integration failed with retcode: $(integrator.sol.retcode)")
+    end
+end
+# http://docs.juliadiffeq.org/latest/basics/solution.html#Return-Codes-(RetCodes)-1
+
 const ContinuousLEProblem = LEProblem{ODEProblem}
 
 """
