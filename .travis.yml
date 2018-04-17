@@ -8,6 +8,7 @@ julia:
 env:
   - REQUIRE_VERSIONS=minimal
   - REQUIRE_VERSIONS=latest
+  - REQUIRE_VERSIONS=dev
 notifications:
   email: false
 git:
