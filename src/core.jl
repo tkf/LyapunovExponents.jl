@@ -34,7 +34,7 @@ function get_tangent_integrator(prob::LEProblem, relaxer;
     tspan = if relaxer.integrator isa ODEIntegrator
         (relaxer.integrator.t, Inf)
     else
-        # Support this in discrete problem
+        # TODO: Support this in discrete problem
         prob.phase_prob.tspan
     end
     x0 = current_state(relaxer)
@@ -46,6 +46,7 @@ end
 # with phase_prob.tspan[1] which is less than relaxer.integrator.t.
 # It causes problems in some rare cases with stateful problem
 # definitions.
+# See: [[./clv/clv_problem.jl::get_integrator]]
 
 TangentRenormalizer(relaxer::PhaseRelaxer, prob::LEProblem, sol::LESolution,
                     tmnr::Terminator, integrator_options) =

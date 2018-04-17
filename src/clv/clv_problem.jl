@@ -106,7 +106,15 @@ function get_le_solver(prob;
                        x0 = prob.phase_prob.u0,
                        t_renorm = prob.t_renorm,
                        kwargs...)
-    tangent_prob = get_tangent_prob(prob; x0=x0)
+
+    tspan = if prob.tangent_prob isa ODEProblem
+        (prob.tangent_prob.tspan[1], Inf)
+    else
+        prob.phase_prob.tspan
+    end
+    # See: [[../core.jl::get_tangent_integrator]]
+
+    tangent_prob = get_tangent_prob(prob; x0=x0, tspan=tspan)
     t_attr = prob.t_forward_tran + prob.t_clv + prob.t_backward_tran
     return TangentRenormalizer(get_integrator(tangent_prob),
                                t_attr, t_renorm; kwargs...)
