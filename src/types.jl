@@ -369,3 +369,10 @@ Base.show(io::IO, solver::LESolver) =
     print(io,
           "#Orth.: ", num_orth(solver), ", ",
           "LEs: ", lyapunov_exponents(solver))
+
+
+struct IntegratorError <: Exception
+    retcode::Symbol
+end
+Base.showerror(io::IO, ex::IntegratorError) =
+    print(io, "IntegratorError: Integration failed with retcode: $(ex.retcode)")

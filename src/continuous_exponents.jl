@@ -26,7 +26,7 @@ end
 
 @inline function assert_success(integrator::DEIntegrator)
     if ! (integrator.sol.retcode in (:Default, :Success))
-        error("Integration failed with retcode: $(integrator.sol.retcode)")
+        throw(IntegratorError(integrator.sol.retcode))
     end
 end
 # http://docs.juliadiffeq.org/latest/basics/solution.html#Return-Codes-(RetCodes)-1
