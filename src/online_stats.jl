@@ -1,5 +1,5 @@
-using OnlineStats: OnlineStat, EqualWeight, VectorOb,
-    smooth!, smooth, value, unbias
+using OnlineStatsBase: OnlineStat, EqualWeight, value
+using OnlineStats: VectorOb, smooth!, smooth, unbias
 import OnlineStats
 import OnlineStatsBase
 
