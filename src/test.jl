@@ -170,14 +170,16 @@ end
 
 
 function compare_states(u1, u2; verbose=false, kwargs...)
-    if verbose
-        @display u1
-        @display u2
-        @display u1 - u2
-    end
-    @show_diff_info(u1, u2)
     local ok
     @test ok = isapprox(u1, u2; kwargs...)
+    if !ok
+        if verbose
+            @display u1
+            @display u2
+            @display u1 - u2
+        end
+        @show_diff_info(u1, u2)
+    end
     ok
 end
 
