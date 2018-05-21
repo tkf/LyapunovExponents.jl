@@ -33,6 +33,9 @@ function get_tangent_integrator(prob::LEProblem, relaxer;
     # Carry on simulated time to tangent integrator [*]:
     tspan = if relaxer.integrator isa ODEIntegrator
         (relaxer.integrator.t, Inf)
+        # Also carry on dt from the phase relaxer:
+        integrator_options = [integrator_options...,
+                              :dt => relaxer.integrator.dt]
     else
         # TODO: Support this in discrete problem
         prob.phase_prob.tspan
