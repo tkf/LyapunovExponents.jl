@@ -31,14 +31,14 @@ current_state(relaxer::Union{PhaseRelaxer, AbstractRenormalizer}) =
 function get_tangent_integrator(prob::LEProblem, relaxer;
                                 integrator_options...)
     # Carry on simulated time to tangent integrator [*]:
-    tspan = if relaxer.integrator isa ODEIntegrator
-        (relaxer.integrator.t, Inf)
+    if relaxer.integrator isa ODEIntegrator
+        tspan = (relaxer.integrator.t, Inf)
         # Also carry on dt from the phase relaxer:
         integrator_options = [integrator_options...,
                               :dt => relaxer.integrator.dt]
     else
         # TODO: Support this in discrete problem
-        prob.phase_prob.tspan
+        tspan = prob.phase_prob.tspan
     end
     x0 = current_state(relaxer)
     tangent_prob = get_tangent_prob(prob; x0=x0, tspan=tspan)
