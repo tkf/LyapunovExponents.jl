@@ -14,6 +14,10 @@ env:
   matrix:
     - REQUIRE_VERSIONS=minimal
     - REQUIRE_VERSIONS=latest
+matrix:
+  exclude:
+    - julia: nightly
+      env: REQUIRE_VERSIONS=minimal
 notifications:
   email: false
 git:
