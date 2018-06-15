@@ -6,8 +6,14 @@ julia:
   - 0.6
   - nightly
 env:
-  - REQUIRE_VERSIONS=minimal
-  - REQUIRE_VERSIONS=latest
+  global:
+    # Suppress "Could not connect to display" warnings from GR Framework.
+    # * https://gr-framework.org/about.html#file-formats
+    # * https://github.com/jheinen/gr/blob/v0.31.1/lib/gks/util.c#L67
+    - GKS_WSTYPE: png
+  matrix:
+    - REQUIRE_VERSIONS=minimal
+    - REQUIRE_VERSIONS=latest
 notifications:
   email: false
 git:
